@@ -1,1742 +1,2359 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-
-<title>AAC Cards SPA</title>
-
-<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
-<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-
-<style>
-
-*{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
-}
-
-html,
-body{
-  width:100%;
-  height:100%;
-  overflow:hidden;
-  font-family:'Inter',sans-serif;
-  background:linear-gradient(to bottom,#eef2ff,#f8fafc,#ffffff);
-  color:#0f172a;
-  -webkit-font-smoothing:antialiased;
-}
-
-body{
-  touch-action:manipulation;
-}
-
-button{
-  border:none;
-  background:none;
-  cursor:pointer;
-  touch-action:none;
-}
-
-img{
-  display:block;
-}
-
-.font-display{
-  font-family:'Baloo 2',cursive;
-}
-
-.app{
-  width:100%;
-  height:100vh;
-  display:flex;
-  flex-direction:column;
-  overflow:hidden;
-}
-
-/* HEADER */
-
-.header{
-  padding:14px 14px 10px;
-  flex-shrink:0;
-}
-
-.header-box{
-  background:rgba(255,255,255,.85);
-  backdrop-filter:blur(12px);
-  border-radius:24px;
-  padding:16px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  box-shadow:0 10px 30px rgba(0,0,0,.06);
-}
-
-.header-title{
-  font-size:30px;
-  font-weight:700;
-}
-
-.header-sub{
-  font-size:11px;
-  font-weight:700;
-  text-transform:uppercase;
-  letter-spacing:.16em;
-  color:#6366f1;
-}
-
-.status{
-  padding:10px 14px;
-  border-radius:999px;
-  background:#f8fafc;
-  border:1px solid #e2e8f0;
-  font-size:12px;
-  font-weight:600;
-}
-
-/* MAIN */
-
-.main{
-  flex:1;
-  min-height:0;
-  display:flex;
-  flex-direction:column;
-  overflow:hidden;
-  padding:0 14px 14px;
-  gap:12px;
-}
-
-/* COMPOSER */
-
-.composer{
-  flex:1;
-  min-height:0;
-  background:rgba(255,255,255,.85);
-  border-radius:30px;
-  padding:16px;
-  display:flex;
-  flex-direction:column;
-  position:relative;
-  overflow:hidden;
-  box-shadow:0 10px 30px rgba(0,0,0,.06);
-}
-
-.composer-top{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-bottom:12px;
-  flex-shrink:0;
-}
-
-.composer-title{
-  font-size:26px;
-  font-weight:700;
-}
-
-.composer-sub{
-  font-size:14px;
-  color:#64748b;
-}
-
-.clear-btn{
-  background:#f8fafc;
-  border:1px solid #e2e8f0;
-  padding:12px 16px;
-  border-radius:16px;
-  font-weight:600;
-}
-
-.dropzone{
-  flex:1;
-  min-height:0;
-  overflow:auto;
-  border:2px dashed #cbd5e1;
-  border-radius:28px;
-  padding:14px;
-  display:flex;
-  flex-wrap:wrap;
-  align-content:flex-start;
-  gap:12px;
-  transition:.2s;
-  background:
-    linear-gradient(to right, rgba(148,163,184,.08) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(148,163,184,.08) 1px, transparent 1px);
-  background-size:24px 24px;
-}
-
-.dropzone.active{
-  border-color:#6366f1;
-  background-color:rgba(99,102,241,.05);
-}
-
-.empty{
-  width:100%;
-  height:100%;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  text-align:center;
-  color:#64748b;
-  font-size:16px;
-  padding:20px;
-}
-
-.phrase-card{
-  width:calc(50% - 6px);
-  border-radius:26px;
-  padding:14px;
-  position:relative;
-  overflow:hidden;
-  background:white;
-  box-shadow:0 10px 30px rgba(15,23,42,.08);
-  animation:pop .2s ease;
-}
-
-.phrase-card.playing{
-  transform:scale(1.03);
-  box-shadow:0 16px 35px rgba(79,70,229,.25);
-}
-
-.phrase-image{
-  width:70px;
-  height:70px;
-  border-radius:20px;
-  overflow:hidden;
-  margin-bottom:12px;
-}
-
-.phrase-image img{
-  width:100%;
-  height:100%;
-  object-fit:cover;
-}
-
-.phrase-title{
-  font-size:26px;
-  font-weight:700;
-  line-height:1;
-  margin-bottom:6px;
-}
-
-.phrase-category{
-  font-size:11px;
-  text-transform:uppercase;
-  letter-spacing:.12em;
-  color:#64748b;
-  margin-bottom:10px;
-}
-
-.tags{
-  display:flex;
-  gap:4px;
-  flex-wrap:wrap;
-}
-
-.tag{
-  padding:4px 8px;
-  border-radius:999px;
-  background:rgba(255,255,255,.7);
-  font-size:10px;
-  font-weight:600;
-}
-
-.remove-btn{
-  position:absolute;
-  top:10px;
-  right:10px;
-  width:34px;
-  height:34px;
-  border-radius:12px;
-  background:rgba(255,255,255,.85);
-  font-size:18px;
-  font-weight:700;
-}
-
-.play-btn{
-  position:absolute;
-  right:18px;
-  bottom:18px;
-  width:68px;
-  height:68px;
-  border-radius:999px;
-  background:linear-gradient(135deg,#4f46e5,#14b8a6);
-  color:white;
-  font-size:26px;
-  box-shadow:0 16px 35px rgba(79,70,229,.25);
-}
-
-/* FILTERS */
-
-.filters{
-  flex-shrink:0;
-  display:flex;
-  flex-direction:column;
-  gap:10px;
-}
-
-.filter-title{
-  font-size:14px;
-  font-weight:700;
-  color:#475569;
-  margin-bottom:8px;
-}
-
-.chips{
-  display:flex;
-  gap:8px;
-  overflow-x:auto;
-  scrollbar-width:none;
-  padding-bottom:2px;
-}
-
-.chips::-webkit-scrollbar{
-  display:none;
-}
-
-.chip{
-  flex-shrink:0;
-  padding:10px 14px;
-  border-radius:999px;
-  background:white;
-  border:1px solid #e2e8f0;
-  font-size:13px;
-  font-weight:600;
-  transition:.2s;
-}
-
-.chip.active{
-  background:#4f46e5;
-  color:white;
-  border-color:#4f46e5;
-}
-
-/* LIBRARY */
-
-.library{
-  flex-shrink:0;
-  background:rgba(255,255,255,.82);
-  backdrop-filter:blur(14px);
-  border-radius:28px;
-  padding:14px;
-  box-shadow:0 -10px 30px rgba(0,0,0,.08);
-}
-
-.library-top{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-bottom:12px;
-}
-
-.library-title{
-  font-size:24px;
-  font-weight:700;
-}
-
-.library-sub{
-  font-size:13px;
-  color:#64748b;
-}
-
-.library-counter{
-  background:white;
-  padding:10px 14px;
-  border-radius:14px;
-  font-size:12px;
-  font-weight:700;
-}
-
-.library-scroll{
-  display:flex;
-  gap:12px;
-  overflow-x:auto;
-  scrollbar-width:none;
-  -webkit-overflow-scrolling:touch;
-}
-
-.library-scroll::-webkit-scrollbar{
-  display:none;
-}
-
-.library-card{
-  min-width:165px;
-  max-width:165px;
-  padding:14px;
-  border-radius:26px;
-  background:white;
-  text-align:left;
-  flex-shrink:0;
-  box-shadow:0 10px 30px rgba(15,23,42,.08);
-}
-
-.library-image{
-  width:64px;
-  height:64px;
-  border-radius:20px;
-  overflow:hidden;
-  margin-bottom:12px;
-}
-
-.library-image img{
-  width:100%;
-  height:100%;
-  object-fit:cover;
-}
-
-.library-card-title{
-  font-size:26px;
-  font-weight:700;
-  line-height:1;
-  margin-bottom:6px;
-}
-
-.library-category{
-  font-size:11px;
-  text-transform:uppercase;
-  letter-spacing:.12em;
-  color:#64748b;
-  margin-bottom:10px;
-}
-
-/* DRAG */
-
-.ghost{
-  position:fixed;
-  pointer-events:none;
-  z-index:999;
-  width:165px;
-  border-radius:26px;
-  padding:14px;
-  transform:translate(-50%,-50%) scale(1.05);
-  box-shadow:0 20px 40px rgba(0,0,0,.18);
-}
-
-.ghost img{
-  width:64px;
-  height:64px;
-  border-radius:20px;
-  object-fit:cover;
-  margin-bottom:12px;
-}
-
-/* TOAST */
-
-.toast{
-  position:fixed;
-  top:20px;
-  left:50%;
-  transform:translateX(-50%);
-  background:#0f172a;
-  color:white;
-  padding:12px 18px;
-  border-radius:999px;
-  font-size:14px;
-  font-weight:600;
-  z-index:999;
-  box-shadow:0 10px 30px rgba(0,0,0,.15);
-}
-
-/* MOBILE FIX */
-
-@media (max-height: 760px){
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+
+  <title>AAC Cards SPA</title>
+
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700&family=Inter:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
+    <style>
+
+      /* =========================================================
+         RESET
+      ========================================================= */
+      
+      *{
+        margin:0;
+        padding:0;
+        box-sizing:border-box;
+      }
+      
+      html,
+      body{
+        width:100%;
+        height:100%;
+        overflow:hidden;
+      
+        font-family:'Inter',sans-serif;
+      
+        background:
+          linear-gradient(
+            to bottom,
+            #eef2ff,
+            #f8fafc,
+            #ffffff
+          );
+      
+        color:#0f172a;
+      
+        -webkit-font-smoothing:antialiased;
+      }
+      
+      body{
+        touch-action:manipulation;
+      }
+      
+      button{
+        border:none;
+        background:none;
+        cursor:pointer;
+        font-family:inherit;
+      }
+      
+      img{
+        display:block;
+      }
+      
+      .font-display{
+        font-family:'Baloo 2',cursive;
+      }
+      
+      /* =========================================================
+         APP
+      ========================================================= */
+      
+      .app{
+        width:100%;
+        height:100dvh;
+      
+        display:flex;
+        flex-direction:column;
+      
+        overflow:hidden;
+      }
+      
+      /* =========================================================
+         HEADER
+      ========================================================= */
+      
+      .header{
+        padding:14px 14px 10px;
+        flex-shrink:0;
+      }
+      
+      .header-box{
+        background:rgba(255,255,255,.85);
+      
+        backdrop-filter:blur(12px);
+      
+        border-radius:24px;
+      
+        padding:16px;
+      
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+      
+        box-shadow:
+          0 10px 30px rgba(0,0,0,.06);
+      }
+      
+      .header-title{
+        font-size:30px;
+        font-weight:700;
+      }
+      
+      .header-sub{
+        font-size:11px;
+        font-weight:700;
+      
+        text-transform:uppercase;
+      
+        letter-spacing:.16em;
+      
+        color:#6366f1;
+      }
+      
+      .status{
+        padding:10px 14px;
+      
+        border-radius:999px;
+      
+        background:#f8fafc;
+      
+        border:1px solid #e2e8f0;
+      
+        font-size:12px;
+        font-weight:600;
+      }
+      
+      /* =========================================================
+         MAIN
+      ========================================================= */
+      
+      .main{
+        flex:1;
+        min-height:0;
+      
+        display:flex;
+        flex-direction:column;
+      
+        overflow:hidden;
+      
+        padding:0 14px 14px;
+      
+        gap:12px;
+      }
+      
+      /* =========================================================
+         COMPOSER
+      ========================================================= */
+      
+      .composer{
+        flex:1;
+        min-height:0;
+      
+        background:rgba(255,255,255,.85);
+      
+        border-radius:30px;
+      
+        padding:16px;
+      
+        display:flex;
+        flex-direction:column;
+      
+        position:relative;
+      
+        overflow:hidden;
+      
+        box-shadow:
+          0 10px 30px rgba(0,0,0,.06);
+      }
+      
+      .composer-top{
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+      
+        margin-bottom:12px;
+      
+        flex-shrink:0;
+      }
+      
+      .composer-title{
+        font-size:26px;
+        font-weight:700;
+      }
+      
+      .composer-sub{
+        font-size:14px;
+        color:#64748b;
+      }
+      
+      .clear-btn{
+        background:#f8fafc;
+      
+        border:1px solid #e2e8f0;
+      
+        padding:12px 16px;
+      
+        border-radius:16px;
+      
+        font-weight:600;
+      }
+      
+      /* =========================================================
+         DROPZONE
+      ========================================================= */
+      
+      .dropzone{
+        flex:1;
+        min-height:0;
+      
+        overflow:auto;
+      
+        border:2px dashed #cbd5e1;
+      
+        border-radius:28px;
+      
+        padding:14px;
+      
+        display:flex;
+        flex-wrap:wrap;
+      
+        align-content:flex-start;
+      
+        gap:12px;
+      
+        transition:.2s;
+      
+        background:
+          linear-gradient(to right, rgba(148,163,184,.08) 1px, transparent 1px),
+          linear-gradient(to bottom, rgba(148,163,184,.08) 1px, transparent 1px);
+      
+        background-size:24px 24px;
+      
+        -webkit-overflow-scrolling:touch;
+      }
+      
+      .dropzone.active{
+        border-color:#6366f1;
+        background-color:rgba(99,102,241,.05);
+      }
+      
+      .empty{
+        width:100%;
+        height:100%;
+      
+        display:flex;
+        align-items:center;
+        justify-content:center;
+      
+        text-align:center;
+      
+        color:#64748b;
+      
+        font-size:16px;
+      
+        padding:20px;
+      }
+      
+      /* =========================================================
+         PHRASE CARD
+      ========================================================= */
+      
+      .phrase-card{
+        width:calc(50% - 6px);
+      
+        border-radius:26px;
+      
+        padding:14px;
+      
+        position:relative;
+      
+        overflow:hidden;
+      
+        background:white;
+      
+        box-shadow:
+          0 10px 30px rgba(15,23,42,.08);
+      
+        animation:pop .2s ease;
+      }
+      
+      .phrase-card.playing{
+        transform:scale(1.03);
+      
+        box-shadow:
+          0 16px 35px rgba(79,70,229,.25);
+      }
+      
+      .phrase-image{
+        width:70px;
+        height:70px;
+      
+        border-radius:20px;
+      
+        overflow:hidden;
+      
+        margin-bottom:12px;
+      }
+      
+      .phrase-image img{
+        width:100%;
+        height:100%;
+      
+        object-fit:cover;
+      }
+      
+      .phrase-title{
+        font-size:26px;
+        font-weight:700;
+      
+        line-height:1;
+      
+        margin-bottom:6px;
+      }
+      
+      .phrase-category{
+        font-size:11px;
+      
+        text-transform:uppercase;
+      
+        letter-spacing:.12em;
+      
+        color:#64748b;
+      
+        margin-bottom:10px;
+      }
+      
+      .tags{
+        display:flex;
+        gap:4px;
+        flex-wrap:wrap;
+      }
+      
+      .tag{
+        padding:4px 8px;
+      
+        border-radius:999px;
+      
+        background:rgba(255,255,255,.7);
+      
+        font-size:10px;
+        font-weight:600;
+      }
+      
+      .remove-btn{
+        position:absolute;
+      
+        top:10px;
+        right:10px;
+      
+        width:34px;
+        height:34px;
+      
+        border-radius:12px;
+      
+        background:rgba(255,255,255,.85);
+      
+        font-size:18px;
+        font-weight:700;
+      }
+      
+      .play-btn{
+        position:absolute;
+      
+        right:18px;
+        bottom:18px;
+      
+        width:68px;
+        height:68px;
+      
+        border-radius:999px;
+      
+        background:
+          linear-gradient(
+            135deg,
+            #4f46e5,
+            #14b8a6
+          );
+      
+        color:white;
+      
+        font-size:26px;
+      
+        box-shadow:
+          0 16px 35px rgba(79,70,229,.25);
+      }
+      
+      /* =========================================================
+         FILTERS
+      ========================================================= */
+      
+      .filters{
+        flex-shrink:0;
+        min-width:0;
+      }
+      
+      .filters-bar{
+        display:flex;
+        align-items:center;
+      
+        gap:10px;
+      
+        min-width:0;
+      
+        overflow:hidden;
+      
+        padding:10px 12px;
+      
+        border-radius:22px;
+      
+        background:rgba(255,255,255,.82);
+      
+        backdrop-filter:blur(14px);
+      
+        box-shadow:
+          0 8px 24px rgba(0,0,0,.05);
+      }
+      
+      /* SWITCH */
+      
+      .filter-switch{
+        flex-shrink:0;
+      
+        display:flex;
+      
+        gap:6px;
+      
+        padding:4px;
+      
+        border-radius:16px;
+      
+        background:#eef2ff;
+      }
+      
+      .switch-btn{
+        flex-shrink:0;
+      
+        padding:10px 14px;
+      
+        border-radius:12px;
+      
+        font-size:12px;
+        font-weight:700;
+      
+        color:#475569;
+      
+        white-space:nowrap;
+      
+        transition:.2s;
+      }
+      
+      .switch-btn.active{
+        background:#4f46e5;
+      
+        color:white;
+      
+        box-shadow:
+          0 6px 16px rgba(79,70,229,.25);
+      }
+      
+      /* =========================================================
+         CHIPS SLIDER
+      ========================================================= */
+      
+      .chips-main{
+        flex:1;
+        min-width:0;
+      
+        display:flex;
+        align-items:center;
+      
+        gap:8px;
+      
+        overflow-x:auto;
+        overflow-y:hidden;
+      
+        scrollbar-width:none;
+      
+        -webkit-overflow-scrolling:touch;
+      
+        touch-action:pan-x;
+      
+        scroll-behavior:smooth;
+      
+        padding-bottom:2px;
+      }
+      
+      .chips-main::-webkit-scrollbar{
+        display:none;
+      }
+      
+      .chip{
+        flex-shrink:0;
+      
+        white-space:nowrap;
+      
+        padding:10px 14px;
+      
+        border-radius:999px;
+      
+        background:white;
+      
+        border:1px solid #e2e8f0;
+      
+        font-size:13px;
+        font-weight:600;
+      
+        color:#334155;
+      
+        transition:.2s;
+      }
+      
+      .chip.active{
+        background:#4f46e5;
+      
+        border-color:#4f46e5;
+      
+        color:white;
+      }
+      
+      /* =========================================================
+         LIBRARY
+      ========================================================= */
+      
+      .library{
+        flex:1;
+        min-height:0;
+      
+        background:rgba(255,255,255,.82);
+      
+        backdrop-filter:blur(14px);
+      
+        border-radius:28px;
+      
+        padding:14px;
+      
+        display:flex;
+        flex-direction:column;
+      
+        overflow:hidden;
+      
+        box-shadow:
+          0 -10px 30px rgba(0,0,0,.08);
+      }
+      
+      .library-top{
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+      
+        margin-bottom:12px;
+      
+        flex-shrink:0;
+      }
+      
+      .library-title{
+        font-size:24px;
+        font-weight:700;
+      }
+      
+      .library-sub{
+        font-size:13px;
+        color:#64748b;
+      }
+      
+      .library-counter{
+        background:white;
+      
+        padding:10px 14px;
+      
+        border-radius:14px;
+      
+        font-size:12px;
+        font-weight:700;
+      }
+      
+      .library-scroll{
+        flex:1;
+        min-height:0;
+      
+        display:flex;
+      
+        gap:12px;
+      
+        overflow-x:auto;
+        overflow-y:hidden;
+      
+        scrollbar-width:none;
+      
+        -webkit-overflow-scrolling:touch;
+      }
+      
+      .library-scroll::-webkit-scrollbar{
+        display:none;
+      }
+      
+      .library-card{
+        min-width:165px;
+        max-width:165px;
+      
+        flex-shrink:0;
+      
+        padding:14px;
+      
+        border-radius:26px;
+      
+        background:white;
+      
+        text-align:left;
+      
+        box-shadow:
+          0 10px 30px rgba(15,23,42,.08);
+      }
+      
+      .library-image{
+        width:64px;
+        height:64px;
+      
+        border-radius:20px;
+      
+        overflow:hidden;
+      
+        margin-bottom:12px;
+      }
+      
+      .library-image img{
+        width:100%;
+        height:100%;
+      
+        object-fit:cover;
+      }
+      
+      .library-card-title{
+        font-size:26px;
+        font-weight:700;
+      
+        line-height:1;
+      
+        margin-bottom:6px;
+      }
+      
+      .library-category{
+        font-size:11px;
+      
+        text-transform:uppercase;
+      
+        letter-spacing:.12em;
+      
+        color:#64748b;
+      
+        margin-bottom:10px;
+      }
+      
+      /* =========================================================
+         DRAG
+      ========================================================= */
+      
+      .ghost{
+        position:fixed;
+      
+        pointer-events:none;
+      
+        z-index:999;
+      
+        width:165px;
+      
+        border-radius:26px;
+      
+        padding:14px;
+      
+        transform:
+          translate(-50%,-50%)
+          scale(1.05);
+      
+        box-shadow:
+          0 20px 40px rgba(0,0,0,.18);
+      }
+      
+      .ghost img{
+        width:64px;
+        height:64px;
+      
+        border-radius:20px;
+      
+        object-fit:cover;
+      
+        margin-bottom:12px;
+      }
+      
+      /* =========================================================
+         TOAST
+      ========================================================= */
+      
+      .toast{
+        position:fixed;
+      
+        top:20px;
+        left:50%;
+      
+        transform:translateX(-50%);
+      
+        background:#0f172a;
+      
+        color:white;
+      
+        padding:12px 18px;
+      
+        border-radius:999px;
+      
+        font-size:14px;
+        font-weight:600;
+      
+        z-index:999;
+      
+        box-shadow:
+          0 10px 30px rgba(0,0,0,.15);
+      }
+      /* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width:768px){
+
+  html,
+  body{
+    width:100%;
+    height:100dvh;
+    overflow:hidden;
+  }
+
+  .app{
+    width:100%;
+    height:100dvh;
+    overflow:hidden;
+  }
+
+  .header{
+    display:none;
+  }
+
+  .main{
+    flex:1;
+    min-height:0;
+
+    display:flex;
+    flex-direction:column;
+
+    gap:8px;
+
+    padding:8px;
+
+    overflow:hidden;
+  }
+
+  /* =========================================================
+     COMPOSER
+     AGORA MENOR NO MOBILE
+  ========================================================= */
 
   .composer{
-    min-height:300px;
+    flex:0 0 28%;
+
+    min-height:155px;
+    max-height:28dvh;
+
+    padding:10px;
+
+    border-radius:20px;
   }
+
+  .composer-top{
+    margin-bottom:8px;
+  }
+
+  .composer-title{
+    font-size:18px;
+    line-height:1;
+  }
+
+  .composer-sub{
+    display:none;
+  }
+
+  .clear-btn{
+    padding:8px 10px;
+
+    border-radius:12px;
+
+    font-size:11px;
+  }
+
+  /* =========================================================
+     DROPZONE
+  ========================================================= */
+
+  .dropzone{
+    gap:8px;
+
+    padding:8px;
+
+    border-radius:18px;
+
+    background-size:18px 18px;
+  }
+
+  .empty{
+    padding:12px;
+
+    font-size:14px;
+
+    line-height:1.3;
+  }
+
+  /* =========================================================
+     PHRASE CARD
+  ========================================================= */
 
   .phrase-card{
     width:100%;
+
+    min-height:84px;
+
+    padding:
+      10px
+      12px
+      10px
+      82px;
+
+    border-radius:18px;
+  }
+
+  .phrase-image{
+    position:absolute;
+
+    left:10px;
+    top:10px;
+
+    width:56px;
+    height:56px;
+
+    margin:0;
+
+    border-radius:14px;
+  }
+
+  .phrase-title{
+    font-size:20px;
+
+    line-height:1;
+
+    margin-bottom:4px;
+  }
+
+  .phrase-category{
+    font-size:9px;
+
+    margin-bottom:6px;
+  }
+
+  .tag{
+    padding:3px 6px;
+
+    font-size:9px;
+  }
+
+  .remove-btn{
+    top:8px;
+    right:8px;
+
+    width:26px;
+    height:26px;
+
+    border-radius:8px;
+
+    font-size:14px;
+  }
+
+  .play-btn{
+    right:12px;
+    bottom:12px;
+
+    width:52px;
+    height:52px;
+
+    font-size:20px;
+  }
+
+  /* =========================================================
+     FILTERS
+  ========================================================= */
+
+  .filters{
+    flex-shrink:0;
+
+    min-width:0;
+  }
+
+  .filters-bar{
+    display:flex;
+    align-items:center;
+
+    gap:8px;
+
+    padding:8px;
+
+    border-radius:18px;
+
+    overflow:hidden;
+
+    min-width:0;
+  }
+
+  .filter-switch{
+    flex-shrink:0;
+
+    display:flex;
+
+    gap:4px;
+
+    padding:3px;
+
+    border-radius:14px;
+  }
+
+  .switch-btn{
+    padding:9px 10px;
+
+    font-size:11px;
+
+    white-space:nowrap;
+  }
+
+  /* =========================================================
+     SLIDER DAS TAGS/CATEGORIAS
+  ========================================================= */
+
+  .chips-main{
+    flex:1;
+    min-width:0;
+
+    display:flex;
+    align-items:center;
+
+    gap:6px;
+
+    overflow-x:auto;
+    overflow-y:hidden;
+
+    scrollbar-width:none;
+
+    -webkit-overflow-scrolling:touch;
+
+    scroll-behavior:smooth;
+
+    touch-action:pan-x;
+  }
+
+  .chips-main::-webkit-scrollbar{
+    display:none;
+  }
+
+  .chip{
+    flex-shrink:0;
+
+    padding:8px 10px;
+
+    font-size:10px;
+
+    white-space:nowrap;
+  }
+
+  /* =========================================================
+     LIBRARY
+     AGORA MAIOR NO MOBILE
+  ========================================================= */
+
+  .library{
+    flex:1;
+    min-height:0;
+
+    padding:10px;
+
+    border-radius:20px;
+
+    overflow:hidden;
+  }
+
+  .library-top{
+    margin-bottom:8px;
+  }
+
+  .library-title{
+    font-size:18px;
+    line-height:1;
+  }
+
+  .library-sub{
+    display:none;
+  }
+
+  .library-counter{
+    padding:6px 10px;
+
+    border-radius:10px;
+
+    font-size:10px;
+  }
+
+  .library-scroll{
+    flex:1;
+    min-height:0;
+
+    display:flex;
+
+    gap:8px;
+
+    overflow-x:auto;
+    overflow-y:hidden;
+
+    scrollbar-width:none;
+
+    -webkit-overflow-scrolling:touch;
+
+    touch-action:pan-x;
+  }
+
+  .library-scroll::-webkit-scrollbar{
+    display:none;
   }
 
   .library-card{
-    min-width:150px;
-    max-width:150px;
+    min-width:112px;
+    max-width:112px;
+
+    padding:10px;
+
+    border-radius:18px;
+  }
+
+  .library-image{
+    width:48px;
+    height:48px;
+
+    margin-bottom:8px;
+
+    border-radius:14px;
+  }
+
+  .library-card-title{
+    font-size:18px;
+
+    margin-bottom:4px;
+  }
+
+  .library-category{
+    font-size:9px;
+
+    margin-bottom:6px;
+  }
+
+  /* =========================================================
+     GHOST
+  ========================================================= */
+
+  .ghost{
+    width:112px;
+
+    padding:10px;
+
+    border-radius:18px;
+  }
+
+  .ghost img{
+    width:48px;
+    height:48px;
+
+    margin-bottom:8px;
+
+    border-radius:14px;
+  }
+
+  /* =========================================================
+     TOAST
+  ========================================================= */
+
+  .toast{
+    top:10px;
+
+    padding:10px 14px;
+
+    font-size:12px;
   }
 
 }
 
-@keyframes pop{
-  from{
-    opacity:0;
-    transform:scale(.95);
-  }
-  to{
-    opacity:1;
-    transform:scale(1);
-  }
-}
+/* =========================================================
+   SMALL HEIGHT
+========================================================= */
 
-</style>
+@media (max-height:700px){
+
+  .composer{
+    flex:0 0 24%;
+
+    min-height:140px;
+
+    max-height:24dvh;
+  }
+
+  .library-card{
+    min-width:104px;
+    max-width:104px;
+  }
+
+}
+  
+      /* =========================================================
+         ANIMATION
+      ========================================================= */
+      
+      @keyframes pop{
+      
+        from{
+          opacity:0;
+          transform:scale(.95);
+        }
+      
+        to{
+          opacity:1;
+          transform:scale(1);
+        }
+      
+      }
+      
+      </style>
 </head>
 
 <body>
 
-<div
-  class="app"
-  x-data="aacApp()"
-  x-init="init()"
->
+  <div class="app" x-data="aacApp()" x-init="init()">
 
-  <header class="header">
+    <header class="header">
 
-    <div class="header-box">
-
-      <div>
-        <div class="header-sub">
-          Comunicação visual
-        </div>
-
-        <div class="header-title font-display">
-          Minha frase
-        </div>
-      </div>
-
-      <div class="status">
-        Toque e arraste
-      </div>
-
-    </div>
-
-  </header>
-
-  <main class="main">
-
-    <!-- COMPOSER -->
-
-    <section class="composer">
-
-      <div class="composer-top">
+      <div class="header-box">
 
         <div>
-          <div class="composer-title font-display">
-            Área de composição
+          <div class="header-sub">
+            Comunicação visual
           </div>
 
-          <div class="composer-sub">
-            Monte até 5 cartões
+          <div class="header-title font-display">
+            Minha frase
           </div>
         </div>
 
-        <button
-          class="clear-btn"
-          @click="clearPhrase()"
-        >
-          Limpar
-        </button>
+        <div class="status">
+          Toque e arraste
+        </div>
 
       </div>
 
-      <div
-        class="dropzone"
-        :class="drag.overDropzone ? 'active' : ''"
-        x-ref="dropzone"
-      >
+    </header>
 
-        <template x-if="phrase.length === 0">
+    <main class="main">
 
-          <div class="empty font-display">
-            Arraste cartões para formar uma frase
-          </div>
+      <!-- COMPOSER -->
 
-        </template>
+      <section class="composer">
 
-        <template
-          x-for="(item,index) in phrase"
-          :key="item.uid"
-        >
+        <div class="composer-top">
 
-          <div
-            data-gjs-name="Phrase Card Wrapper"
-            class="phrase-card"
-            :class="playingUid === item.uid ? 'playing' : ''"
-            :style="'background:linear-gradient(180deg,'+item.color+' 0%, #fff 100%)'"
-          >
-
-            <button
-              class="remove-btn"
-              @click="removeFromPhrase(index)"
-            >
-              ×
-            </button>
-
-            <div class="phrase-image">
-              <img :src="item.image">
+          <div>
+            <div class="composer-title font-display">
+              Área de composição
             </div>
 
-            <div
-              class="phrase-title font-display"
-              x-text="displayText(item)"
-            ></div>
-
-            <div
-              class="phrase-category"
-              x-text="item.category"
-            ></div>
-
-            <div class="tags">
-
-              <template
-                x-for="tag in item.tags.slice(0,2)"
-              >
-
-                <div
-                  class="tag"
-                  x-text="tag"
-                ></div>
-
-              </template>
-
+            <div class="composer-sub">
+              Monte até 5 cartões
             </div>
-
-            <button
-              style="position:absolute; inset:0; opacity:0"
-              @pointerdown="startDragFromPhrase($event,index)"
-              @click="flipCard(item.uid)"
-            ></button>
-
           </div>
 
-        </template>
-
-      </div>
-
-      <button
-        class="play-btn"
-        @click="playPhrase()"
-      >
-        🔊
-      </button>
-
-    </section>
-
-    <!-- FILTERS -->
-
-    <section class="filters">
-
-      <div>
-
-        <div class="filter-title">
-          Categorias
-        </div>
-
-        <div class="chips">
-
-          <template x-for="category in categories">
-
-            <button
-              class="chip"
-              :class="selectedCategory === category ? 'active' : ''"
-              @click="selectedCategory = category"
-              x-text="category"
-            ></button>
-
-          </template>
-
-        </div>
-
-      </div>
-
-      <div>
-
-        <div class="filter-title">
-          Tags
-        </div>
-
-        <div class="chips">
-
-          <template x-for="tag in tags">
-
-            <button
-              class="chip"
-              :class="selectedTag === tag ? 'active' : ''"
-              @click="selectedTag = tag"
-              x-text="tag"
-            ></button>
-
-          </template>
-
-        </div>
-
-      </div>
-
-    </section>
-
-    <!-- LIBRARY -->
-
-    <section class="library">
-
-      <div class="library-top">
-
-        <div>
-
-          <div class="library-title font-display">
-            Biblioteca
-          </div>
-
-          <div class="library-sub">
-            Segure e arraste
-          </div>
-
-        </div>
-
-        <div class="library-counter">
-          <span x-text="phrase.length"></span>/5
-        </div>
-
-      </div>
-
-      <div class="library-scroll">
-
-        <template
-          x-for="card in filteredCards"
-          :key="card.id"
-        >
-
-          <button
-            class="library-card"
-            @pointerdown="startDragFromLibrary($event,card)"
-            @click="quickAdd(card)"
-            :style="'background:linear-gradient(180deg,'+card.color+' 0%, #fff 72%)'"
-          >
-
-            <div class="library-image">
-              <img :src="card.image">
-            </div>
-
-            <div
-              class="library-card-title font-display"
-              x-text="card.title"
-            ></div>
-
-            <div
-              class="library-category"
-              x-text="card.category"
-            ></div>
-
-            <div class="tags">
-
-              <template
-                x-for="tag in card.tags.slice(0,2)"
-              >
-
-                <div
-                  class="tag"
-                  x-text="tag"
-                ></div>
-
-              </template>
-
-            </div>
-
+          <button class="clear-btn" @click="clearPhrase()">
+            Limpar
           </button>
 
-        </template>
+        </div>
+
+        <div class="dropzone" :class="drag.overDropzone ? 'active' : ''" x-ref="dropzone">
+
+          <template x-if="phrase.length === 0">
+
+            <div class="empty font-display">
+              Arraste cartões para formar uma frase
+            </div>
+
+          </template>
+
+          <template x-for="(item,index) in phrase" :key="item.uid">
+
+            <div data-gjs-name="Phrase Card Wrapper" class="phrase-card"
+              :class="playingUid === item.uid ? 'playing' : ''"
+              :style="'background:linear-gradient(180deg,'+item.color+' 0%, #fff 100%)'">
+
+              <button class="remove-btn" @click="removeFromPhrase(index)">
+                ×
+              </button>
+
+              <div class="phrase-image">
+                <img :src="item.image">
+              </div>
+
+              <div class="phrase-title font-display" x-text="displayText(item)"></div>
+
+              <div class="phrase-category" x-text="item.category"></div>
+
+              <div class="tags">
+
+                <template x-for="tag in item.tags.slice(0,2)">
+
+                  <div class="tag" x-text="tag"></div>
+
+                </template>
+
+              </div>
+
+              <button style="position:absolute; inset:0; opacity:0" @pointerdown="startDragFromPhrase($event,index)"
+                @click="flipCard(item.uid)"></button>
+
+            </div>
+
+          </template>
+
+        </div>
+
+        <button class="play-btn" @click="playPhrase()">
+          🔊
+        </button>
+
+      </section>
+
+      <!-- FILTERS -->
+
+      <section class="filters">
+
+        <div class="filters-bar">
+
+          <!-- SWITCH -->
+
+          <div class="filter-switch">
+
+            <button class="switch-btn" :class="filterMode === 'categories' ? 'active' : ''"
+              @click="filterMode = 'categories'">
+              Categorias
+            </button>
+
+            <button class="switch-btn" :class="filterMode === 'tags' ? 'active' : ''" @click="filterMode = 'tags'">
+              Tags
+            </button>
+
+          </div>
+
+          <!-- VALUES -->
+
+          <div class="chips chips-main">
+
+            <!-- CATEGORIES -->
+
+            <template x-if="filterMode === 'categories'">
+
+              <template x-for="category in categories">
+
+                <button class="chip" :class="selectedCategory === category ? 'active' : ''" @click="
+              selectedCategory =
+                selectedCategory === category
+                  ? 'Todas'
+                  : category
+            " x-text="category"></button>
+
+              </template>
+
+            </template>
+
+            <!-- TAGS -->
+
+            <template x-if="filterMode === 'tags'">
+
+              <template x-for="tag in tags">
+
+                <button class="chip" :class="selectedTag === tag ? 'active' : ''" @click="
+              selectedTag =
+                selectedTag === tag
+                  ? 'Todas'
+                  : tag
+            " x-text="tag"></button>
+
+              </template>
+
+            </template>
+
+          </div>
+
+        </div>
+
+      </section>
+      <!-- LIBRARY -->
+
+      <section class="library">
+
+        <div class="library-top">
+
+          <div>
+
+            <div class="library-title font-display">
+              Biblioteca
+            </div>
+
+            <div class="library-sub">
+              Segure e arraste
+            </div>
+
+          </div>
+
+          <div class="library-counter">
+            <span x-text="phrase.length"></span>/5
+          </div>
+
+        </div>
+
+        <div class="library-scroll">
+
+          <template x-for="card in filteredCards" :key="card.id">
+
+            <button class="library-card" @pointerdown="startDragFromLibrary($event,card)" @click="quickAdd(card)"
+              :style="'background:linear-gradient(180deg,'+card.color+' 0%, #fff 72%)'">
+
+              <div class="library-image">
+                <img :src="card.image">
+              </div>
+
+              <div class="library-card-title font-display" x-text="card.title"></div>
+
+              <div class="library-category" x-text="card.category"></div>
+
+              <div class="tags">
+
+                <template x-for="tag in card.tags.slice(0,2)">
+
+                  <div class="tag" x-text="tag"></div>
+
+                </template>
+
+              </div>
+
+            </button>
+
+          </template>
+
+        </div>
+
+      </section>
+
+    </main>
+
+    <!-- DRAG GHOST -->
+
+    <template x-if="drag.active && drag.card">
+
+      <div class="ghost"
+        :style="'left:'+drag.x+'px; top:'+drag.y+'px; background:linear-gradient(180deg,'+drag.card.color+' 0%, #fff 70%)'">
+
+        <img :src="drag.card.image">
+
+        <div class="library-card-title font-display" x-text="drag.card.title"></div>
+
+        <div class="library-category" x-text="drag.card.category"></div>
 
       </div>
 
-    </section>
+    </template>
 
-  </main>
+    <!-- TOAST -->
 
-  <!-- DRAG GHOST -->
+    <div class="toast" x-show="toast.show" x-transition.opacity x-text="toast.message"></div>
 
-  <template x-if="drag.active && drag.card">
+  </div>
 
-    <div
-      class="ghost"
-      :style="'left:'+drag.x+'px; top:'+drag.y+'px; background:linear-gradient(180deg,'+drag.card.color+' 0%, #fff 70%)'"
-    >
+  <script>
 
-      <img :src="drag.card.image">
-
-      <div
-        class="library-card-title font-display"
-        x-text="drag.card.title"
-      ></div>
-
-      <div
-        class="library-category"
-        x-text="drag.card.category"
-      ></div>
-
-    </div>
-
-  </template>
-
-  <!-- TOAST -->
-
-  <div
-    class="toast"
-    x-show="toast.show"
-    x-transition.opacity
-    x-text="toast.message"
-  ></div>
-
-</div>
-
-<script>
-
-function aacApp(){
-
-  return {
-
-    cards:[
-
-{
-  id:1,
-  title:'Água',
-  category:'Comida',
-  tags:['Casa','Rotina'],
-  image:'https://cdn-icons-png.flaticon.com/512/824/824239.png',
-  frontText:'Água',
-  backText:'Quero água',
-  color:'#DBEAFE'
-},
-
-{
-  id:2,
-  title:'Comer',
-  category:'Ações',
-  tags:['Casa','Escola'],
-  image:'https://cdn-icons-png.flaticon.com/512/1046/1046784.png',
-  frontText:'Comer',
-  backText:'Quero comer',
-  color:'#FEF3C7'
-},
-
-{
-  id:3,
-  title:'Banheiro',
-  category:'Lugares',
-  tags:['Casa','Rotina'],
-  image:'https://cdn-icons-png.flaticon.com/512/619/619034.png',
-  frontText:'Banheiro',
-  backText:'Ir ao banheiro',
-  color:'#E0F2FE'
-},
-
-{
-  id:4,
-  title:'Feliz',
-  category:'Emoções',
-  tags:['Favoritos'],
-  image:'https://cdn-icons-png.flaticon.com/512/742/742751.png',
-  frontText:'Feliz',
-  backText:'Estou feliz',
-  color:'#FDE68A'
-},
-
-{
-  id:5,
-  title:'Mamãe',
-  category:'Pessoas',
-  tags:['Casa','Favoritos'],
-  image:'https://cdn-icons-png.flaticon.com/512/4140/4140051.png',
-  frontText:'Mamãe',
-  backText:'Quero mamãe',
-  color:'#FBCFE8'
-},
-
-{
-  id:6,
-  title:'Papai',
-  category:'Pessoas',
-  tags:['Casa'],
-  image:'https://cdn-icons-png.flaticon.com/512/4140/4140048.png',
-  frontText:'Papai',
-  backText:'Quero papai',
-  color:'#DDD6FE'
-},
-
-{
-  id:7,
-  title:'Dormir',
-  category:'Ações',
-  tags:['Casa','Rotina'],
-  image:'https://cdn-icons-png.flaticon.com/512/10303/10303407.png',
-  frontText:'Dormir',
-  backText:'Quero dormir',
-  color:'#E9D5FF'
-},
-
-{
-  id:8,
-  title:'Brincar',
-  category:'Ações',
-  tags:['Casa','Escola'],
-  image:'https://cdn-icons-png.flaticon.com/512/686/686589.png',
-  frontText:'Brincar',
-  backText:'Quero brincar',
-  color:'#FDE68A'
-},
-
-{
-  id:9,
-  title:'Triste',
-  category:'Emoções',
-  tags:['Favoritos'],
-  image:'https://cdn-icons-png.flaticon.com/512/742/742752.png',
-  frontText:'Triste',
-  backText:'Estou triste',
-  color:'#BFDBFE'
-},
-
-{
-  id:10,
-  title:'Dor',
-  category:'Saúde',
-  tags:['Médico'],
-  image:'https://cdn-icons-png.flaticon.com/512/4320/4320337.png',
-  frontText:'Dor',
-  backText:'Estou com dor',
-  color:'#FECACA'
-},
-
-{
-  id:11,
-  title:'Escola',
-  category:'Lugares',
-  tags:['Escola'],
-  image:'https://cdn-icons-png.flaticon.com/512/2436/2436874.png',
-  frontText:'Escola',
-  backText:'Quero ir à escola',
-  color:'#C7D2FE'
-},
-
-{
-  id:12,
-  title:'Casa',
-  category:'Lugares',
-  tags:['Casa'],
-  image:'https://cdn-icons-png.flaticon.com/512/1946/1946488.png',
-  frontText:'Casa',
-  backText:'Quero ir para casa',
-  color:'#FDE68A'
-},
-
-{
-  id:13,
-  title:'Hospital',
-  category:'Lugares',
-  tags:['Médico'],
-  image:'https://cdn-icons-png.flaticon.com/512/2967/2967350.png',
-  frontText:'Hospital',
-  backText:'Preciso ir ao hospital',
-  color:'#E0F2FE'
-},
-
-{
-  id:14,
-  title:'Remédio',
-  category:'Saúde',
-  tags:['Médico','Casa'],
-  image:'https://cdn-icons-png.flaticon.com/512/4320/4320371.png',
-  frontText:'Remédio',
-  backText:'Preciso do remédio',
-  color:'#FECACA'
-},
-
-{
-  id:15,
-  title:'Suco',
-  category:'Comida',
-  tags:['Casa'],
-  image:'https://cdn-icons-png.flaticon.com/512/2405/2405479.png',
-  frontText:'Suco',
-  backText:'Quero suco',
-  color:'#FDE68A'
-},
-
-{
-  id:16,
-  title:'Leite',
-  category:'Comida',
-  tags:['Casa'],
-  image:'https://cdn-icons-png.flaticon.com/512/2674/2674505.png',
-  frontText:'Leite',
-  backText:'Quero leite',
-  color:'#DBEAFE'
-},
-
-{
-  id:17,
-  title:'Maçã',
-  category:'Comida',
-  tags:['Casa','Escola'],
-  image:'https://cdn-icons-png.flaticon.com/512/415/415733.png',
-  frontText:'Maçã',
-  backText:'Quero maçã',
-  color:'#FECACA'
-},
-
-{
-  id:18,
-  title:'Banana',
-  category:'Comida',
-  tags:['Casa'],
-  image:'https://cdn-icons-png.flaticon.com/512/9768/9768109.png',
-  frontText:'Banana',
-  backText:'Quero banana',
-  color:'#FEF3C7'
-},
-
-{
-  id:19,
-  title:'Pão',
-  category:'Comida',
-  tags:['Casa'],
-  image:'https://cdn-icons-png.flaticon.com/512/7093/7093198.png',
-  frontText:'Pão',
-  backText:'Quero pão',
-  color:'#FDE68A'
-},
-
-{
-  id:20,
-  title:'Pizza',
-  category:'Comida',
-  tags:['Favoritos'],
-  image:'https://cdn-icons-png.flaticon.com/512/3132/3132693.png',
-  frontText:'Pizza',
-  backText:'Quero pizza',
-  color:'#FED7AA'
-},
-
-{
-  id:21,
-  title:'Parque',
-  category:'Lugares',
-  tags:['Favoritos'],
-  image:'https://cdn-icons-png.flaticon.com/512/12963/12963355.png',
-  frontText:'Parque',
-  backText:'Quero ir ao parque',
-  color:'#BBF7D0'
-},
-
-{
-  id:22,
-  title:'Carro',
-  category:'Objetos',
-  tags:['Casa'],
-  image:'https://cdn-icons-png.flaticon.com/512/744/744465.png',
-  frontText:'Carro',
-  backText:'Quero passear de carro',
-  color:'#BFDBFE'
-},
-
-{
-  id:23,
-  title:'Ônibus',
-  category:'Transportes',
-  tags:['Escola'],
-  image:'https://cdn-icons-png.flaticon.com/512/3448/3448339.png',
-  frontText:'Ônibus',
-  backText:'Quero pegar ônibus',
-  color:'#FDE68A'
-},
-
-{
-  id:24,
-  title:'Celular',
-  category:'Objetos',
-  tags:['Favoritos'],
-  image:'https://cdn-icons-png.flaticon.com/512/2586/2586738.png',
-  frontText:'Celular',
-  backText:'Quero usar o celular',
-  color:'#DDD6FE'
-},
-
-{
-  id:25,
-  title:'TV',
-  category:'Objetos',
-  tags:['Casa'],
-  image:'https://cdn-icons-png.flaticon.com/512/15177/15177944.png',
-  frontText:'TV',
-  backText:'Quero assistir TV',
-  color:'#DBEAFE'
-},
-
-{
-  id:26,
-  title:'Música',
-  category:'Ações',
-  tags:['Favoritos'],
-  image:'https://cdn-icons-png.flaticon.com/512/727/727218.png',
-  frontText:'Música',
-  backText:'Quero ouvir música',
-  color:'#FBCFE8'
-},
-
-{
-  id:27,
-  title:'Correr',
-  category:'Ações',
-  tags:['Escola'],
-  image:'https://cdn-icons-png.flaticon.com/512/3043/3043888.png',
-  frontText:'Correr',
-  backText:'Quero correr',
-  color:'#BBF7D0'
-},
-
-{
-  id:28,
-  title:'Sentar',
-  category:'Ações',
-  tags:['Escola'],
-  image:'https://cdn-icons-png.flaticon.com/512/6840/6840012.png',
-  frontText:'Sentar',
-  backText:'Quero sentar',
-  color:'#E0E7FF'
-},
-
-{
-  id:29,
-  title:'Levantar',
-  category:'Ações',
-  tags:['Escola'],
-  image:'https://cdn-icons-png.flaticon.com/512/2593/2593782.png',
-  frontText:'Levantar',
-  backText:'Quero levantar',
-  color:'#D1FAE5'
-},
-
-{
-  id:30,
-  title:'Abraço',
-  category:'Emoções',
-  tags:['Casa','Favoritos'],
-  image:'https://cdn-icons-png.flaticon.com/512/11325/11325064.png',
-  frontText:'Abraço',
-  backText:'Quero abraço',
-  color:'#FBCFE8'
-},
-
-{
-  id:31,
-  title:'Bravo',
-  category:'Emoções',
-  tags:['Rotina'],
-  image:'https://cdn-icons-png.flaticon.com/512/742/742774.png',
-  frontText:'Bravo',
-  backText:'Estou bravo',
-  color:'#FCA5A5'
-},
-
-{
-  id:32,
-  title:'Calmo',
-  category:'Emoções',
-  tags:['Rotina'],
-  image:'https://cdn-icons-png.flaticon.com/512/742/742760.png',
-  frontText:'Calmo',
-  backText:'Estou calmo',
-  color:'#BFDBFE'
-},
-
-{
-  id:33,
-  title:'Professor',
-  category:'Pessoas',
-  tags:['Escola'],
-  image:'https://cdn-icons-png.flaticon.com/512/1995/1995574.png',
-  frontText:'Professor',
-  backText:'Quero falar com o professor',
-  color:'#DDD6FE'
-},
-
-{
-  id:34,
-  title:'Amigo',
-  category:'Pessoas',
-  tags:['Escola','Favoritos'],
-  image:'https://cdn-icons-png.flaticon.com/512/1000/1000370.png',
-  frontText:'Amigo',
-  backText:'Quero brincar com amigo',
-  color:'#BBF7D0'
-},
-
-{
-  id:35,
-  title:'Vovó',
-  category:'Pessoas',
-  tags:['Casa'],
-  image:'https://cdn-icons-png.flaticon.com/512/7697/7697560.png',
-  frontText:'Vovó',
-  backText:'Quero ver a vovó',
-  color:'#FBCFE8'
-},
-
-{
-  id:36,
-  title:'Vovô',
-  category:'Pessoas',
-  tags:['Casa'],
-  image:'https://cdn-icons-png.flaticon.com/512/6740/6740296.png',
-  frontText:'Vovô',
-  backText:'Quero ver o vovô',
-  color:'#DBEAFE'
-},
-
-{
-  id:37,
-  title:'Escovar dentes',
-  category:'Rotina',
-  tags:['Casa','Rotina'],
-  image:'https://cdn-icons-png.flaticon.com/512/3004/3004458.png',
-  frontText:'Escovar dentes',
-  backText:'Preciso escovar os dentes',
-  color:'#E0F2FE'
-},
-
-{
-  id:38,
-  title:'Tomar banho',
-  category:'Rotina',
-  tags:['Casa','Rotina'],
-  image:'https://cdn-icons-png.flaticon.com/512/1426/1426396.png',
-  frontText:'Banho',
-  backText:'Quero tomar banho',
-  color:'#BFDBFE'
-},
-
-{
-  id:39,
-  title:'Vestir roupa',
-  category:'Rotina',
-  tags:['Casa'],
-  image:'https://cdn-icons-png.flaticon.com/512/892/892458.png',
-  frontText:'Roupa',
-  backText:'Quero trocar de roupa',
-  color:'#FDE68A'
-},
-
-{
-  id:40,
-  title:'Lavar mãos',
-  category:'Rotina',
-  tags:['Casa','Escola'],
-  image:'https://cdn-icons-png.flaticon.com/512/2755/2755820.png',
-  frontText:'Lavar mãos',
-  backText:'Preciso lavar as mãos',
-  color:'#D1FAE5'
-},
-
-{
-  id:41,
-  title:'Cansado',
-  category:'Emoções',
-  tags:['Rotina'],
-  image:'https://cdn-icons-png.flaticon.com/512/742/742755.png',
-  frontText:'Cansado',
-  backText:'Estou cansado',
-  color:'#E5E7EB'
-},
-
-{
-  id:42,
-  title:'Frio',
-  category:'Sensações',
-  tags:['Casa'],
-  image:'https://cdn-icons-png.flaticon.com/512/414/414927.png',
-  frontText:'Frio',
-  backText:'Estou com frio',
-  color:'#BFDBFE'
-},
-
-{
-  id:43,
-  title:'Calor',
-  category:'Sensações',
-  tags:['Casa'],
-  image:'https://cdn-icons-png.flaticon.com/512/869/869869.png',
-  frontText:'Calor',
-  backText:'Estou com calor',
-  color:'#FED7AA'
-},
-
-{
-  id:44,
-  title:'Fome',
-  category:'Sensações',
-  tags:['Casa'],
-  image:'https://cdn-icons-png.flaticon.com/512/1046/1046784.png',
-  frontText:'Fome',
-  backText:'Estou com fome',
-  color:'#FEF3C7'
-},
-
-{
-  id:45,
-  title:'Sede',
-  category:'Sensações',
-  tags:['Casa'],
-  image:'https://cdn-icons-png.flaticon.com/512/824/824239.png',
-  frontText:'Sede',
-  backText:'Estou com sede',
-  color:'#DBEAFE'
-},
-
-{
-  id:46,
-  title:'Ajuda',
-  category:'Ações',
-  tags:['Escola','Casa'],
-  image:'https://cdn-icons-png.flaticon.com/512/3524/3524659.png',
-  frontText:'Ajuda',
-  backText:'Preciso de ajuda',
-  color:'#FECACA'
-},
-
-{
-  id:47,
-  title:'Sim',
-  category:'Comunicação',
-  tags:['Favoritos'],
-  image:'https://cdn-icons-png.flaticon.com/512/845/845646.png',
-  frontText:'Sim',
-  backText:'Sim',
-  color:'#BBF7D0'
-},
-
-{
-  id:48,
-  title:'Não',
-  category:'Comunicação',
-  tags:['Favoritos'],
-  image:'https://cdn-icons-png.flaticon.com/512/1828/1828843.png',
-  frontText:'Não',
-  backText:'Não quero',
-  color:'#FCA5A5'
-},
-
-{
-  id:49,
-  title:'Obrigado',
-  category:'Comunicação',
-  tags:['Escola','Casa'],
-  image:'https://cdn-icons-png.flaticon.com/512/742/742748.png',
-  frontText:'Obrigado',
-  backText:'Muito obrigado',
-  color:'#DDD6FE'
-},
-
-{
-  id:50,
-  title:'Por favor',
-  category:'Comunicação',
-  tags:['Escola','Casa'],
-  image:'https://cdn-icons-png.flaticon.com/512/742/742799.png',
-  frontText:'Por favor',
-  backText:'Por favor',
-  color:'#FBCFE8'
-}
-
-],
-categories:[
-  'Todas',
-  'Comida',
-  'Ações',
-  'Emoções',
-  'Pessoas',
-  'Lugares',
-  'Saúde',
-  'Objetos',
-  'Transportes',
-  'Rotina',
-  'Sensações',
-  'Comunicação'
-],
-
-tags:[
-  'Todas',
-  'Favoritos',
-  'Rotina',
-  'Escola',
-  'Casa',
-  'Médico'
-],
-    selectedCategory:'Todas',
-    selectedTag:'Todas',
-
-    phrase:[],
-
-    uidCounter:1,
-
-    drag:{
-      active:false,
-      source:null,
-      sourceIndex:null,
-      card:null,
-      x:0,
-      y:0,
-      overDropzone:false,
-      insertIndex:null
-    },
-
-    toast:{
-      show:false,
-      message:'',
-      timer:null
-    },
-
-    audioCtx:null,
-    isPlaying:false,
-    playingUid:null,
-
-    init(){
-
-      window.addEventListener(
-        'pointermove',
-        this.onPointerMove.bind(this),
-        { passive:false }
-      );
-
-      window.addEventListener(
-        'pointerup',
-        this.onPointerUp.bind(this)
-      );
-
-      this.prepareAudio();
-    },
-
-    get filteredCards(){
-
-      return this.cards.filter(card => {
-
-        const cat =
-          this.selectedCategory === 'Todas'
-          || card.category === this.selectedCategory;
-
-        const tag =
-          this.selectedTag === 'Todas'
-          || card.tags.includes(this.selectedTag);
-
-        return cat && tag;
-      });
-    },
-
-    displayText(item){
-      return item.flipped
-        ? item.backText
-        : item.frontText;
-    },
-
-    createPhraseCard(card){
+    function aacApp() {
 
       return {
-        ...card,
-        uid:'phrase-'+this.uidCounter++,
-        flipped:false
-      };
-    },
 
-    quickAdd(card){
+        cards: [
 
-      if(this.phrase.length >= 5){
+          {
+            id: 1,
+            title: 'Água',
+            category: 'Comida',
+            tags: ['Casa', 'Rotina'],
+            image: 'https://cdn-icons-png.flaticon.com/512/824/824239.png',
+            frontText: 'Água',
+            backText: 'Quero água',
+            color: '#DBEAFE'
+          },
 
-        this.showToast('Máximo de 5 cartões');
-        return;
-      }
+          {
+            id: 2,
+            title: 'Comer',
+            category: 'Ações',
+            tags: ['Casa', 'Escola'],
+            image: 'https://cdn-icons-png.flaticon.com/512/1046/1046784.png',
+            frontText: 'Comer',
+            backText: 'Quero comer',
+            color: '#FEF3C7'
+          },
 
-      this.phrase.push(
-        this.createPhraseCard(card)
-      );
-    },
+          {
+            id: 3,
+            title: 'Banheiro',
+            category: 'Lugares',
+            tags: ['Casa', 'Rotina'],
+            image: 'https://cdn-icons-png.flaticon.com/512/619/619034.png',
+            frontText: 'Banheiro',
+            backText: 'Ir ao banheiro',
+            color: '#E0F2FE'
+          },
 
-    flipCard(uid){
+          {
+            id: 4,
+            title: 'Feliz',
+            category: 'Emoções',
+            tags: ['Favoritos'],
+            image: 'https://cdn-icons-png.flaticon.com/512/742/742751.png',
+            frontText: 'Feliz',
+            backText: 'Estou feliz',
+            color: '#FDE68A'
+          },
 
-      const item =
-        this.phrase.find(i => i.uid === uid);
+          {
+            id: 5,
+            title: 'Mamãe',
+            category: 'Pessoas',
+            tags: ['Casa', 'Favoritos'],
+            image: 'https://cdn-icons-png.flaticon.com/512/4140/4140051.png',
+            frontText: 'Mamãe',
+            backText: 'Quero mamãe',
+            color: '#FBCFE8'
+          },
 
-      if(item){
-        item.flipped = !item.flipped;
-      }
-    },
+          {
+            id: 6,
+            title: 'Papai',
+            category: 'Pessoas',
+            tags: ['Casa'],
+            image: 'https://cdn-icons-png.flaticon.com/512/4140/4140048.png',
+            frontText: 'Papai',
+            backText: 'Quero papai',
+            color: '#DDD6FE'
+          },
 
-    removeFromPhrase(index){
-      this.phrase.splice(index,1);
-    },
+          {
+            id: 7,
+            title: 'Dormir',
+            category: 'Ações',
+            tags: ['Casa', 'Rotina'],
+            image: 'https://cdn-icons-png.flaticon.com/512/10303/10303407.png',
+            frontText: 'Dormir',
+            backText: 'Quero dormir',
+            color: '#E9D5FF'
+          },
 
-    clearPhrase(){
-      this.phrase = [];
-    },
+          {
+            id: 8,
+            title: 'Brincar',
+            category: 'Ações',
+            tags: ['Casa', 'Escola'],
+            image: 'https://cdn-icons-png.flaticon.com/512/686/686589.png',
+            frontText: 'Brincar',
+            backText: 'Quero brincar',
+            color: '#FDE68A'
+          },
 
-    showToast(message){
+          {
+            id: 9,
+            title: 'Triste',
+            category: 'Emoções',
+            tags: ['Favoritos'],
+            image: 'https://cdn-icons-png.flaticon.com/512/742/742752.png',
+            frontText: 'Triste',
+            backText: 'Estou triste',
+            color: '#BFDBFE'
+          },
 
-      clearTimeout(this.toast.timer);
+          {
+            id: 10,
+            title: 'Dor',
+            category: 'Saúde',
+            tags: ['Médico'],
+            image: 'https://cdn-icons-png.flaticon.com/512/4320/4320337.png',
+            frontText: 'Dor',
+            backText: 'Estou com dor',
+            color: '#FECACA'
+          },
 
-      this.toast.message = message;
-      this.toast.show = true;
+          {
+            id: 11,
+            title: 'Escola',
+            category: 'Lugares',
+            tags: ['Escola'],
+            image: 'https://cdn-icons-png.flaticon.com/512/2436/2436874.png',
+            frontText: 'Escola',
+            backText: 'Quero ir à escola',
+            color: '#C7D2FE'
+          },
 
-      this.toast.timer = setTimeout(() => {
-        this.toast.show = false;
-      },1800);
-    },
+          {
+            id: 12,
+            title: 'Casa',
+            category: 'Lugares',
+            tags: ['Casa'],
+            image: 'https://cdn-icons-png.flaticon.com/512/1946/1946488.png',
+            frontText: 'Casa',
+            backText: 'Quero ir para casa',
+            color: '#FDE68A'
+          },
 
-    startDragFromLibrary(event,card){
-      this.beginDrag(event,'library',card,null);
-    },
+          {
+            id: 13,
+            title: 'Hospital',
+            category: 'Lugares',
+            tags: ['Médico'],
+            image: 'https://cdn-icons-png.flaticon.com/512/2967/2967350.png',
+            frontText: 'Hospital',
+            backText: 'Preciso ir ao hospital',
+            color: '#E0F2FE'
+          },
 
-    startDragFromPhrase(event,index){
-      this.beginDrag(
-        event,
-        'phrase',
-        this.phrase[index],
-        index
-      );
-    },
+          {
+            id: 14,
+            title: 'Remédio',
+            category: 'Saúde',
+            tags: ['Médico', 'Casa'],
+            image: 'https://cdn-icons-png.flaticon.com/512/4320/4320371.png',
+            frontText: 'Remédio',
+            backText: 'Preciso do remédio',
+            color: '#FECACA'
+          },
 
-    beginDrag(event,source,card,index){
+          {
+            id: 15,
+            title: 'Suco',
+            category: 'Comida',
+            tags: ['Casa'],
+            image: 'https://cdn-icons-png.flaticon.com/512/2405/2405479.png',
+            frontText: 'Suco',
+            backText: 'Quero suco',
+            color: '#FDE68A'
+          },
 
-      this.drag.active = true;
-      this.drag.source = source;
-      this.drag.sourceIndex = index;
-      this.drag.card = { ...card };
+          {
+            id: 16,
+            title: 'Leite',
+            category: 'Comida',
+            tags: ['Casa'],
+            image: 'https://cdn-icons-png.flaticon.com/512/2674/2674505.png',
+            frontText: 'Leite',
+            backText: 'Quero leite',
+            color: '#DBEAFE'
+          },
 
-      this.drag.x = event.clientX;
-      this.drag.y = event.clientY;
-    },
+          {
+            id: 17,
+            title: 'Maçã',
+            category: 'Comida',
+            tags: ['Casa', 'Escola'],
+            image: 'https://cdn-icons-png.flaticon.com/512/415/415733.png',
+            frontText: 'Maçã',
+            backText: 'Quero maçã',
+            color: '#FECACA'
+          },
 
-    onPointerMove(event){
+          {
+            id: 18,
+            title: 'Banana',
+            category: 'Comida',
+            tags: ['Casa'],
+            image: 'https://cdn-icons-png.flaticon.com/512/9768/9768109.png',
+            frontText: 'Banana',
+            backText: 'Quero banana',
+            color: '#FEF3C7'
+          },
 
-      if(!this.drag.active) return;
+          {
+            id: 19,
+            title: 'Pão',
+            category: 'Comida',
+            tags: ['Casa'],
+            image: 'https://cdn-icons-png.flaticon.com/512/7093/7093198.png',
+            frontText: 'Pão',
+            backText: 'Quero pão',
+            color: '#FDE68A'
+          },
 
-      event.preventDefault();
+          {
+            id: 20,
+            title: 'Pizza',
+            category: 'Comida',
+            tags: ['Favoritos'],
+            image: 'https://cdn-icons-png.flaticon.com/512/3132/3132693.png',
+            frontText: 'Pizza',
+            backText: 'Quero pizza',
+            color: '#FED7AA'
+          },
 
-      this.drag.x = event.clientX;
-      this.drag.y = event.clientY;
+          {
+            id: 21,
+            title: 'Parque',
+            category: 'Lugares',
+            tags: ['Favoritos'],
+            image: 'https://cdn-icons-png.flaticon.com/512/12963/12963355.png',
+            frontText: 'Parque',
+            backText: 'Quero ir ao parque',
+            color: '#BBF7D0'
+          },
 
-      const zone =
-        this.$refs.dropzone.getBoundingClientRect();
+          {
+            id: 22,
+            title: 'Carro',
+            category: 'Objetos',
+            tags: ['Casa'],
+            image: 'https://cdn-icons-png.flaticon.com/512/744/744465.png',
+            frontText: 'Carro',
+            backText: 'Quero passear de carro',
+            color: '#BFDBFE'
+          },
 
-      const inside =
-        event.clientX >= zone.left &&
-        event.clientX <= zone.right &&
-        event.clientY >= zone.top &&
-        event.clientY <= zone.bottom;
+          {
+            id: 23,
+            title: 'Ônibus',
+            category: 'Transportes',
+            tags: ['Escola'],
+            image: 'https://cdn-icons-png.flaticon.com/512/3448/3448339.png',
+            frontText: 'Ônibus',
+            backText: 'Quero pegar ônibus',
+            color: '#FDE68A'
+          },
 
-      this.drag.overDropzone = inside;
+          {
+            id: 24,
+            title: 'Celular',
+            category: 'Objetos',
+            tags: ['Favoritos'],
+            image: 'https://cdn-icons-png.flaticon.com/512/2586/2586738.png',
+            frontText: 'Celular',
+            backText: 'Quero usar o celular',
+            color: '#DDD6FE'
+          },
 
-      if(inside){
+          {
+            id: 25,
+            title: 'TV',
+            category: 'Objetos',
+            tags: ['Casa'],
+            image: 'https://cdn-icons-png.flaticon.com/512/15177/15177944.png',
+            frontText: 'TV',
+            backText: 'Quero assistir TV',
+            color: '#DBEAFE'
+          },
 
-        this.drag.insertIndex =
-          this.calculateInsertIndex(
-            event.clientX,
-            event.clientY
+          {
+            id: 26,
+            title: 'Música',
+            category: 'Ações',
+            tags: ['Favoritos'],
+            image: 'https://cdn-icons-png.flaticon.com/512/727/727218.png',
+            frontText: 'Música',
+            backText: 'Quero ouvir música',
+            color: '#FBCFE8'
+          },
+
+          {
+            id: 27,
+            title: 'Correr',
+            category: 'Ações',
+            tags: ['Escola'],
+            image: 'https://cdn-icons-png.flaticon.com/512/3043/3043888.png',
+            frontText: 'Correr',
+            backText: 'Quero correr',
+            color: '#BBF7D0'
+          },
+
+          {
+            id: 28,
+            title: 'Sentar',
+            category: 'Ações',
+            tags: ['Escola'],
+            image: 'https://cdn-icons-png.flaticon.com/512/6840/6840012.png',
+            frontText: 'Sentar',
+            backText: 'Quero sentar',
+            color: '#E0E7FF'
+          },
+
+          {
+            id: 29,
+            title: 'Levantar',
+            category: 'Ações',
+            tags: ['Escola'],
+            image: 'https://cdn-icons-png.flaticon.com/512/2593/2593782.png',
+            frontText: 'Levantar',
+            backText: 'Quero levantar',
+            color: '#D1FAE5'
+          },
+
+          {
+            id: 30,
+            title: 'Abraço',
+            category: 'Emoções',
+            tags: ['Casa', 'Favoritos'],
+            image: 'https://cdn-icons-png.flaticon.com/512/11325/11325064.png',
+            frontText: 'Abraço',
+            backText: 'Quero abraço',
+            color: '#FBCFE8'
+          },
+
+          {
+            id: 31,
+            title: 'Bravo',
+            category: 'Emoções',
+            tags: ['Rotina'],
+            image: 'https://cdn-icons-png.flaticon.com/512/742/742774.png',
+            frontText: 'Bravo',
+            backText: 'Estou bravo',
+            color: '#FCA5A5'
+          },
+
+          {
+            id: 32,
+            title: 'Calmo',
+            category: 'Emoções',
+            tags: ['Rotina'],
+            image: 'https://cdn-icons-png.flaticon.com/512/742/742760.png',
+            frontText: 'Calmo',
+            backText: 'Estou calmo',
+            color: '#BFDBFE'
+          },
+
+          {
+            id: 33,
+            title: 'Professor',
+            category: 'Pessoas',
+            tags: ['Escola'],
+            image: 'https://cdn-icons-png.flaticon.com/512/1995/1995574.png',
+            frontText: 'Professor',
+            backText: 'Quero falar com o professor',
+            color: '#DDD6FE'
+          },
+
+          {
+            id: 34,
+            title: 'Amigo',
+            category: 'Pessoas',
+            tags: ['Escola', 'Favoritos'],
+            image: 'https://cdn-icons-png.flaticon.com/512/1000/1000370.png',
+            frontText: 'Amigo',
+            backText: 'Quero brincar com amigo',
+            color: '#BBF7D0'
+          },
+
+          {
+            id: 35,
+            title: 'Vovó',
+            category: 'Pessoas',
+            tags: ['Casa'],
+            image: 'https://cdn-icons-png.flaticon.com/512/7697/7697560.png',
+            frontText: 'Vovó',
+            backText: 'Quero ver a vovó',
+            color: '#FBCFE8'
+          },
+
+          {
+            id: 36,
+            title: 'Vovô',
+            category: 'Pessoas',
+            tags: ['Casa'],
+            image: 'https://cdn-icons-png.flaticon.com/512/6740/6740296.png',
+            frontText: 'Vovô',
+            backText: 'Quero ver o vovô',
+            color: '#DBEAFE'
+          },
+
+          {
+            id: 37,
+            title: 'Escovar dentes',
+            category: 'Rotina',
+            tags: ['Casa', 'Rotina'],
+            image: 'https://cdn-icons-png.flaticon.com/512/3004/3004458.png',
+            frontText: 'Escovar dentes',
+            backText: 'Preciso escovar os dentes',
+            color: '#E0F2FE'
+          },
+
+          {
+            id: 38,
+            title: 'Tomar banho',
+            category: 'Rotina',
+            tags: ['Casa', 'Rotina'],
+            image: 'https://cdn-icons-png.flaticon.com/512/1426/1426396.png',
+            frontText: 'Banho',
+            backText: 'Quero tomar banho',
+            color: '#BFDBFE'
+          },
+
+          {
+            id: 39,
+            title: 'Vestir roupa',
+            category: 'Rotina',
+            tags: ['Casa'],
+            image: 'https://cdn-icons-png.flaticon.com/512/892/892458.png',
+            frontText: 'Roupa',
+            backText: 'Quero trocar de roupa',
+            color: '#FDE68A'
+          },
+
+          {
+            id: 40,
+            title: 'Lavar mãos',
+            category: 'Rotina',
+            tags: ['Casa', 'Escola'],
+            image: 'https://cdn-icons-png.flaticon.com/512/2755/2755820.png',
+            frontText: 'Lavar mãos',
+            backText: 'Preciso lavar as mãos',
+            color: '#D1FAE5'
+          },
+
+          {
+            id: 41,
+            title: 'Cansado',
+            category: 'Emoções',
+            tags: ['Rotina'],
+            image: 'https://cdn-icons-png.flaticon.com/512/742/742755.png',
+            frontText: 'Cansado',
+            backText: 'Estou cansado',
+            color: '#E5E7EB'
+          },
+
+          {
+            id: 42,
+            title: 'Frio',
+            category: 'Sensações',
+            tags: ['Casa'],
+            image: 'https://cdn-icons-png.flaticon.com/512/414/414927.png',
+            frontText: 'Frio',
+            backText: 'Estou com frio',
+            color: '#BFDBFE'
+          },
+
+          {
+            id: 43,
+            title: 'Calor',
+            category: 'Sensações',
+            tags: ['Casa'],
+            image: 'https://cdn-icons-png.flaticon.com/512/869/869869.png',
+            frontText: 'Calor',
+            backText: 'Estou com calor',
+            color: '#FED7AA'
+          },
+
+          {
+            id: 44,
+            title: 'Fome',
+            category: 'Sensações',
+            tags: ['Casa'],
+            image: 'https://cdn-icons-png.flaticon.com/512/1046/1046784.png',
+            frontText: 'Fome',
+            backText: 'Estou com fome',
+            color: '#FEF3C7'
+          },
+
+          {
+            id: 45,
+            title: 'Sede',
+            category: 'Sensações',
+            tags: ['Casa'],
+            image: 'https://cdn-icons-png.flaticon.com/512/824/824239.png',
+            frontText: 'Sede',
+            backText: 'Estou com sede',
+            color: '#DBEAFE'
+          },
+
+          {
+            id: 46,
+            title: 'Ajuda',
+            category: 'Ações',
+            tags: ['Escola', 'Casa'],
+            image: 'https://cdn-icons-png.flaticon.com/512/3524/3524659.png',
+            frontText: 'Ajuda',
+            backText: 'Preciso de ajuda',
+            color: '#FECACA'
+          },
+
+          {
+            id: 47,
+            title: 'Sim',
+            category: 'Comunicação',
+            tags: ['Favoritos'],
+            image: 'https://cdn-icons-png.flaticon.com/512/845/845646.png',
+            frontText: 'Sim',
+            backText: 'Sim',
+            color: '#BBF7D0'
+          },
+
+          {
+            id: 48,
+            title: 'Não',
+            category: 'Comunicação',
+            tags: ['Favoritos'],
+            image: 'https://cdn-icons-png.flaticon.com/512/1828/1828843.png',
+            frontText: 'Não',
+            backText: 'Não quero',
+            color: '#FCA5A5'
+          },
+
+          {
+            id: 49,
+            title: 'Obrigado',
+            category: 'Comunicação',
+            tags: ['Escola', 'Casa'],
+            image: 'https://cdn-icons-png.flaticon.com/512/742/742748.png',
+            frontText: 'Obrigado',
+            backText: 'Muito obrigado',
+            color: '#DDD6FE'
+          },
+
+          {
+            id: 50,
+            title: 'Por favor',
+            category: 'Comunicação',
+            tags: ['Escola', 'Casa'],
+            image: 'https://cdn-icons-png.flaticon.com/512/742/742799.png',
+            frontText: 'Por favor',
+            backText: 'Por favor',
+            color: '#FBCFE8'
+          }
+
+        ],
+        categories: [
+          'Todas',
+          'Comida',
+          'Ações',
+          'Emoções',
+          'Pessoas',
+          'Lugares',
+          'Saúde',
+          'Objetos',
+          'Transportes',
+          'Rotina',
+          'Sensações',
+          'Comunicação'
+        ],
+
+        tags: [
+          'Todas',
+          'Favoritos',
+          'Rotina',
+          'Escola',
+          'Casa',
+          'Médico'
+        ],
+        filterMode: 'categories',
+        selectedCategory: 'Todas',
+        selectedTag: 'Todas',
+
+        phrase: [],
+
+        uidCounter: 1,
+
+        drag: {
+          active: false,
+          source: null,
+          sourceIndex: null,
+          card: null,
+          x: 0,
+          y: 0,
+          overDropzone: false,
+          insertIndex: null
+        },
+
+        toast: {
+          show: false,
+          message: '',
+          timer: null
+        },
+
+        audioCtx: null,
+        isPlaying: false,
+        playingUid: null,
+
+        init() {
+
+          window.addEventListener(
+            'pointermove',
+            this.onPointerMove.bind(this),
+            { passive: false }
           );
-      }
-    },
 
-    onPointerUp(event){
+          window.addEventListener(
+            'pointerup',
+            this.onPointerUp.bind(this)
+          );
 
-      if(!this.drag.active) return;
-      if(!this.drag.card) return;
+          this.prepareAudio();
+        },
 
-      const zone =
-        this.$refs.dropzone.getBoundingClientRect();
+        get filteredCards() {
 
-      const inside =
-        event.clientX >= zone.left &&
-        event.clientX <= zone.right &&
-        event.clientY >= zone.top &&
-        event.clientY <= zone.bottom;
+          return this.cards.filter(card => {
 
-      if(inside){
+            const cat =
+              this.selectedCategory === 'Todas'
+              || card.category === this.selectedCategory;
 
-        if(this.drag.source === 'library'){
+            const tag =
+              this.selectedTag === 'Todas'
+              || card.tags.includes(this.selectedTag);
 
-          if(this.phrase.length >= 5){
+            return cat && tag;
+          });
+        },
+
+        displayText(item) {
+          return item.flipped
+            ? item.backText
+            : item.frontText;
+        },
+
+        createPhraseCard(card) {
+
+          return {
+            ...card,
+            uid: 'phrase-' + this.uidCounter++,
+            flipped: false
+          };
+        },
+
+        quickAdd(card) {
+
+          if (this.phrase.length >= 5) {
 
             this.showToast('Máximo de 5 cartões');
+            return;
           }
 
-          else{
+          this.phrase.push(
+            this.createPhraseCard(card)
+          );
+        },
 
-            const insertAt =
-              this.drag.insertIndex ?? this.phrase.length;
-
-            this.phrase.splice(
-              insertAt,
-              0,
-              this.createPhraseCard(this.drag.card)
-            );
-          }
-        }
-
-        else if(this.drag.source === 'phrase'){
+        flipCard(uid) {
 
           const item =
-            this.phrase[this.drag.sourceIndex];
+            this.phrase.find(i => i.uid === uid);
 
-          this.phrase.splice(
-            this.drag.sourceIndex,
-            1
+          if (item) {
+            item.flipped = !item.flipped;
+          }
+        },
+
+        removeFromPhrase(index) {
+          this.phrase.splice(index, 1);
+        },
+
+        clearPhrase() {
+          this.phrase = [];
+        },
+
+        showToast(message) {
+
+          clearTimeout(this.toast.timer);
+
+          this.toast.message = message;
+          this.toast.show = true;
+
+          this.toast.timer = setTimeout(() => {
+            this.toast.show = false;
+          }, 1800);
+        },
+
+        startDragFromLibrary(event, card) {
+          this.beginDrag(event, 'library', card, null);
+        },
+
+        startDragFromPhrase(event, index) {
+          this.beginDrag(
+            event,
+            'phrase',
+            this.phrase[index],
+            index
           );
+        },
 
-          let insertAt =
-            this.drag.insertIndex ?? this.phrase.length;
+        beginDrag(event, source, card, index) {
 
-          if(insertAt > this.drag.sourceIndex){
-            insertAt--;
+          this.drag.active = true;
+          this.drag.source = source;
+          this.drag.sourceIndex = index;
+          this.drag.card = { ...card };
+
+          this.drag.x = event.clientX;
+          this.drag.y = event.clientY;
+        },
+
+        onPointerMove(event) {
+
+          if (!this.drag.active) return;
+
+          event.preventDefault();
+
+          this.drag.x = event.clientX;
+          this.drag.y = event.clientY;
+
+          const zone =
+            this.$refs.dropzone.getBoundingClientRect();
+
+          const inside =
+            event.clientX >= zone.left &&
+            event.clientX <= zone.right &&
+            event.clientY >= zone.top &&
+            event.clientY <= zone.bottom;
+
+          this.drag.overDropzone = inside;
+
+          if (inside) {
+
+            this.drag.insertIndex =
+              this.calculateInsertIndex(
+                event.clientX,
+                event.clientY
+              );
+          }
+        },
+
+        onPointerUp(event) {
+
+          if (!this.drag.active) return;
+          if (!this.drag.card) return;
+
+          const zone =
+            this.$refs.dropzone.getBoundingClientRect();
+
+          const inside =
+            event.clientX >= zone.left &&
+            event.clientX <= zone.right &&
+            event.clientY >= zone.top &&
+            event.clientY <= zone.bottom;
+
+          if (inside) {
+
+            if (this.drag.source === 'library') {
+
+              if (this.phrase.length >= 5) {
+
+                this.showToast('Máximo de 5 cartões');
+              }
+
+              else {
+
+                const insertAt =
+                  this.drag.insertIndex ?? this.phrase.length;
+
+                this.phrase.splice(
+                  insertAt,
+                  0,
+                  this.createPhraseCard(this.drag.card)
+                );
+              }
+            }
+
+            else if (this.drag.source === 'phrase') {
+
+              const item =
+                this.phrase[this.drag.sourceIndex];
+
+              this.phrase.splice(
+                this.drag.sourceIndex,
+                1
+              );
+
+              let insertAt =
+                this.drag.insertIndex ?? this.phrase.length;
+
+              if (insertAt > this.drag.sourceIndex) {
+                insertAt--;
+              }
+
+              this.phrase.splice(insertAt, 0, item);
+            }
           }
 
-          this.phrase.splice(insertAt,0,item);
+          else if (this.drag.source === 'phrase') {
+
+            this.removeFromPhrase(
+              this.drag.sourceIndex
+            );
+
+            this.showToast('Cartão removido');
+          }
+
+          this.cancelDrag();
+        },
+
+        cancelDrag() {
+
+          this.drag.active = false;
+          this.drag.source = null;
+          this.drag.sourceIndex = null;
+          this.drag.card = null;
+          this.drag.overDropzone = false;
+          this.drag.insertIndex = null;
+        },
+
+        calculateInsertIndex(x, y) {
+
+          const wrappers =
+            this.$refs.dropzone.querySelectorAll(
+              '[data-gjs-name="Phrase Card Wrapper"]'
+            );
+
+          if (!wrappers.length) return 0;
+
+          let index = wrappers.length;
+
+          wrappers.forEach((el, i) => {
+
+            const rect = el.getBoundingClientRect();
+
+            const before =
+              y < rect.top + rect.height * .5 ||
+              (
+                y >= rect.top &&
+                y <= rect.bottom &&
+                x < rect.left + rect.width * .5
+              );
+
+            if (index === wrappers.length && before) {
+              index = i;
+            }
+          });
+
+          return index;
+        },
+
+        prepareAudio() {
+
+          try {
+
+            const AC =
+              window.AudioContext ||
+              window.webkitAudioContext;
+
+            if (AC) {
+              this.audioCtx = new AC();
+            }
+
+          } catch (e) { }
+        },
+
+        async playPhrase() {
+
+          if (!this.phrase.length || this.isPlaying) {
+            return;
+          }
+
+          this.isPlaying = true;
+
+          for (const item of this.phrase) {
+
+            this.playingUid = item.uid;
+
+            await this.playTone(item.id, 260);
+
+            await this.wait(180);
+          }
+
+          this.playingUid = null;
+          this.isPlaying = false;
+        },
+
+        playTone(seed, duration) {
+
+          return new Promise(resolve => {
+
+            if (!this.audioCtx) {
+
+              setTimeout(resolve, duration);
+              return;
+            }
+
+            const osc =
+              this.audioCtx.createOscillator();
+
+            const gain =
+              this.audioCtx.createGain();
+
+            osc.type = 'sine';
+
+            osc.frequency.value =
+              320 + (seed * 70);
+
+            gain.gain.setValueAtTime(
+              0.0001,
+              this.audioCtx.currentTime
+            );
+
+            gain.gain.exponentialRampToValueAtTime(
+              0.08,
+              this.audioCtx.currentTime + 0.02
+            );
+
+            gain.gain.exponentialRampToValueAtTime(
+              0.0001,
+              this.audioCtx.currentTime + duration / 1000
+            );
+
+            osc.connect(gain);
+            gain.connect(this.audioCtx.destination);
+
+            osc.start();
+
+            osc.stop(
+              this.audioCtx.currentTime + duration / 1000
+            );
+
+            osc.onended = () => resolve();
+          });
+        },
+
+        wait(ms) {
+          return new Promise(r => setTimeout(r, ms));
         }
-      }
 
-      else if(this.drag.source === 'phrase'){
-
-        this.removeFromPhrase(
-          this.drag.sourceIndex
-        );
-
-        this.showToast('Cartão removido');
-      }
-
-      this.cancelDrag();
-    },
-
-    cancelDrag(){
-
-      this.drag.active = false;
-      this.drag.source = null;
-      this.drag.sourceIndex = null;
-      this.drag.card = null;
-      this.drag.overDropzone = false;
-      this.drag.insertIndex = null;
-    },
-
-    calculateInsertIndex(x,y){
-
-      const wrappers =
-        this.$refs.dropzone.querySelectorAll(
-          '[data-gjs-name="Phrase Card Wrapper"]'
-        );
-
-      if(!wrappers.length) return 0;
-
-      let index = wrappers.length;
-
-      wrappers.forEach((el,i) => {
-
-        const rect = el.getBoundingClientRect();
-
-        const before =
-          y < rect.top + rect.height * .5 ||
-          (
-            y >= rect.top &&
-            y <= rect.bottom &&
-            x < rect.left + rect.width * .5
-          );
-
-        if(index === wrappers.length && before){
-          index = i;
-        }
-      });
-
-      return index;
-    },
-
-    prepareAudio(){
-
-      try{
-
-        const AC =
-          window.AudioContext ||
-          window.webkitAudioContext;
-
-        if(AC){
-          this.audioCtx = new AC();
-        }
-
-      }catch(e){}
-    },
-
-    async playPhrase(){
-
-      if(!this.phrase.length || this.isPlaying){
-        return;
-      }
-
-      this.isPlaying = true;
-
-      for(const item of this.phrase){
-
-        this.playingUid = item.uid;
-
-        await this.playTone(item.id,260);
-
-        await this.wait(180);
-      }
-
-      this.playingUid = null;
-      this.isPlaying = false;
-    },
-
-    playTone(seed,duration){
-
-      return new Promise(resolve => {
-
-        if(!this.audioCtx){
-
-          setTimeout(resolve,duration);
-          return;
-        }
-
-        const osc =
-          this.audioCtx.createOscillator();
-
-        const gain =
-          this.audioCtx.createGain();
-
-        osc.type = 'sine';
-
-        osc.frequency.value =
-          320 + (seed * 70);
-
-        gain.gain.setValueAtTime(
-          0.0001,
-          this.audioCtx.currentTime
-        );
-
-        gain.gain.exponentialRampToValueAtTime(
-          0.08,
-          this.audioCtx.currentTime + 0.02
-        );
-
-        gain.gain.exponentialRampToValueAtTime(
-          0.0001,
-          this.audioCtx.currentTime + duration / 1000
-        );
-
-        osc.connect(gain);
-        gain.connect(this.audioCtx.destination);
-
-        osc.start();
-
-        osc.stop(
-          this.audioCtx.currentTime + duration / 1000
-        );
-
-        osc.onended = () => resolve();
-      });
-    },
-
-    wait(ms){
-      return new Promise(r => setTimeout(r,ms));
+      };
     }
 
-  };
-}
-
-</script>
+  </script>
 
 </body>
+
 </html>
