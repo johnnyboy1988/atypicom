@@ -11,1160 +11,41 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
+  <script src="https://cdn.tailwindcss.com"></script>
   <link
     href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700&family=Inter:wght@400;500;600;700&display=swap"
     rel="stylesheet">
-    <style>
 
-      /* =========================================================
-         RESET
-      ========================================================= */
-      
-      *{
-        margin:0;
-        padding:0;
-        box-sizing:border-box;
-      }
-      
-      html,
-      body{
-        width:100%;
-        height:100%;
-        overflow:hidden;
-      
-        font-family:'Inter',sans-serif;
-      
-        background:
-          linear-gradient(
-            to bottom,
-            #eef2ff,
-            #f8fafc,
-            #ffffff
-          );
-      
-        color:#0f172a;
-      
-        -webkit-font-smoothing:antialiased;
-      }
-      
-      body{
-        touch-action:manipulation;
-      }
-      
-      button{
-        border:none;
-        background:none;
-        cursor:pointer;
-        font-family:inherit;
-      }
-      
-      img{
-        display:block;
-      }
-      
-      .font-display{
-        font-family:'Baloo 2',cursive;
-      }
-      
-      /* =========================================================
-         APP
-      ========================================================= */
-      
-      .app{
-        width:100%;
-        height:100dvh;
-      
-        display:flex;
-        flex-direction:column;
-      
-        overflow:hidden;
-      }
-      
-      /* =========================================================
-         HEADER
-      ========================================================= */
-      
-      .header{
-        padding:14px 14px 10px;
-        flex-shrink:0;
-      }
-      
-      .header-box{
-        background:rgba(255,255,255,.85);
-      
-        backdrop-filter:blur(12px);
-      
-        border-radius:24px;
-      
-        padding:16px;
-      
-        display:flex;
-        justify-content:space-between;
-        align-items:center;
-      
-        box-shadow:
-          0 10px 30px rgba(0,0,0,.06);
-      }
-      
-      .header-title{
-        font-size:30px;
-        font-weight:700;
-      }
-      
-      .header-sub{
-        font-size:11px;
-        font-weight:700;
-      
-        text-transform:uppercase;
-      
-        letter-spacing:.16em;
-      
-        color:#6366f1;
-      }
-      
-      .status{
-        padding:10px 14px;
-      
-        border-radius:999px;
-      
-        background:#f8fafc;
-      
-        border:1px solid #e2e8f0;
-      
-        font-size:12px;
-        font-weight:600;
-      }
-      
-      /* =========================================================
-         MAIN
-      ========================================================= */
-      
-      .main{
-        flex:1;
-        min-height:0;
-      
-        display:flex;
-        flex-direction:column;
-      
-        overflow:hidden;
-      
-        padding:0 14px 14px;
-      
-        gap:12px;
-      }
-      
-      /* =========================================================
-         COMPOSER
-      ========================================================= */
-      
-      .composer{
-        flex:1;
-        min-height:0;
-      
-        background:rgba(255,255,255,.85);
-      
-        border-radius:30px;
-      
-        padding:16px;
-      
-        display:flex;
-        flex-direction:column;
-      
-        position:relative;
-      
-        overflow:hidden;
-      
-        box-shadow:
-          0 10px 30px rgba(0,0,0,.06);
-      }
-      
-      .composer-top{
-        display:flex;
-        justify-content:space-between;
-        align-items:center;
-      
-        margin-bottom:12px;
-      
-        flex-shrink:0;
-      }
-      
-      .composer-title{
-        font-size:26px;
-        font-weight:700;
-      }
-      
-      .composer-sub{
-        font-size:14px;
-        color:#64748b;
-      }
-      
-      .clear-btn{
-        background:#f8fafc;
-      
-        border:1px solid #e2e8f0;
-      
-        padding:12px 16px;
-      
-        border-radius:16px;
-      
-        font-weight:600;
-      }
-      
-      /* =========================================================
-         DROPZONE
-      ========================================================= */
-      
-      .dropzone{
-        flex:1;
-        min-height:0;
-      
-        overflow:auto;
-      
-        border:2px dashed #cbd5e1;
-      
-        border-radius:28px;
-      
-        padding:14px;
-      
-        display:flex;
-        flex-wrap:wrap;
-      
-        align-content:flex-start;
-      
-        gap:12px;
-      
-        transition:.2s;
-      
-        background:
-          linear-gradient(to right, rgba(148,163,184,.08) 1px, transparent 1px),
-          linear-gradient(to bottom, rgba(148,163,184,.08) 1px, transparent 1px);
-      
-        background-size:24px 24px;
-      
-        -webkit-overflow-scrolling:touch;
-      }
-      
-      .dropzone.active{
-        border-color:#6366f1;
-        background-color:rgba(99,102,241,.05);
-      }
-      
-      .empty{
-        width:100%;
-        height:100%;
-      
-        display:flex;
-        align-items:center;
-        justify-content:center;
-      
-        text-align:center;
-      
-        color:#64748b;
-      
-        font-size:16px;
-      
-        padding:20px;
-      }
-      
-      /* =========================================================
-         PHRASE CARD
-      ========================================================= */
-      
-      .phrase-card{
-        width:calc(50% - 6px);
-      
-        border-radius:26px;
-      
-        padding:14px;
-      
-        position:relative;
-      
-        overflow:hidden;
-      
-        background:white;
-      
-        box-shadow:
-          0 10px 30px rgba(15,23,42,.08);
-      
-        animation:pop .2s ease;
-      }
-      
-      .phrase-card.playing{
-        transform:scale(1.03);
-      
-        box-shadow:
-          0 16px 35px rgba(79,70,229,.25);
-      }
-      
-      .phrase-image{
-        width:70px;
-        height:70px;
-      
-        border-radius:20px;
-      
-        overflow:hidden;
-      
-        margin-bottom:12px;
-      }
-      
-      .phrase-image img{
-        width:100%;
-        height:100%;
-      
-        object-fit:cover;
-      }
-      
-      .phrase-title{
-        font-size:26px;
-        font-weight:700;
-      
-        line-height:1;
-      
-        margin-bottom:6px;
-      }
-      
-      .phrase-category{
-        font-size:11px;
-      
-        text-transform:uppercase;
-      
-        letter-spacing:.12em;
-      
-        color:#64748b;
-      
-        margin-bottom:10px;
-      }
-      
-      .tags{
-        display:flex;
-        gap:4px;
-        flex-wrap:wrap;
-      }
-      
-      .tag{
-        padding:4px 8px;
-      
-        border-radius:999px;
-      
-        background:rgba(255,255,255,.7);
-      
-        font-size:10px;
-        font-weight:600;
-      }
-      
-      .remove-btn{
-        position:absolute;
-      
-        top:10px;
-        right:10px;
-      
-        width:34px;
-        height:34px;
-      
-        border-radius:12px;
-      
-        background:rgba(255,255,255,.85);
-      
-        font-size:18px;
-        font-weight:700;
-      }
-      
-      .play-btn{
-        position:absolute;
-      
-        right:18px;
-        bottom:18px;
-      
-        width:68px;
-        height:68px;
-      
-        border-radius:999px;
-      
-        background:
-          linear-gradient(
-            135deg,
-            #4f46e5,
-            #14b8a6
-          );
-      
-        color:white;
-      
-        font-size:26px;
-      
-        box-shadow:
-          0 16px 35px rgba(79,70,229,.25);
-      }
-      
-      /* =========================================================
-         FILTERS
-      ========================================================= */
-      
-      .filters{
-        flex-shrink:0;
-        min-width:0;
-      }
-      
-      .filters-bar{
-        display:flex;
-        align-items:center;
-      
-        gap:10px;
-      
-        min-width:0;
-      
-        overflow:hidden;
-      
-        padding:10px 12px;
-      
-        border-radius:22px;
-      
-        background:rgba(255,255,255,.82);
-      
-        backdrop-filter:blur(14px);
-      
-        box-shadow:
-          0 8px 24px rgba(0,0,0,.05);
-      }
-      
-      /* SWITCH */
-      
-      .filter-switch{
-        flex-shrink:0;
-      
-        display:flex;
-      
-        gap:6px;
-      
-        padding:4px;
-      
-        border-radius:16px;
-      
-        background:#eef2ff;
-      }
-      
-      .switch-btn{
-        flex-shrink:0;
-      
-        padding:10px 14px;
-      
-        border-radius:12px;
-      
-        font-size:12px;
-        font-weight:700;
-      
-        color:#475569;
-      
-        white-space:nowrap;
-      
-        transition:.2s;
-      }
-      
-      .switch-btn.active{
-        background:#4f46e5;
-      
-        color:white;
-      
-        box-shadow:
-          0 6px 16px rgba(79,70,229,.25);
-      }
-      
-      /* =========================================================
-         CHIPS SLIDER
-      ========================================================= */
-      
-      .chips-main{
-        flex:1;
-        min-width:0;
-      
-        display:flex;
-        align-items:center;
-      
-        gap:8px;
-      
-        overflow-x:auto;
-        overflow-y:hidden;
-      
-        scrollbar-width:none;
-      
-        -webkit-overflow-scrolling:touch;
-      
-        touch-action:pan-x;
-      
-        scroll-behavior:smooth;
-      
-        padding-bottom:2px;
-      }
-      
-      .chips-main::-webkit-scrollbar{
-        display:none;
-      }
-      
-      .chip{
-        flex-shrink:0;
-      
-        white-space:nowrap;
-      
-        padding:10px 14px;
-      
-        border-radius:999px;
-      
-        background:white;
-      
-        border:1px solid #e2e8f0;
-      
-        font-size:13px;
-        font-weight:600;
-      
-        color:#334155;
-      
-        transition:.2s;
-      }
-      
-      .chip.active{
-        background:#4f46e5;
-      
-        border-color:#4f46e5;
-      
-        color:white;
-      }
-      
-      /* =========================================================
-         LIBRARY
-      ========================================================= */
-      
-      .library{
-        flex:1;
-        min-height:0;
-      
-        background:rgba(255,255,255,.82);
-      
-        backdrop-filter:blur(14px);
-      
-        border-radius:28px;
-      
-        padding:14px;
-      
-        display:flex;
-        flex-direction:column;
-      
-        overflow:hidden;
-      
-        box-shadow:
-          0 -10px 30px rgba(0,0,0,.08);
-      }
-      
-      .library-top{
-        display:flex;
-        justify-content:space-between;
-        align-items:center;
-      
-        margin-bottom:12px;
-      
-        flex-shrink:0;
-      }
-      
-      .library-title{
-        font-size:24px;
-        font-weight:700;
-      }
-      
-      .library-sub{
-        font-size:13px;
-        color:#64748b;
-      }
-      
-      .library-counter{
-        background:white;
-      
-        padding:10px 14px;
-      
-        border-radius:14px;
-      
-        font-size:12px;
-        font-weight:700;
-      }
-      
-      .library-scroll{
-        flex:1;
-        min-height:0;
-      
-        display:flex;
-      
-        gap:12px;
-      
-        overflow-x:auto;
-        overflow-y:hidden;
-      
-        scrollbar-width:none;
-      
-        -webkit-overflow-scrolling:touch;
-      }
-      
-      .library-scroll::-webkit-scrollbar{
-        display:none;
-      }
-      
-      .library-card{
-        min-width:165px;
-        max-width:165px;
-      
-        flex-shrink:0;
-      
-        padding:14px;
-      
-        border-radius:26px;
-      
-        background:white;
-      
-        text-align:left;
-      
-        box-shadow:
-          0 10px 30px rgba(15,23,42,.08);
-      }
-      
-      .library-image{
-        width:64px;
-        height:64px;
-      
-        border-radius:20px;
-      
-        overflow:hidden;
-      
-        margin-bottom:12px;
-      }
-      
-      .library-image img{
-        width:100%;
-        height:100%;
-      
-        object-fit:cover;
-      }
-      
-      .library-card-title{
-        font-size:26px;
-        font-weight:700;
-      
-        line-height:1;
-      
-        margin-bottom:6px;
-      }
-      
-      .library-category{
-        font-size:11px;
-      
-        text-transform:uppercase;
-      
-        letter-spacing:.12em;
-      
-        color:#64748b;
-      
-        margin-bottom:10px;
-      }
-      
-      /* =========================================================
-         DRAG
-      ========================================================= */
-      
-      .ghost{
-        position:fixed;
-      
-        pointer-events:none;
-      
-        z-index:999;
-      
-        width:165px;
-      
-        border-radius:26px;
-      
-        padding:14px;
-      
-        transform:
-          translate(-50%,-50%)
-          scale(1.05);
-      
-        box-shadow:
-          0 20px 40px rgba(0,0,0,.18);
-      }
-      
-      .ghost img{
-        width:64px;
-        height:64px;
-      
-        border-radius:20px;
-      
-        object-fit:cover;
-      
-        margin-bottom:12px;
-      }
-      
-      /* =========================================================
-         TOAST
-      ========================================================= */
-      
-      .toast{
-        position:fixed;
-      
-        top:20px;
-        left:50%;
-      
-        transform:translateX(-50%);
-      
-        background:#0f172a;
-      
-        color:white;
-      
-        padding:12px 18px;
-      
-        border-radius:999px;
-      
-        font-size:14px;
-        font-weight:600;
-      
-        z-index:999;
-      
-        box-shadow:
-          0 10px 30px rgba(0,0,0,.15);
-      }
-      /* =========================================================
-   MOBILE
-========================================================= */
-
-@media (max-width:768px){
-
-  html,
-  body{
-    width:100%;
-    height:100dvh;
-    overflow:hidden;
-  }
-
-  .app{
-    width:100%;
-    height:100dvh;
-    overflow:hidden;
-  }
-
-  .header{
-    display:none;
-  }
-
-  .main{
-    flex:1;
-    min-height:0;
-
-    display:flex;
-    flex-direction:column;
-
-    gap:8px;
-
-    padding:8px;
-
-    overflow:hidden;
-  }
-
-  /* =========================================================
-     COMPOSER
-     AGORA MENOR NO MOBILE
-  ========================================================= */
-
-  .composer{
-    flex:0 0 28%;
-
-    min-height:155px;
-    max-height:28dvh;
-
-    padding:10px;
-
-    border-radius:20px;
-  }
-
-  .composer-top{
-    margin-bottom:8px;
-  }
-
-  .composer-title{
-    font-size:18px;
-    line-height:1;
-  }
-
-  .composer-sub{
-    display:none;
-  }
-
-  .clear-btn{
-    padding:8px 10px;
-
-    border-radius:12px;
-
-    font-size:11px;
-  }
-
-  /* =========================================================
-     DROPZONE
-  ========================================================= */
-
-  .dropzone{
-    gap:8px;
-
-    padding:8px;
-
-    border-radius:18px;
-
-    background-size:18px 18px;
-  }
-
-  .empty{
-    padding:12px;
-
-    font-size:14px;
-
-    line-height:1.3;
-  }
-
-  /* =========================================================
-     PHRASE CARD
-  ========================================================= */
-
-  .phrase-card{
-    width:100%;
-
-    min-height:84px;
-
-    padding:
-      10px
-      12px
-      10px
-      82px;
-
-    border-radius:18px;
-  }
-
-  .phrase-image{
-    position:absolute;
-
-    left:10px;
-    top:10px;
-
-    width:56px;
-    height:56px;
-
-    margin:0;
-
-    border-radius:14px;
-  }
-
-  .phrase-title{
-    font-size:20px;
-
-    line-height:1;
-
-    margin-bottom:4px;
-  }
-
-  .phrase-category{
-    font-size:9px;
-
-    margin-bottom:6px;
-  }
-
-  .tag{
-    padding:3px 6px;
-
-    font-size:9px;
-  }
-
-  .remove-btn{
-    top:8px;
-    right:8px;
-
-    width:26px;
-    height:26px;
-
-    border-radius:8px;
-
-    font-size:14px;
-  }
-
-  .play-btn{
-    right:12px;
-    bottom:12px;
-
-    width:52px;
-    height:52px;
-
-    font-size:20px;
-  }
-
-  /* =========================================================
-     FILTERS
-  ========================================================= */
-
-  .filters{
-    flex-shrink:0;
-
-    min-width:0;
-  }
-
-  .filters-bar{
-    display:flex;
-    align-items:center;
-
-    gap:8px;
-
-    padding:8px;
-
-    border-radius:18px;
-
-    overflow:hidden;
-
-    min-width:0;
-  }
-
-  .filter-switch{
-    flex-shrink:0;
-
-    display:flex;
-
-    gap:4px;
-
-    padding:3px;
-
-    border-radius:14px;
-  }
-
-  .switch-btn{
-    padding:9px 10px;
-
-    font-size:11px;
-
-    white-space:nowrap;
-  }
-
-  /* =========================================================
-     SLIDER DAS TAGS/CATEGORIAS
-  ========================================================= */
-
-  .chips-main{
-    flex:1;
-    min-width:0;
-
-    display:flex;
-    align-items:center;
-
-    gap:6px;
-
-    overflow-x:auto;
-    overflow-y:hidden;
-
-    scrollbar-width:none;
-
-    -webkit-overflow-scrolling:touch;
-
-    scroll-behavior:smooth;
-
-    touch-action:pan-x;
-  }
-
-  .chips-main::-webkit-scrollbar{
-    display:none;
-  }
-
-  .chip{
-    flex-shrink:0;
-
-    padding:8px 10px;
-
-    font-size:10px;
-
-    white-space:nowrap;
-  }
-
-  /* =========================================================
-     LIBRARY
-     AGORA MAIOR NO MOBILE
-  ========================================================= */
-
-  .library{
-    flex:1;
-    min-height:0;
-
-    padding:10px;
-
-    border-radius:20px;
-
-    overflow:hidden;
-  }
-
-  .library-top{
-    margin-bottom:8px;
-  }
-
-  .library-title{
-    font-size:18px;
-    line-height:1;
-  }
-
-  .library-sub{
-    display:none;
-  }
-
-  .library-counter{
-    padding:6px 10px;
-
-    border-radius:10px;
-
-    font-size:10px;
-  }
-
-  .library-scroll{
-    flex:1;
-    min-height:0;
-
-    display:flex;
-
-    gap:8px;
-
-    overflow-x:auto;
-    overflow-y:hidden;
-
-    scrollbar-width:none;
-
-    -webkit-overflow-scrolling:touch;
-
-    touch-action:pan-x;
-  }
-
-  .library-scroll::-webkit-scrollbar{
-    display:none;
-  }
-
-  .library-card{
-    min-width:112px;
-    max-width:112px;
-
-    padding:10px;
-
-    border-radius:18px;
-  }
-
-  .library-image{
-    width:48px;
-    height:48px;
-
-    margin-bottom:8px;
-
-    border-radius:14px;
-  }
-
-  .library-card-title{
-    font-size:18px;
-
-    margin-bottom:4px;
-  }
-
-  .library-category{
-    font-size:9px;
-
-    margin-bottom:6px;
-  }
-
-  /* =========================================================
-     GHOST
-  ========================================================= */
-
-  .ghost{
-    width:112px;
-
-    padding:10px;
-
-    border-radius:18px;
-  }
-
-  .ghost img{
-    width:48px;
-    height:48px;
-
-    margin-bottom:8px;
-
-    border-radius:14px;
-  }
-
-  /* =========================================================
-     TOAST
-  ========================================================= */
-
-  .toast{
-    top:10px;
-
-    padding:10px 14px;
-
-    font-size:12px;
-  }
-
-}
-
-/* =========================================================
-   SMALL HEIGHT
-========================================================= */
-
-@media (max-height:700px){
-
-  .composer{
-    flex:0 0 24%;
-
-    min-height:140px;
-
-    max-height:24dvh;
-  }
-
-  .library-card{
-    min-width:104px;
-    max-width:104px;
-  }
-
-}
-  
-      /* =========================================================
-         ANIMATION
-      ========================================================= */
-      
-      @keyframes pop{
-      
-        from{
-          opacity:0;
-          transform:scale(.95);
-        }
-      
-        to{
-          opacity:1;
-          transform:scale(1);
-        }
-      
-      }
-      
-      </style>
 </head>
-
 <body>
 
-  <div class="app" x-data="aacApp()" x-init="init()">
+  <div
+    class="flex flex-col w-full h-dvh overflow-hidden bg-gradient-to-b from-indigo-50 via-slate-50 to-white text-slate-900 antialiased"
+    x-data="aacApp()"
+    x-init="init()"
+  >
 
-    <header class="header">
+    <!-- HEADER -->
 
-      <div class="header-box">
+    <header class="hidden md:block flex-shrink-0 p-3">
+
+      <div
+        class="flex items-center justify-between rounded-[24px] bg-white/85 backdrop-blur-xl p-4 shadow-[0_10px_30px_rgba(0,0,0,.06)]"
+      >
 
         <div>
-          <div class="header-sub">
+
+          <div class="text-[11px] uppercase tracking-[.16em] font-bold text-indigo-500">
             Comunicação visual
           </div>
 
-          <div class="header-title font-display">
+          <div class="text-[30px] font-bold font-['Baloo_2']">
             Minha frase
           </div>
+
         </div>
 
-        <div class="status">
+        <div class="px-4 py-2 rounded-full border border-slate-200 bg-slate-50 text-xs font-semibold">
           Toque e arraste
         </div>
 
@@ -1172,70 +53,188 @@
 
     </header>
 
-    <main class="main">
+    <!-- MAIN -->
+
+    <!--
+      AJUSTE FINAL ESTRUTURAL:
+
+      1. min-h-0 permite encolhimento correto do flex
+      2. composer é o ÚNICO flexível
+      3. filters e library são fixos
+      4. removido sticky
+      5. removido mt-auto
+      6. sem competição de altura
+      7. sem overlap em desktop
+    -->
+
+    <main
+      class="flex flex-col flex-1 min-h-0 overflow-hidden gap-2 md:gap-3 p-2 md:px-3 md:pt-0 md:pb-3"
+    >
 
       <!-- COMPOSER -->
 
-      <section class="composer">
+      <section
+        class="relative flex flex-col
+               flex-1
+               min-h-0
+               overflow-hidden
+               rounded-[20px] md:rounded-[30px]
+               bg-white/85
+               p-2.5 md:p-4
+               shadow-[0_10px_30px_rgba(0,0,0,.06)]"
+      >
 
-        <div class="composer-top">
+        <!-- TOP -->
+
+        <div class="flex items-center justify-between flex-shrink-0 mb-2 md:mb-3">
 
           <div>
-            <div class="composer-title font-display">
+
+            <div class="text-[18px] md:text-[26px] leading-none font-bold font-['Baloo_2']">
               Área de composição
             </div>
 
-            <div class="composer-sub">
+            <div class="hidden md:block text-sm text-slate-500">
               Monte até 5 cartões
             </div>
+
           </div>
 
-          <button class="clear-btn" @click="clearPhrase()">
+          <button
+            class="px-3 py-2 rounded-xl md:rounded-2xl border border-slate-200 bg-slate-50 text-[11px] md:text-sm font-semibold"
+            @click="clearPhrase()"
+          >
             Limpar
           </button>
 
         </div>
 
-        <div class="dropzone" :class="drag.overDropzone ? 'active' : ''" x-ref="dropzone">
+        <!-- DROPZONE -->
+
+        <div
+          x-ref="dropzone"
+          class="flex-1 min-h-0 overflow-auto
+                 grid grid-cols-2 md:grid-cols-4
+                 auto-rows-max
+                 content-start
+                 gap-2 md:gap-3
+                 rounded-[18px] md:rounded-[28px]
+                 border-2 border-dashed border-slate-300
+                 p-2 md:p-3
+                 transition-all duration-200
+                 bg-[linear-gradient(to_right,rgba(148,163,184,.08)_1px,transparent_1px),linear-gradient(to_bottom,rgba(148,163,184,.08)_1px,transparent_1px)]
+                 bg-[size:18px_18px] md:bg-[size:24px_24px]"
+          :class="drag.overDropzone ? 'border-indigo-500 bg-indigo-50/40' : ''"
+        >
+
+          <!-- EMPTY -->
 
           <template x-if="phrase.length === 0">
 
-            <div class="empty font-display">
+            <div
+              class="col-span-full flex items-center justify-center w-full h-full text-center text-slate-500 text-sm md:text-base font-['Baloo_2'] p-4"
+            >
               Arraste cartões para formar uma frase
             </div>
 
           </template>
 
+          <!-- PHRASE CARDS -->
+
           <template x-for="(item,index) in phrase" :key="item.uid">
 
-            <div data-gjs-name="Phrase Card Wrapper" class="phrase-card"
-              :class="playingUid === item.uid ? 'playing' : ''"
-              :style="'background:linear-gradient(180deg,'+item.color+' 0%, #fff 100%)'">
+            <div
+              data-gjs-name="Phrase Card Wrapper"
+              class="relative overflow-hidden
+                     w-full
+                     min-h-[118px]
+                     md:min-h-[145px]
+                     rounded-[18px] md:rounded-[22px]
+                     bg-white
+                     shadow-[0_10px_24px_rgba(15,23,42,.08)]
+                     p-2.5 md:p-3
+                     transition-all duration-200"
+              :class="playingUid === item.uid
+                ? 'scale-[1.03] shadow-[0_16px_35px_rgba(79,70,229,.25)]'
+                : ''"
+              :style="'background:linear-gradient(180deg,'+item.color+' 0%, #fff 100%)'"
+            >
 
-              <button class="remove-btn" @click="removeFromPhrase(index)">
+              <!-- REMOVE -->
+
+              <button
+                class="absolute top-2 right-2 flex items-center justify-center
+                       w-[24px] h-[24px]
+                       rounded-[8px]
+                       bg-white/90
+                       text-sm font-bold"
+                @click="removeFromPhrase(index)"
+              >
                 ×
               </button>
 
-              <div class="phrase-image">
-                <img :src="item.image">
+              <!-- IMAGE -->
+
+              <div
+                class="overflow-hidden rounded-[14px]
+                       w-[46px] h-[46px]
+                       md:w-[58px] md:h-[58px]
+                       mb-2"
+              >
+
+                <img
+                  class="object-cover w-full h-full"
+                  :src="item.image"
+                >
+
               </div>
 
-              <div class="phrase-title font-display" x-text="displayText(item)"></div>
+              <!-- TITLE -->
 
-              <div class="phrase-category" x-text="item.category"></div>
+              <div
+                class="text-[15px] md:text-[20px]
+                       leading-none font-bold
+                       font-['Baloo_2']
+                       mb-1"
+                x-text="displayText(item)"
+              ></div>
 
-              <div class="tags">
+              <!-- CATEGORY -->
+
+              <div
+                class="text-[8px] md:text-[10px]
+                       uppercase tracking-[.12em]
+                       text-slate-500
+                       mb-1.5"
+                x-text="item.category"
+              ></div>
+
+              <!-- TAGS -->
+
+              <div class="flex flex-wrap gap-1">
 
                 <template x-for="tag in item.tags.slice(0,2)">
 
-                  <div class="tag" x-text="tag"></div>
+                  <div
+                    class="px-1.5 py-1 rounded-full
+                           bg-white/70
+                           text-[8px]
+                           md:text-[9px]
+                           font-semibold"
+                    x-text="tag"
+                  ></div>
 
                 </template>
 
               </div>
 
-              <button style="position:absolute; inset:0; opacity:0" @pointerdown="startDragFromPhrase($event,index)"
-                @click="flipCard(item.uid)"></button>
+              <!-- OVERLAY -->
+
+              <button
+                class="absolute inset-0 opacity-0"
+                @pointerdown="startDragFromPhrase($event,index)"
+                @click="flipCard(item.uid)"
+              ></button>
 
             </div>
 
@@ -1243,7 +242,19 @@
 
         </div>
 
-        <button class="play-btn" @click="playPhrase()">
+        <!-- PLAY -->
+
+        <button
+          class="absolute bottom-3 right-3
+                 md:bottom-[18px] md:right-[18px]
+                 w-[52px] h-[52px]
+                 md:w-[64px] md:h-[64px]
+                 rounded-full
+                 bg-gradient-to-br from-indigo-600 to-teal-500
+                 text-white text-[20px] md:text-[24px]
+                 shadow-[0_16px_35px_rgba(79,70,229,.25)]"
+          @click="playPhrase()"
+        >
           🔊
         </button>
 
@@ -1251,58 +262,81 @@
 
       <!-- FILTERS -->
 
-      <section class="filters">
+      <section class="flex-shrink-0 min-w-0">
 
-        <div class="filters-bar">
+        <div
+          class="flex items-center gap-2 min-w-0 overflow-hidden rounded-[18px] md:rounded-[22px] bg-white/80 backdrop-blur-xl p-2 md:px-3 md:py-2.5 shadow-[0_8px_24px_rgba(0,0,0,.05)]"
+        >
 
           <!-- SWITCH -->
 
-          <div class="filter-switch">
+          <div class="flex flex-shrink-0 gap-1 p-1 rounded-2xl bg-indigo-50">
 
-            <button class="switch-btn" :class="filterMode === 'categories' ? 'active' : ''"
-              @click="filterMode = 'categories'">
+            <button
+              class="flex-shrink-0 whitespace-nowrap rounded-xl px-[10px] py-[9px] md:px-3.5 md:py-2.5 text-[11px] md:text-xs font-bold transition-all duration-200"
+              :class="filterMode === 'categories'
+                ? 'bg-indigo-600 text-white shadow-[0_6px_16px_rgba(79,70,229,.25)]'
+                : 'text-slate-600'"
+              @click="filterMode = 'categories'"
+            >
               Categorias
             </button>
 
-            <button class="switch-btn" :class="filterMode === 'tags' ? 'active' : ''" @click="filterMode = 'tags'">
+            <button
+              class="flex-shrink-0 whitespace-nowrap rounded-xl px-[10px] py-[9px] md:px-3.5 md:py-2.5 text-[11px] md:text-xs font-bold transition-all duration-200"
+              :class="filterMode === 'tags'
+                ? 'bg-indigo-600 text-white shadow-[0_6px_16px_rgba(79,70,229,.25)]'
+                : 'text-slate-600'"
+              @click="filterMode = 'tags'"
+            >
               Tags
             </button>
 
           </div>
 
-          <!-- VALUES -->
+          <!-- CHIPS -->
 
-          <div class="chips chips-main">
-
-            <!-- CATEGORIES -->
+          <div class="flex items-center flex-1 min-w-0 gap-1 overflow-x-auto overflow-y-hidden scroll-smooth">
 
             <template x-if="filterMode === 'categories'">
 
               <template x-for="category in categories">
 
-                <button class="chip" :class="selectedCategory === category ? 'active' : ''" @click="
-              selectedCategory =
-                selectedCategory === category
-                  ? 'Todas'
-                  : category
-            " x-text="category"></button>
+                <button
+                  class="flex-shrink-0 whitespace-nowrap rounded-full border border-slate-200 bg-white px-2.5 py-2 md:px-3.5 md:py-2.5 text-[10px] md:text-[13px] font-semibold transition-all duration-200"
+                  :class="selectedCategory === category
+                    ? 'bg-indigo-600 border-indigo-600 text-white'
+                    : 'text-slate-700'"
+                  @click="
+                    selectedCategory =
+                      selectedCategory === category
+                        ? 'Todas'
+                        : category
+                  "
+                  x-text="category"
+                ></button>
 
               </template>
 
             </template>
 
-            <!-- TAGS -->
-
             <template x-if="filterMode === 'tags'">
 
               <template x-for="tag in tags">
 
-                <button class="chip" :class="selectedTag === tag ? 'active' : ''" @click="
-              selectedTag =
-                selectedTag === tag
-                  ? 'Todas'
-                  : tag
-            " x-text="tag"></button>
+                <button
+                  class="flex-shrink-0 whitespace-nowrap rounded-full border border-slate-200 bg-white px-2.5 py-2 md:px-3.5 md:py-2.5 text-[10px] md:text-[13px] font-semibold transition-all duration-200"
+                  :class="selectedTag === tag
+                    ? 'bg-indigo-600 border-indigo-600 text-white'
+                    : 'text-slate-700'"
+                  @click="
+                    selectedTag =
+                      selectedTag === tag
+                        ? 'Todas'
+                        : tag
+                  "
+                  x-text="tag"
+                ></button>
 
               </template>
 
@@ -1313,54 +347,92 @@
         </div>
 
       </section>
+
       <!-- LIBRARY -->
 
-      <section class="library">
+      <section
+        class="flex flex-col
+               flex-shrink-0
+               h-[210px] md:h-[260px]
+               overflow-hidden
+               rounded-[20px] md:rounded-[28px]
+               bg-white/80
+               backdrop-blur-xl
+               p-2 md:p-3
+               shadow-[0_-10px_30px_rgba(0,0,0,.08)]"
+      >
 
-        <div class="library-top">
+        <!-- TOP -->
+
+        <div class="flex items-center justify-between flex-shrink-0 mb-2">
 
           <div>
 
-            <div class="library-title font-display">
+            <div class="text-[18px] md:text-[24px] leading-none font-bold font-['Baloo_2']">
               Biblioteca
             </div>
 
-            <div class="library-sub">
+            <div class="hidden md:block text-sm text-slate-500">
               Segure e arraste
             </div>
 
           </div>
 
-          <div class="library-counter">
+          <div class="px-2.5 py-1.5 rounded-xl bg-white text-[10px] md:text-xs font-bold">
             <span x-text="phrase.length"></span>/5
           </div>
 
         </div>
 
-        <div class="library-scroll">
+        <!-- SCROLL -->
+
+        <div
+          class="flex flex-1 min-h-0 gap-2 overflow-x-auto overflow-y-hidden pb-1"
+        >
 
           <template x-for="card in filteredCards" :key="card.id">
 
-            <button class="library-card" @pointerdown="startDragFromLibrary($event,card)" @click="quickAdd(card)"
-              :style="'background:linear-gradient(180deg,'+card.color+' 0%, #fff 72%)'">
+            <button
+              class="flex-shrink-0 text-left
+                     rounded-[16px] md:rounded-[20px]
+                     min-w-[92px] max-w-[92px]
+                     md:min-w-[118px] md:max-w-[118px]
+                     p-2
+                     shadow-[0_10px_24px_rgba(15,23,42,.08)]"
+              @pointerdown="startDragFromLibrary($event,card)"
+              @click="quickAdd(card)"
+              :style="'background:linear-gradient(180deg,'+card.color+' 0%, #fff 72%)'"
+            >
 
-              <div class="library-image">
-                <img :src="card.image">
+              <div
+                class="overflow-hidden rounded-[12px]
+                       w-10 h-10
+                       md:w-12 md:h-12
+                       mb-2"
+              >
+
+                <img
+                  class="object-cover w-full h-full"
+                  :src="card.image"
+                >
+
               </div>
 
-              <div class="library-card-title font-display" x-text="card.title"></div>
+              <div
+                class="text-[15px] md:text-[18px]
+                       leading-none font-bold
+                       font-['Baloo_2']
+                       mb-1"
+                x-text="card.title"
+              ></div>
 
-              <div class="library-category" x-text="card.category"></div>
-
-              <div class="tags">
-
-                <template x-for="tag in card.tags.slice(0,2)">
-
-                  <div class="tag" x-text="tag"></div>
-
-                </template>
-
-              </div>
+              <div
+                class="text-[8px] md:text-[9px]
+                       uppercase tracking-[.12em]
+                       text-slate-500
+                       mb-1"
+                x-text="card.category"
+              ></div>
 
             </button>
 
@@ -1371,27 +443,6 @@
       </section>
 
     </main>
-
-    <!-- DRAG GHOST -->
-
-    <template x-if="drag.active && drag.card">
-
-      <div class="ghost"
-        :style="'left:'+drag.x+'px; top:'+drag.y+'px; background:linear-gradient(180deg,'+drag.card.color+' 0%, #fff 70%)'">
-
-        <img :src="drag.card.image">
-
-        <div class="library-card-title font-display" x-text="drag.card.title"></div>
-
-        <div class="library-category" x-text="drag.card.category"></div>
-
-      </div>
-
-    </template>
-
-    <!-- TOAST -->
-
-    <div class="toast" x-show="toast.show" x-transition.opacity x-text="toast.message"></div>
 
   </div>
 
