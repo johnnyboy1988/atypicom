@@ -318,7 +318,7 @@
               @click="showCreateModal = true">
               + Criar card
             </button>
-<!-- 
+            <!-- 
             <div class="px-2.5 py-1.5 rounded-xl bg-white text-[10px] md:text-xs font-bold">
               <span x-text="phrase.length"></span>/5  TODO:  validar o total da categoria ou tag em questão
             </div>
@@ -1283,7 +1283,8 @@
         filterMode: 'categories',
         selectedCategory: 'Todas',
         selectedTag: 'Todas',
-
+        selectedTagToAdd: '',
+        
         phrase: [],
 
         uidCounter: 1,
@@ -1605,15 +1606,44 @@
 
             this.playingUid = item.uid;
 
-            await this.playTone(item.id, 260);
+            /*
+              pega o texto visível do cartão
+            */
+            const text = this.displayText(item);
 
-            await this.wait(180);
+            await this.speakText(text);
+
+            await this.wait(200);
           }
 
           this.playingUid = null;
           this.isPlaying = false;
         },
+        async playPhrase() {
 
+          if (!this.phrase.length || this.isPlaying) {
+            return;
+          }
+
+          this.isPlaying = true;
+
+          for (const item of this.phrase) {
+
+            this.playingUid = item.uid;
+
+            /*
+              pega o texto visível do cartão
+            */
+            const text = this.displayText(item);
+
+            await this.speakText(text);
+
+            await this.wait(200);
+          }
+
+          this.playingUid = null;
+          this.isPlaying = false;
+        },
         playTone(seed, duration) {
 
           return new Promise(resolve => {
@@ -1662,7 +1692,66 @@
             osc.onended = () => resolve();
           });
         },
+        speakText(text) {
 
+          return new Promise(resolve => {
+
+            if (!window.speechSynthesis) {
+
+              resolve();
+              return;
+            }
+
+            /*
+              limpa falas anteriores
+            */
+            window.speechSynthesis.cancel();
+
+            const utterance =
+              new SpeechSynthesisUtterance(text);
+
+            /*
+              idioma pt-BR
+            */
+            utterance.lang = 'pt-BR';
+
+            /*
+              velocidade
+            */
+            utterance.rate = 0.9;
+
+            /*
+              tom da voz
+            */
+            utterance.pitch = 1;
+
+            /*
+              volume
+            */
+            utterance.volume = 1;
+
+            /*
+              tenta escolher voz pt-BR
+            */
+            const voices =
+              window.speechSynthesis.getVoices();
+
+            const brazilVoice =
+              voices.find(v =>
+                v.lang.toLowerCase().includes('pt-br')
+              );
+
+            if (brazilVoice) {
+              utterance.voice = brazilVoice;
+            }
+
+            utterance.onend = () => resolve();
+
+            utterance.onerror = () => resolve();
+
+            window.speechSynthesis.speak(utterance);
+          });
+        },
         async searchIcons() {
 
           const query =
@@ -1733,7 +1822,7 @@
 
             this.showToast('Informe o texto do verso');
             return;
-          } 
+          }
 
           if (!this.createForm.selectedImage) {
 
