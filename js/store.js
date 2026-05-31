@@ -504,7 +504,6 @@ window.AACStore = {
 
         ],
         categories: [
-          'Todas',
           'Comida',
           'Ações',
           'Emoções',
@@ -519,7 +518,6 @@ window.AACStore = {
         ],
 
         tags: [
-          'Todas',
           'Favoritos',
           'Rotina',
           'Escola',

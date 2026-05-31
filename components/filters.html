@@ -1,77 +1,58 @@
+<section class="flex-shrink-0 min-w-0">
 
-      <!-- FILTERS -->
+  <div class="flex flex-col gap-3 rounded-[18px] md:rounded-[22px]
+           bg-white/80 backdrop-blur-xl
+           p-3 shadow-[0_8px_24px_rgba(0,0,0,.05)]">
 
-      <section class="flex-shrink-0 min-w-0">
+    <!-- CATEGORIAS -->
 
-        <div
-          class="flex items-center gap-2 min-w-0 overflow-hidden rounded-[18px] md:rounded-[22px] bg-white/80 backdrop-blur-xl p-2 md:px-3 md:py-2.5 shadow-[0_8px_24px_rgba(0,0,0,.05)]">
+    <div class="flex flex-col gap-2">
 
-          <!-- SWITCH -->
+      <span class="text-xs font-bold text-slate-500 uppercase">
+        Categorias
+      </span>
 
-          <div class="flex flex-shrink-0 gap-1 p-1 rounded-2xl bg-indigo-50">
+      <div class="flex gap-1 overflow-x-auto">
+        <template x-for="category in categories" :key="category">
 
-            <button
-              class="flex-shrink-0 whitespace-nowrap rounded-xl px-[10px] py-[9px] md:px-3.5 md:py-2.5 text-[11px] md:text-xs font-bold transition-all duration-200"
-              :class="filterMode === 'categories'
-                ? 'bg-indigo-600 text-white shadow-[0_6px_16px_rgba(79,70,229,.25)]'
-                : 'text-slate-600'" @click="filterMode = 'categories'">
-              Categorias
-            </button>
+          <button class="flex-shrink-0 rounded-full px-3 py-2 text-xs font-semibold border transition" :class="
+      selectedCategories.includes(category)
+        ? 'bg-indigo-600 text-white border-indigo-600'
+        : 'bg-white text-slate-700 border-slate-200'
+    " @click="toggleCategory(category)" x-text="category">
+          </button>
 
-            <button
-              class="flex-shrink-0 whitespace-nowrap rounded-xl px-[10px] py-[9px] md:px-3.5 md:py-2.5 text-[11px] md:text-xs font-bold transition-all duration-200"
-              :class="filterMode === 'tags'
-                ? 'bg-indigo-600 text-white shadow-[0_6px_16px_rgba(79,70,229,.25)]'
-                : 'text-slate-600'" @click="filterMode = 'tags'">
-              Tags
-            </button>
+        </template>
 
-          </div>
+      </div>
 
-          <!-- CHIPS -->
+    </div>
 
-          <div class="flex items-center flex-1 min-w-0 gap-1 overflow-x-auto overflow-y-hidden scroll-smooth">
+    <!-- TAGS -->
 
-            <template x-if="filterMode === 'categories'">
+    <div class="flex flex-col gap-2">
 
-              <template x-for="category in categories">
+      <span class="text-xs font-bold text-slate-500 uppercase">
+        Tags
+      </span>
 
-                <button
-                  class="flex-shrink-0 whitespace-nowrap rounded-full border border-slate-200 bg-white px-2.5 py-2 md:px-3.5 md:py-2.5 text-[10px] md:text-[13px] font-semibold transition-all duration-200"
-                  :class="selectedCategory === category
-                  ? 'bg-indigo-100 border-indigo-400 text-indigo-600'
-                  : 'text-slate-700 bg-white border-slate-200'" @click="
-                    selectedCategory =
-                      selectedCategory === category
-                        ? 'Todas'
-                        : category
-                  " x-text="category"></button>
+      <div class="flex gap-1 overflow-x-auto">
 
-              </template>
+        <template x-for="tag in tags" :key="tag">
 
-            </template>
+          <button class="flex-shrink-0 rounded-full px-3 py-2 text-xs font-semibold border transition" :class="
+      selectedTags.includes(tag)
+        ? 'bg-emerald-600 text-white border-emerald-600'
+        : 'bg-white text-slate-700 border-slate-200'
+    " @click="toggleTag(tag)" x-text="tag">
+          </button>
 
-            <template x-if="filterMode === 'tags'">
+        </template>
 
-              <template x-for="tag in tags">
+      </div>
 
-                <button
-                  class="flex-shrink-0 whitespace-nowrap rounded-full border border-slate-200 bg-white px-2.5 py-2 md:px-3.5 md:py-2.5 text-[10px] md:text-[13px] font-semibold transition-all duration-200"
-                  :class="selectedTag === tag
-                    ? 'bg-indigo-600 border-indigo-600 text-indigo-600'
-                    : 'text-slate-700'" @click="
-                    selectedTag =
-                      selectedTag === tag
-                        ? 'Todas'
-                        : tag
-                  " x-text="tag"></button>
+    </div>
 
-              </template>
+  </div>
 
-            </template>
-
-          </div>
-
-        </div>
-
-      </section>
+</section>

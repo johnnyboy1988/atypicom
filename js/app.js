@@ -39,8 +39,8 @@ function aacApp() {
       timer: null,
     },
 
-    selectedCategory: "Todas",
-    selectedTag: "Todas",
+    selectedCategories: [],
+    selectedTags: [],
 
     createForm: {
       frontText: "",
@@ -62,19 +62,41 @@ function aacApp() {
 
       window.addEventListener("pointerup", this.onPointerUp.bind(this));
     },
+toggleCategory(category) {
+  const idx = this.selectedCategories.indexOf(category);
 
-    get filteredCards() {
-      return this.cards.filter((card) => {
-        const cat =
-          this.selectedCategory === "Todas" ||
-          card.category === this.selectedCategory;
+  if (idx >= 0) {
+    this.selectedCategories.splice(idx, 1);
+  } else {
+    this.selectedCategories.push(category);
+  }
+},
 
-        const tag =
-          this.selectedTag === "Todas" || card.tags.includes(this.selectedTag);
+toggleTag(tag) {
+  const idx = this.selectedTags.indexOf(tag);
 
-        return cat && tag;
-      });
-    },
+  if (idx >= 0) {
+    this.selectedTags.splice(idx, 1);
+  } else {
+    this.selectedTags.push(tag);
+  }
+},
+get filteredCards() {
+  return this.cards.filter(card => {
+
+    const categoryMatch =
+      this.selectedCategories.length === 0 ||
+      this.selectedCategories.includes(card.category);
+
+    const tagMatch =
+      this.selectedTags.length === 0 ||
+      card.tags.some(tag =>
+        this.selectedTags.includes(tag)
+      );
+
+    return categoryMatch && tagMatch;
+  });
+},
 
     displayText(item) {
       return item.flipped ? item.backText : item.frontText;

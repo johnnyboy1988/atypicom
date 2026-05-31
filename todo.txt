@@ -1,0 +1,8 @@
+
+Pessoas -> amarelo
+verbos -> verde
+descrições -> azul
+substantivos -> laranja
+social -> rosa
+diversos -> branco
+
