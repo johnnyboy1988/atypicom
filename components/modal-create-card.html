@@ -76,7 +76,7 @@
 
               <template x-for="category in categories.filter(c => c !== 'Todas')">
 
-                <option :value="category" x-text="category"></option>
+                <option :value="category.name" x-text="category.name"></option>
 
               </template>
 
@@ -122,7 +122,7 @@
 
               <template x-for="tag in tags.filter(t => t !== 'Todas')">
 
-                <option :value="tag" x-text="tag"></option>
+                <option :value="tag.name" x-text="tag.name"></option>
 
               </template>
 
