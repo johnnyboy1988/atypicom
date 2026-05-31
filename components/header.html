@@ -15,10 +15,88 @@
 
         </div>
 
-        <div class="px-4 py-2 rounded-full border border-slate-200 bg-slate-50 text-xs font-semibold">
-            Toque e arraste
-        </div>
+        <button
+            class="w-10 h-10 rounded-full bg-white/80 border border-slate-200 flex items-center justify-center shadow"
+            @click="configMode.open = true">
+            ⚙️
+        </button>
 
     </div>
+    <div x-show="configMode.open" x-transition.opacity
+        class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" style="display:none">
 
+        <div @click.outside="configMode.open = false" class="w-full max-w-md rounded-[28px] bg-white shadow-2xl p-5">
+
+            <div class="text-[22px] font-bold font-['Baloo_2'] mb-4">
+                Configurações
+            </div>
+
+            <!-- CREATE CARD -->
+            <label class="flex items-center justify-between py-3 border-b">
+                <span class="font-semibold">Criar Card</span>
+                <input type="checkbox" x-model="configMode.createCard">
+            </label>
+
+            <!-- CREATE TAG -->
+            <label class="flex items-center justify-between py-3 border-b">
+                <span class="font-semibold">Criar Tag</span>
+                <input type="checkbox" x-model="configMode.createTag">
+            </label>
+
+            <!-- CREATE CATEGORY -->
+            <label class="flex items-center justify-between py-3">
+                <span class="font-semibold">Criar Categoria</span>
+                <input type="checkbox" x-model="configMode.createCategory">
+            </label>
+
+            <!-- IMPORT JSON -->
+            <div class="border border-slate-200 rounded-2xl p-4 bg-white">
+
+                <div class="text-sm font-semibold mb-2">
+                    Importação de dados
+                </div>
+
+                <div class="text-xs text-slate-500 mb-3">
+                    Carregue um arquivo JSON com cards, categorias e tags
+                </div>
+
+                <input type="file" accept="application/json" class="hidden" x-ref="fileInput"
+                    @change="importJson($event)">
+
+                <button
+                    class="w-full rounded-xl bg-indigo-600 text-white py-2 font-semibold hover:bg-indigo-500 transition"
+                    @click="$refs.fileInput.click()">
+
+                    Selecionar arquivo
+                </button>
+
+            </div>
+
+            <!-- EXPORT JSON -->
+            <div class="border border-slate-200 rounded-2xl p-4 bg-white mt-3">
+
+            <div class="text-sm font-semibold mb-2">
+                Exportar dados
+            </div>
+
+            <div class="text-xs text-slate-500 mb-3">
+                Baixe um backup completo do seu storage
+            </div>
+
+            <button
+                class="w-full rounded-xl bg-emerald-600 text-white py-2 font-semibold hover:bg-emerald-500 transition"
+                @click="exportJson()">
+
+                Baixar backup
+            </button>
+
+            </div>
+
+            <button class="w-full mt-5 rounded-2xl bg-indigo-600 text-white py-3 font-bold"
+                @click="configMode.open = false">
+                Fechar
+            </button>
+
+        </div>
+    </div>
 </header>

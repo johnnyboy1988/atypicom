@@ -1,0 +1,19 @@
+{
+  "categories": [
+    { "name": "Animais", "color": "#f97316" }
+  ],
+  "tags": [
+    { "name": "Verbos", "color": "#22c55e" }
+  ],
+  "cards": [
+    {
+      "id": 1,
+      "category": "Animais",
+      "tags": ["Verbos"],
+      "frontText": "Dog",
+      "backText": "Cachorro",
+      "image": "",
+      "color": "#f97316"
+    }
+  ]
+}

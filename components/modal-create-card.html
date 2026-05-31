@@ -83,7 +83,7 @@
             </select>
 
           </div>
-
+          <template x-if="configMode.createCategory">
 
           <div class="flex gap-2 mt-3">
 
@@ -99,6 +99,8 @@
 
           </div>
 
+
+          </template>
         </div>
 
         <!-- TAGS -->
@@ -110,7 +112,6 @@
           </label>
 
           <!-- SELECT TAG -->
-
           <div class="flex gap-2">
 
             <select x-model="selectedTagToAdd"
@@ -134,20 +135,23 @@
             </button>
 
           </div>
-          <div class="flex gap-2 mt-3">
+          <template x-if="configMode.createTag">
+            <div class="flex gap-2 mt-3">
 
-            <input x-model="createForm.newTag" type="text" placeholder="Nova tag"
-              class="flex-1 rounded-2xl border border-slate-200 p-3">
+              <input x-model="createForm.newTag" type="text" placeholder="Nova tag"
+                class="flex-1 rounded-2xl border border-slate-200 p-3">
 
-            <input x-model="createForm.newTagColor" type="color"
-              class="w-14 h-12 rounded-xl border border-slate-200 cursor-pointer">
+              <input x-model="createForm.newTagColor" type="color"
+                class="w-14 h-12 rounded-xl border border-slate-200 cursor-pointer">
 
-            <button class="px-4 rounded-2xl bg-teal-600 text-white font-semibold" @click="createAndAddTag()">
+              <button class="px-4 rounded-2xl bg-teal-600 text-white font-semibold" @click="createAndAddTag()">
 
-              +
-            </button>
+                +
+              </button>
 
-          </div>
+            </div>
+          </template>
+
           <!-- TAG LIST -->
 
           <div class="flex flex-wrap gap-2 mt-4">

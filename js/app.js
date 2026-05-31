@@ -21,7 +21,12 @@ function aacApp() {
     isPlaying: false,
 
     playingUid: null,
-
+    configMode: {
+      open: false,
+      createCard: true,
+      createTag: true,
+      createCategory: true,
+    },
     drag: {
       active: false,
       source: null,
@@ -41,7 +46,7 @@ function aacApp() {
 
     selectedCategories: [],
     selectedTags: [],
-    filtersCollapsed: true,
+    filtersCollapsed: false,
     createForm: {
       frontText: "",
       backText: "",
@@ -106,18 +111,14 @@ function aacApp() {
     getTag(name) {
       return this.tags.find((t) => t.name === name);
     },
-    getCategoryColor(name) {
+    getCategoryColor(categoryName) {
       return (
-        this.getCategory(name)?.color ||
-        "#6366F1"
+        this.categories.find((c) => c.name === categoryName)?.color || "#CBD5E1"
       );
     },
 
     getTagColor(name) {
-      return (
-        this.getTag(name)?.color ||
-        "#64748B"
-      );
+      return this.getTag(name)?.color || "#64748B";
     },
     randomColor() {
       const colors = [
@@ -141,13 +142,21 @@ function aacApp() {
       this.createForm = {
         frontText: "",
         backText: "",
-        category: "Objetos",
+
+        category: this.categories[0]?.name || "",
+
         categoryColor: this.randomColor(),
+
         newCategory: "",
+
         tags: [],
+
         newTag: "",
+
         newTagColor: this.randomColor(),
+
         search: "",
+
         selectedImage: "",
       };
     },
@@ -529,70 +538,169 @@ function aacApp() {
         return;
       }
 
+      /*
+       * garante categoria
+       */
+
       const categoryExists = this.categories.some(
-        (c) => c.toLowerCase() === this.createForm.category.toLowerCase(),
+        (c) => c.name.toLowerCase() === this.createForm.category.toLowerCase(),
       );
 
       if (!categoryExists) {
-        this.categories.push(this.createForm.category);
+        this.categories.push({
+          name: this.createForm.category,
+
+          color: this.createForm.categoryColor || "#6366F1",
+        });
       }
+
+      /*
+       * garante tags
+       */
 
       this.createForm.tags.forEach((tag) => {
         const exists = this.tags.some(
-          (t) => t.toLowerCase() === tag.toLowerCase(),
+          (t) => t.name.toLowerCase() === tag.toLowerCase(),
         );
 
         if (!exists) {
-          this.tags.push(tag);
+          this.tags.push({
+            name: tag,
+
+            color: this.createForm.newTagColor || "#6366F1",
+          });
         }
       });
-
-      const colors = [
-        "#DBEAFE",
-        "#FDE68A",
-        "#FBCFE8",
-        "#DDD6FE",
-        "#BBF7D0",
-        "#FECACA",
-        "#E0F2FE",
-      ];
 
       this.cards.unshift({
         id: Date.now(),
 
         category: this.createForm.category,
 
-        tags: this.createForm.tags.length
-          ? this.createForm.tags
-          : ["Personalizado"],
+        tags:
+          this.createForm.tags.length > 0
+            ? [...this.createForm.tags]
+            : ["Personalizado"],
 
         image: this.createForm.selectedImage,
 
-        frontText: this.createForm.frontText,
+        frontText: this.createForm.frontText.trim(),
 
-        backText: this.createForm.backText,
-
-        color: colors[Math.floor(Math.random() * colors.length)],
+        backText: this.createForm.backText.trim(),
       });
 
       this.showCreateModal = false;
 
       this.iconResults = [];
 
-      this.createForm = {
-        category: "Objetos",
-        newCategory: "",
-        tags: [],
-        newTag: "",
-        search: "",
-        selectedImage: "",
-      };
-
       this.selectedTagToAdd = "";
 
-      this.showToast("Cartão criado com sucesso");
-
       this.resetCreateForm();
+
+      this.showToast("Cartão criado com sucesso");
+    },
+    importJson(event) {
+      const file = event.target.files?.[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+
+      reader.onload = (e) => {
+        try {
+          const data = JSON.parse(e.target.result);
+
+          // validação mínima
+          if (!data.cards && !data.categories && !data.tags) {
+            this.showToast("JSON inválido");
+            return;
+          }
+
+          /*
+           * MERGE CATEGORIES
+           */
+          if (Array.isArray(data.categories)) {
+            data.categories.forEach((cat) => {
+              const exists = this.categories.some(
+                (c) => c.name.toLowerCase() === cat.name.toLowerCase(),
+              );
+
+              if (!exists) {
+                this.categories.push(cat);
+              }
+            });
+          }
+
+          /*
+           * MERGE TAGS
+           */
+          if (Array.isArray(data.tags)) {
+            data.tags.forEach((tag) => {
+              const exists = this.tags.some(
+                (t) => t.name.toLowerCase() === tag.name.toLowerCase(),
+              );
+
+              if (!exists) {
+                this.tags.push(tag);
+              }
+            });
+          }
+
+          /*
+           * MERGE CARDS
+           */
+          if (Array.isArray(data.cards)) {
+            data.cards.forEach((card) => {
+              const exists = this.cards.some(
+                (c) =>
+                  c.frontText === card.frontText &&
+                  c.backText === card.backText,
+              );
+
+              if (!exists) {
+                this.cards.unshift({
+                  ...card,
+                  id: card.id || Date.now() + Math.random(),
+                });
+              }
+            });
+          }
+
+          this.showToast("Importação concluída com sucesso");
+        } catch (err) {
+          console.error(err);
+          this.showToast("Erro ao ler JSON");
+        }
+      };
+
+      reader.readAsText(file);
+
+      // limpa input (permite reimportar mesmo arquivo)
+      event.target.value = "";
+    },
+
+    exportJson() {
+      const data = {
+        cards: this.cards,
+        categories: this.categories,
+        tags: this.tags,
+      };
+
+      const json = JSON.stringify(data, null, 2);
+
+      const blob = new Blob([json], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `backup-${new Date().toISOString().split("T")[0]}.json`;
+
+      document.body.appendChild(a);
+      a.click();
+
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+      this.showToast("Backup exportado com sucesso");
     },
   };
 }
