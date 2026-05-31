@@ -41,7 +41,7 @@ function aacApp() {
 
     selectedCategories: [],
     selectedTags: [],
-
+    filtersCollapsed: true,
     createForm: {
       frontText: "",
       backText: "",
