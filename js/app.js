@@ -46,9 +46,11 @@ function aacApp() {
       frontText: "",
       backText: "",
       category: "Objetos",
+      categoryColor: "",
       newCategory: "",
       tags: [],
       newTag: "",
+      newTagColor: "",
       search: "",
       selectedImage: "",
     },
@@ -56,48 +58,99 @@ function aacApp() {
     async init() {
       await loadComponents();
 
+      this.createForm.categoryColor = this.randomColor();
+      this.createForm.newTagColor = this.randomColor();
+
       window.addEventListener("pointermove", this.onPointerMove.bind(this), {
         passive: false,
       });
 
       window.addEventListener("pointerup", this.onPointerUp.bind(this));
     },
-toggleCategory(category) {
-  const idx = this.selectedCategories.indexOf(category);
+    toggleCategory(category) {
+      const idx = this.selectedCategories.indexOf(category);
 
-  if (idx >= 0) {
-    this.selectedCategories.splice(idx, 1);
-  } else {
-    this.selectedCategories.push(category);
-  }
-},
+      if (idx >= 0) {
+        this.selectedCategories.splice(idx, 1);
+      } else {
+        this.selectedCategories.push(category);
+      }
+    },
 
-toggleTag(tag) {
-  const idx = this.selectedTags.indexOf(tag);
+    toggleTag(tag) {
+      const idx = this.selectedTags.indexOf(tag);
 
-  if (idx >= 0) {
-    this.selectedTags.splice(idx, 1);
-  } else {
-    this.selectedTags.push(tag);
-  }
-},
-get filteredCards() {
-  return this.cards.filter(card => {
+      if (idx >= 0) {
+        this.selectedTags.splice(idx, 1);
+      } else {
+        this.selectedTags.push(tag);
+      }
+    },
+    get filteredCards() {
+      return this.cards.filter((card) => {
+        const categoryMatch =
+          this.selectedCategories.length === 0 ||
+          this.selectedCategories.includes(card.category);
 
-    const categoryMatch =
-      this.selectedCategories.length === 0 ||
-      this.selectedCategories.includes(card.category);
+        const tagMatch =
+          this.selectedTags.length === 0 ||
+          card.tags.some((tag) => this.selectedTags.includes(tag));
 
-    const tagMatch =
-      this.selectedTags.length === 0 ||
-      card.tags.some(tag =>
-        this.selectedTags.includes(tag)
+        return categoryMatch && tagMatch;
+      });
+    },
+    getCategory(name) {
+      return this.categories.find((c) => c.name === name);
+    },
+
+    getTag(name) {
+      return this.tags.find((t) => t.name === name);
+    },
+    getCategoryColor(name) {
+      return (
+        this.getCategory(name)?.color ||
+        "#6366F1"
       );
+    },
 
-    return categoryMatch && tagMatch;
-  });
-},
+    getTagColor(name) {
+      return (
+        this.getTag(name)?.color ||
+        "#64748B"
+      );
+    },
+    randomColor() {
+      const colors = [
+        "#6366F1", // indigo
+        "#8B5CF6", // violet
+        "#EC4899", // pink
+        "#F97316", // orange
+        "#EAB308", // yellow
+        "#22C55E", // green
+        "#10B981", // emerald
+        "#14B8A6", // teal
+        "#06B6D4", // cyan
+        "#3B82F6", // blue
+        "#EF4444", // red
+        "#84CC16", // lime
+      ];
 
+      return colors[Math.floor(Math.random() * colors.length)];
+    },
+    resetCreateForm() {
+      this.createForm = {
+        frontText: "",
+        backText: "",
+        category: "Objetos",
+        categoryColor: this.randomColor(),
+        newCategory: "",
+        tags: [],
+        newTag: "",
+        newTagColor: this.randomColor(),
+        search: "",
+        selectedImage: "",
+      };
+    },
     displayText(item) {
       return item.flipped ? item.backText : item.frontText;
     },
@@ -108,6 +161,30 @@ get filteredCards() {
         uid: "phrase-" + this.uidCounter++,
         flipped: false,
       };
+    },
+
+    /***MODAL */
+    addNewCategory() {
+      const name = this.createForm.newCategory.trim();
+
+      if (!name) {
+        this.showToast("Digite a categoria");
+        return;
+      }
+
+      const exists = this.categories.some(
+        (c) => c.name.toLowerCase() === name.toLowerCase(),
+      );
+
+      if (!exists) {
+        this.categories.push({
+          name,
+          color: this.createForm.categoryColor,
+        });
+      }
+
+      this.createForm.category = name;
+      this.createForm.newCategory = "";
     },
 
     quickAdd(card) {
@@ -401,27 +478,7 @@ get filteredCards() {
     wait(ms) {
       return new Promise((r) => setTimeout(r, ms));
     },
-    addNewCategory() {
-      const name = this.createForm.newCategory.trim();
 
-      if (!name) {
-        this.showToast("Digite a categoria");
-        return;
-      }
-
-      const exists = this.categories.some(
-        (c) => c.toLowerCase() === name.toLowerCase(),
-      );
-
-      if (!exists) {
-        this.categories.push(name);
-
-        this.showToast("Categoria criada");
-      }
-
-      this.createForm.category = name;
-      this.createForm.newCategory = "";
-    },
     addTagToCard(tag) {
       if (!tag) return;
 
@@ -534,6 +591,8 @@ get filteredCards() {
       this.selectedTagToAdd = "";
 
       this.showToast("Cartão criado com sucesso");
+
+      this.resetCreateForm();
     },
   };
 }

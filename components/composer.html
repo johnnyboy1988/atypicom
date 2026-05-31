@@ -1,6 +1,6 @@
-      <!-- COMPOSER -->
+<!-- COMPOSER -->
 
-      <section class="relative flex flex-col
+<section class="relative flex flex-col
                flex-1
                min-h-0
                overflow-hidden
@@ -9,33 +9,33 @@
                p-2.5 md:p-4
                shadow-[0_10px_30px_rgba(0,0,0,.06)]">
 
-        <!-- TOP -->
+  <!-- TOP -->
 
-        <div class="flex items-center justify-between flex-shrink-0 mb-2 md:mb-3">
+  <div class="flex items-center justify-between flex-shrink-0 mb-2 md:mb-3">
 
-          <div>
+    <div>
 
-            <div class="text-[18px] md:text-[26px] leading-none font-bold font-['Baloo_2']">
-              Área de composição
-            </div>
+      <div class="text-[18px] md:text-[26px] leading-none font-bold font-['Baloo_2']">
+        Área de composição
+      </div>
 
-            <div class="hidden md:block text-sm text-slate-500">
-              Toque a arraste
-            </div>
+      <div class="hidden md:block text-sm text-slate-500">
+        Toque a arraste
+      </div>
 
-          </div>
+    </div>
 
-          <button
-            class="px-3 py-2 rounded-xl md:rounded-2xl border border-slate-200 bg-slate-50 text-[11px] md:text-sm font-semibold"
-            @click="clearPhrase()">
-            Limpar
-          </button>
+    <button
+      class="px-3 py-2 rounded-xl md:rounded-2xl border border-slate-200 bg-slate-50 text-[11px] md:text-sm font-semibold"
+      @click="clearPhrase()">
+      Limpar
+    </button>
 
-        </div>
+  </div>
 
-        <!-- DROPZONE -->
+  <!-- DROPZONE -->
 
-        <div x-ref="dropzone" class="flex-1 min-h-0 overflow-auto
+  <div x-ref="dropzone" class="flex-1 min-h-0 overflow-auto
                  grid grid-cols-2 md:grid-cols-4
                  auto-rows-max
                  content-start
@@ -46,100 +46,110 @@
                  transition-all duration-200
                  bg-[linear-gradient(to_right,rgba(148,163,184,.08)_1px,transparent_1px),linear-gradient(to_bottom,rgba(148,163,184,.08)_1px,transparent_1px)]
                  bg-[size:18px_18px] md:bg-[size:24px_24px]"
-          :class="drag.overDropzone ? 'border-indigo-500 bg-indigo-50/40' : ''">
+    :class="drag.overDropzone ? 'border-indigo-500 bg-indigo-50/40' : ''">
 
-          <!-- EMPTY -->
+    <!-- EMPTY -->
 
-          <template x-if="phrase.length === 0">
+    <template x-if="phrase.length === 0">
 
-            <div
-              class="col-span-full flex items-center justify-center w-full h-full text-center text-slate-500 text-sm md:text-base font-['Baloo_2'] p-4">
-              Arraste cartões para formar uma frase
-            </div>
+      <div
+        class="col-span-full flex items-center justify-center w-full h-full text-center text-slate-500 text-sm md:text-base font-['Baloo_2'] p-4">
+        Arraste cartões para formar uma frase
+      </div>
 
-          </template>
+    </template>
+    <!-- PHRASE CARDS -->
 
-          <!-- PHRASE CARDS -->
+    <template x-for="(item,index) in phrase" :key="item.uid">
 
-          <template x-for="(item,index) in phrase" :key="item.uid">
+      <div data-gjs-name="Phrase Card Wrapper" class="relative overflow-hidden
+         rounded-[18px] md:rounded-[22px]
+         bg-white
+         border-[3px]
+         shadow-[0_10px_24px_rgba(15,23,42,.08)]
+         p-2.5 md:p-3
+         transition-all duration-200" :style="`
+    background:linear-gradient(180deg, ${item.color} 0%, #ffffff 100%);
+    border-color:${getCategory(item.category)?.color || '#CBD5E1'};
+  `">
 
-            <div data-gjs-name="Phrase Card Wrapper" class="relative overflow-hidden
-                     w-full
-                     min-h-[118px]
-                     md:min-h-[145px]
-                     rounded-[18px] md:rounded-[22px]
-                     bg-white
-                     shadow-[0_10px_24px_rgba(15,23,42,.08)]
-                     p-2.5 md:p-3
-                     transition-all duration-200" :class="playingUid === item.uid
-                ? 'scale-[1.03] shadow-[0_16px_35px_rgba(79,70,229,.25)]'
-                : ''" :style="'background:linear-gradient(180deg,'+item.color+' 0%, #fff 100%)'">
+        <!-- REMOVE -->
 
-              <!-- REMOVE -->
+        <button class="absolute top-2 right-2 flex items-center justify-center
+             w-[24px] h-[24px]
+             rounded-[8px]
+             bg-white/90
+             text-sm font-bold z-20" @click="removeFromPhrase(index)">
+          ×
+        </button>
 
-              <button class="absolute top-2 right-2 flex items-center justify-center
-                       w-[24px] h-[24px]
-                       rounded-[8px]
-                       bg-white/90
-                       text-sm font-bold" @click="removeFromPhrase(index)">
-                ×
-              </button>
+        <!-- IMAGE -->
 
-              <!-- IMAGE -->
+        <div class="overflow-hidden rounded-[14px]
+             w-[46px] h-[46px]
+             md:w-[58px] md:h-[58px]
+             mb-2">
 
-              <div class="overflow-hidden rounded-[14px]
-                       w-[46px] h-[46px]
-                       md:w-[58px] md:h-[58px]
-                       mb-2">
+          <img class="object-cover w-full h-full" :src="item.image">
 
-                <img class="object-cover w-full h-full" :src="item.image">
+        </div>
 
-              </div>
+        <!-- TITLE -->
 
-              <!-- TITLE -->
+        <div class="text-[15px] md:text-[20px]
+             leading-none font-bold
+             font-['Baloo_2']
+             mb-2" x-text="displayText(item)">
+        </div>
 
-              <div class="text-[15px] md:text-[20px]
-                       leading-none font-bold
-                       font-['Baloo_2']
-                       mb-1" x-text="displayText(item)"></div>
+        <!-- CATEGORY -->
 
-              <!-- CATEGORY -->
+        <div class="mb-2">
 
-              <div class="text-[8px] md:text-[10px]
-                       uppercase tracking-[.12em]
-                       text-slate-500
-                       mb-1.5" x-text="item.category"></div>
+          <span class="inline-flex items-center rounded-full
+               px-2 py-1
+               text-[8px] md:text-[10px]
+               font-bold uppercase tracking-[.08em]" :style="`
+          background:${getCategory(item.category)?.color || '#CBD5E1'}20;
+          color:${getCategory(item.category)?.color || '#64748B'};
+        `" x-text="item.category">
+          </span>
 
-              <!-- TAGS -->
+        </div>
 
-              <div class="flex flex-wrap gap-1">
+        <!-- TAGS -->
 
-                <template x-for="tag in item.tags.slice(0,2)">
+        <div class="flex flex-wrap gap-1">
 
-                  <div class="px-1.5 py-1 rounded-full
-                           bg-white/70
-                           text-[8px]
-                           md:text-[9px]
-                           font-semibold" x-text="tag"></div>
+          <template x-for="tagName in item.tags.slice(0,2)" :key="tagName">
 
-                </template>
-
-              </div>
-
-              <!-- OVERLAY -->
-
-              <button class="absolute inset-0 opacity-0" @pointerdown="startDragFromPhrase($event,index)"
-                @click="flipCard(item.uid)"></button>
-
+            <div class="px-2 py-1 rounded-full
+                 text-[8px] md:text-[9px]
+                 font-semibold" :style="`
+            background:${getTag(tagName)?.color || '#E2E8F0'}30;
+            color:${getTag(tagName)?.color || '#475569'};
+          `" x-text="tagName">
             </div>
 
           </template>
 
         </div>
 
-        <!-- PLAY -->
+        <!-- OVERLAY -->
 
-        <button class="absolute bottom-3 right-3
+        <button class="absolute inset-0 opacity-0" @pointerdown="startDragFromPhrase($event,index)"
+          @click="flipCard(item.uid)">
+        </button>
+
+      </div>
+
+    </template>
+
+  </div>
+
+  <!-- PLAY -->
+
+  <button class="absolute bottom-3 right-3
                  md:bottom-[18px] md:right-[18px]
                  w-[52px] h-[52px]
                  md:w-[64px] md:h-[64px]
@@ -147,7 +157,7 @@
                  bg-gradient-to-br from-indigo-600 to-teal-500
                  text-white text-[20px] md:text-[24px]
                  shadow-[0_16px_35px_rgba(79,70,229,.25)]" @click="playPhrase()">
-          🔊
-        </button>
+    🔊
+  </button>
 
-      </section>
+</section>
