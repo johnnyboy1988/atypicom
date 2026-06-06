@@ -84,20 +84,25 @@
 
           </div>
           <template x-if="configMode.createCategory">
+            <div class="flex items-center gap-2 mt-3">
 
-          <div class="flex gap-2 mt-3">
+              <input x-model="createForm.newCategory" type="text" placeholder="Nova categoria"
+                class="flex-1 min-w-[80px] rounded-2xl border border-slate-200 p-3">
 
-            <input x-model="createForm.newCategory" type="text" placeholder="Nova categoria"
-              class="flex-1 rounded-2xl border border-slate-200 p-3">
+              <input x-model="createForm.categoryColor" type="color" class="w-14 h-14 shrink-0
+               p-1 rounded-xl
+               border border-slate-200
+               cursor-pointer">
 
-            <input x-model="createForm.categoryColor" type="color"
-              class="w-14 h-12 rounded-xl border border-slate-200 cursor-pointer">
+              <button class="w-14 h-14 shrink-0
+               rounded-2xl
+               bg-indigo-600
+               text-white
+               font-bold" @click="addNewCategory()">
+                +
+              </button>
 
-            <button class="px-4 rounded-2xl bg-indigo-600 text-white font-semibold" @click="addNewCategory()">
-              +
-            </button>
-
-          </div>
+            </div>
 
 
           </template>
@@ -136,16 +141,21 @@
 
           </div>
           <template x-if="configMode.createTag">
-            <div class="flex gap-2 mt-3">
+            <div class="flex items-center gap-2 mt-3">
 
               <input x-model="createForm.newTag" type="text" placeholder="Nova tag"
-                class="flex-1 rounded-2xl border border-slate-200 p-3">
+                class="flex-1 min-w-[80px] rounded-2xl border border-slate-200 p-3">
 
-              <input x-model="createForm.newTagColor" type="color"
-                class="w-14 h-12 rounded-xl border border-slate-200 cursor-pointer">
+              <input x-model="createForm.newTagColor" type="color" class="w-14 h-14 shrink-0
+               p-1 rounded-xl
+               border border-slate-200
+               cursor-pointer">
 
-              <button class="px-4 rounded-2xl bg-teal-600 text-white font-semibold" @click="createAndAddTag()">
-
+              <button class="w-14 h-14 shrink-0
+               rounded-2xl
+               bg-teal-600
+               text-white
+               font-bold" @click="createAndAddTag()">
                 +
               </button>
 
