@@ -36,7 +36,11 @@
                 <span class="font-semibold">Criar Card</span>
                 <input type="checkbox" x-model="configMode.createCard">
             </label>
-
+            <!-- EDIT CARD -->
+            <label class="flex items-center justify-between py-3 border-b">
+                <span class="font-semibold">Editar Cards</span>
+                <input type="checkbox" x-model="configMode.editCard">
+            </label>
             <!-- CREATE TAG -->
             <label class="flex items-center justify-between py-3 border-b">
                 <span class="font-semibold">Criar Tag</span>
@@ -75,20 +79,20 @@
             <!-- EXPORT JSON -->
             <div class="border border-slate-200 rounded-2xl p-4 bg-white mt-3">
 
-            <div class="text-sm font-semibold mb-2">
-                Exportar dados
-            </div>
+                <div class="text-sm font-semibold mb-2">
+                    Exportar dados
+                </div>
 
-            <div class="text-xs text-slate-500 mb-3">
-                Baixe um backup completo do seu storage
-            </div>
+                <div class="text-xs text-slate-500 mb-3">
+                    Baixe um backup completo do seu storage
+                </div>
 
-            <button
-                class="w-full rounded-xl bg-emerald-600 text-white py-2 font-semibold hover:bg-emerald-500 transition"
-                @click="exportJson()">
+                <button
+                    class="w-full rounded-xl bg-emerald-600 text-white py-2 font-semibold hover:bg-emerald-500 transition"
+                    @click="exportJson()">
 
-                Baixar backup
-            </button>
+                    Baixar backup
+                </button>
 
             </div>
 

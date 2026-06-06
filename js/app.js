@@ -11,7 +11,11 @@ function aacApp() {
     filterMode: "categories",
 
     showCreateModal: false,
+    editLibraryMode: false,
 
+    editMode: false,
+
+    editingCardId: null,
     selectedTagToAdd: "",
 
     loadingIcons: false,
@@ -26,6 +30,7 @@ function aacApp() {
       createCard: true,
       createTag: true,
       createCategory: true,
+      editCard: false,
     },
     drag: {
       active: false,
@@ -99,8 +104,7 @@ function aacApp() {
 
         const tagMatch =
           this.selectedTags.length === 0 ||
-          card.tags.some((tag) => this.selectedTags.includes(tag));
-
+          (card.tags || []).some((tag) => this.selectedTags.includes(tag));
         return categoryMatch && tagMatch;
       });
     },
@@ -589,14 +593,7 @@ function aacApp() {
         backText: this.createForm.backText.trim(),
       });
 
-      this.showCreateModal = false;
-
-      this.iconResults = [];
-
-      this.selectedTagToAdd = "";
-
-      this.resetCreateForm();
-
+      this.closeCreateModal();
       this.showToast("Cartão criado com sucesso");
     },
     importJson(event) {
@@ -701,6 +698,92 @@ function aacApp() {
       URL.revokeObjectURL(url);
 
       this.showToast("Backup exportado com sucesso");
+    },
+    toggleEditMode() {
+      this.editLibraryMode = !this.editLibraryMode;
+
+      this.showToast(
+        this.editLibraryMode ? "Modo edição ativado" : "Modo edição desativado",
+      );
+    },
+
+    onLibraryCardClick(card) {
+      if (this.editLibraryMode) {
+        this.openEditCard(card);
+
+        return;
+      }
+
+      this.quickAdd(card);
+    },
+
+    openEditCard(card) {
+      this.editLibraryMode = false;
+
+      this.editMode = true;
+
+      this.editingCardId = card.id;
+
+      this.createForm = {
+        frontText: card.frontText || "",
+        backText: card.backText || "",
+
+        category: card.category || "",
+
+        categoryColor:
+          this.getCategory(card.category)?.color || this.randomColor(),
+
+        newCategory: "",
+
+        tags: [...(card.tags || [])],
+
+        newTag: "",
+
+        newTagColor: this.randomColor(),
+
+        search: "",
+
+        selectedImage: card.image || "",
+      };
+
+      this.showCreateModal = true;
+    },
+
+    updateCard() {
+      const card = this.cards.find((c) => c.id === this.editingCardId);
+
+      if (!card) {
+        this.showToast("Cartão não encontrado");
+        return;
+      }
+
+      card.frontText = this.createForm.frontText.trim();
+
+      card.backText = this.createForm.backText.trim();
+
+      card.category = this.createForm.category;
+
+      card.tags = [...this.createForm.tags];
+
+      card.image = this.createForm.selectedImage;
+
+      this.closeCreateModal();
+
+      this.showToast("Cartão atualizado com sucesso");
+    },
+
+    closeCreateModal() {
+      this.showCreateModal = false;
+
+      this.editMode = false;
+
+      this.editingCardId = null;
+
+      this.iconResults = [];
+
+      this.selectedTagToAdd = "";
+
+      this.resetCreateForm();
     },
   };
 }
