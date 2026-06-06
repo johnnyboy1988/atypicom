@@ -30,6 +30,10 @@ function aacApp() {
       createTag: true,
       createCategory: true,
       editCard: false,
+      iconProviders: {
+        iconify: true,
+        openmoji: true,
+      },
     },
     drag: {
       active: false,
@@ -444,8 +448,34 @@ function aacApp() {
         await this.wait(50);
       }
     },
+    async searchIconify(query) {
+      const response = await fetch(
+        `https://api.iconify.design/search?query=${encodeURIComponent(query)}&limit=60`,
+      );
+
+      if (!response.ok) {
+        throw new Error("Erro Iconify");
+      }
+
+      const data = await response.json();
+
+      return (data.icons || []).map((iconName) => ({
+        source: "iconify",
+        name: iconName,
+        url: `https://api.iconify.design/${iconName}.svg`,
+      }));
+    },
     async searchIcons() {
-      const query = this.createForm.search.trim().toLowerCase();
+      if (
+        !this.configMode.iconProviders.iconify &&
+        !this.configMode.iconProviders.openmoji
+      ) {
+        this.showToast(
+          "Selecione ao menos uma biblioteca de ícones"
+        );
+        return;
+      }
+      const query = this.createForm.search.trim();
 
       if (!query) {
         this.showToast("Digite algo para buscar");
@@ -455,38 +485,70 @@ function aacApp() {
       this.loadingIcons = true;
 
       try {
-        const response = await fetch(
-          `https://api.iconify.design/search?query=${encodeURIComponent(query)}&limit=60`,
-        );
+        const promises = [];
 
-        if (!response.ok) {
-          throw new Error("Erro API");
+        if (this.configMode.iconProviders.iconify) {
+          promises.push(this.searchIconify(query));
         }
 
-        const data = await response.json();
-
-        /*
-              transforma resultados
-            */
-
-        this.iconResults = (data.icons || []).map((iconName) => ({
-          name: iconName,
-
-          url: `https://api.iconify.design/${iconName}.svg`,
-        }));
-
-        if (!this.iconResults.length) {
-          this.showToast("Nenhum ícone encontrado");
+        if (this.configMode.iconProviders.openmoji) {
+          promises.push(this.searchOpenMoji(query));
         }
-      } catch (e) {
-        console.error(e);
 
-        this.showToast("Erro ao buscar ícones");
+        const results = await Promise.all(promises);
+
+        this.iconResults = results.flat();
+
+        const merged = [...openMojiResults, ...iconifyResults];
+
+        this.iconResults = merged;
+      } catch (err) {
+        console.error(err);
+
+        this.showToast("Erro ao buscar imagens");
       } finally {
         this.loadingIcons = false;
       }
     },
+    async searchOpenMoji(query) {
+      await this.loadOpenMoji();
 
+      const q = query.toLowerCase();
+
+      return this.openMojiIndex
+        .filter((item) => {
+          const annotation = (item.annotation || "").toLowerCase();
+
+          const tags = Array.isArray(item.tags)
+            ? item.tags.join(" ").toLowerCase()
+            : String(item.tags || "").toLowerCase();
+
+          const keywords = Array.isArray(item.keywords)
+            ? item.keywords.join(" ").toLowerCase()
+            : String(item.keywords || "").toLowerCase();
+
+          return (
+            annotation.includes(q) || tags.includes(q) || keywords.includes(q)
+          );
+        })
+        .slice(0, 30)
+        .map((item) => ({
+          source: "openmoji",
+          name: item.annotation,
+          url: `https://cdn.jsdelivr.net/npm/openmoji@latest/color/svg/${item.hexcode}.svg`,
+        }));
+    },
+    async loadOpenMoji() {
+      if (this.openMojiIndex) {
+        return;
+      }
+
+      const response = await fetch(
+        "https://raw.githubusercontent.com/hfg-gmuend/openmoji/master/data/openmoji.json",
+      );
+
+      this.openMojiIndex = await response.json();
+    },
     wait(ms) {
       return new Promise((r) => setTimeout(r, ms));
     },
@@ -702,9 +764,7 @@ function aacApp() {
       this.editMode = !this.editMode;
 
       this.showToast(
-        this.editMode
-          ? "Modo edição ativado"
-          : "Modo edição desativado"
+        this.editMode ? "Modo edição ativado" : "Modo edição desativado",
       );
     },
 
@@ -717,10 +777,10 @@ function aacApp() {
 
       this.quickAdd(card);
     },
-openCreateModal() {
-  this.closeCreateModal();
-  this.showCreateModal = true;
-},
+    openCreateModal() {
+      this.closeCreateModal();
+      this.showCreateModal = true;
+    },
     openEditCard(card) {
       this.editMode = true;
 
