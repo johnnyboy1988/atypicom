@@ -11,7 +11,6 @@ function aacApp() {
     filterMode: "categories",
 
     showCreateModal: false,
-    editLibraryMode: false,
 
     editMode: false,
 
@@ -700,15 +699,17 @@ function aacApp() {
       this.showToast("Backup exportado com sucesso");
     },
     toggleEditMode() {
-      this.editLibraryMode = !this.editLibraryMode;
+      this.editMode = !this.editMode;
 
       this.showToast(
-        this.editLibraryMode ? "Modo edição ativado" : "Modo edição desativado",
+        this.editMode
+          ? "Modo edição ativado"
+          : "Modo edição desativado"
       );
     },
 
     onLibraryCardClick(card) {
-      if (this.editLibraryMode) {
+      if (this.editMode) {
         this.openEditCard(card);
 
         return;
@@ -716,10 +717,11 @@ function aacApp() {
 
       this.quickAdd(card);
     },
-
+openCreateModal() {
+  this.closeCreateModal();
+  this.showCreateModal = true;
+},
     openEditCard(card) {
-      this.editLibraryMode = false;
-
       this.editMode = true;
 
       this.editingCardId = card.id;

@@ -73,13 +73,7 @@
          p-2
          shadow-[0_10px_24px_rgba(15,23,42,.08)]" :class="editMode
     ? 'ring-4 ring-amber-400 cursor-pointer'
-    : ''" @pointerdown="!editMode && startDragFromLibrary($event,card)" @click="
-    if(editMode){
-      openEditCard(card);
-    }else{
-      quickAdd(card);
-    }
-  " :style="`
+    : ''" @pointerdown="!editMode && startDragFromLibrary($event,card)" @click="onLibraryCardClick(card)" :style="`
     background:linear-gradient(
       180deg,
       ${getCategory(card.category)?.color || '#E2E8F0'} 0%,
