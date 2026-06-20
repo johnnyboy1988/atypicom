@@ -1,4 +1,23 @@
 <!-- COMPOSER -->
+<style>
+  @keyframes speakingPulse {
+    0% {
+      transform: scale(1);
+    }
+
+    50% {
+      transform: scale(1.06);
+    }
+
+    100% {
+      transform: scale(1);
+    }
+  }
+
+  .aac-speaking {
+    animation: speakingPulse .9s ease-in-out infinite;
+  }
+</style>
 
 <section class="relative flex flex-col
                flex-1
@@ -61,16 +80,35 @@
     <!-- PHRASE CARDS -->
 
     <template x-for="(item,index) in phrase" :key="item.uid">
-
       <div data-gjs-name="Phrase Card Wrapper" class="relative overflow-hidden
          rounded-[18px] md:rounded-[22px]
          bg-white
          border-[3px]
          shadow-[0_10px_24px_rgba(15,23,42,.08)]
          p-2.5 md:p-3
-         transition-all duration-200" :style="`
-    background:linear-gradient(180deg, ${getCategory(item.category)?.color} 0%, #ffffff 100%);
+         transition-all duration-300" :class="playingUid === item.uid ? 'aac-speaking z-10' : ''" :style="`
+    background:linear-gradient(
+      180deg,
+      ${getCategory(item.category)?.color} 0%,
+      #ffffff 100%
+    );
+
     border-color:${getCategory(item.category)?.color || '#CBD5E1'};
+
+    ${
+      playingUid === item.uid
+        ? `
+          transform:scale(1.08);
+          box-shadow:
+            0 0 0 4px ${getCategory(item.category)?.color || '#6366F1'},
+            0 0 25px ${getCategory(item.category)?.color || '#6366F1'},
+            0 0 60px ${getCategory(item.category)?.color || '#6366F1'};
+        `
+        : `
+          box-shadow:
+            0 10px 24px rgba(15,23,42,.08);
+        `
+    }
   `">
 
         <!-- REMOVE -->

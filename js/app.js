@@ -470,9 +470,7 @@ function aacApp() {
         !this.configMode.iconProviders.iconify &&
         !this.configMode.iconProviders.openmoji
       ) {
-        this.showToast(
-          "Selecione ao menos uma biblioteca de ícones"
-        );
+        this.showToast("Selecione ao menos uma biblioteca de ícones");
         return;
       }
       const query = this.createForm.search.trim();
