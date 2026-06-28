@@ -465,49 +465,54 @@ function aacApp() {
         url: `https://api.iconify.design/${iconName}.svg`,
       }));
     },
-    async searchIcons() {
-      if (
+async searchIcons() {
+
+    if (
         !this.configMode.iconProviders.iconify &&
         !this.configMode.iconProviders.openmoji
-      ) {
+    ) {
         this.showToast("Selecione ao menos uma biblioteca de ícones");
         return;
-      }
-      const query = this.createForm.search.trim();
+    }
 
-      if (!query) {
+    const query = this.createForm.search.trim();
+
+    if (!query) {
         this.showToast("Digite algo para buscar");
         return;
-      }
+    }
 
-      this.loadingIcons = true;
+    this.loadingIcons = true;
 
-      try {
+    try {
+
         const promises = [];
 
         if (this.configMode.iconProviders.iconify) {
-          promises.push(this.searchIconify(query));
+            promises.push(this.searchIconify(query));
         }
 
         if (this.configMode.iconProviders.openmoji) {
-          promises.push(this.searchOpenMoji(query));
+            promises.push(this.searchOpenMoji(query));
         }
 
         const results = await Promise.all(promises);
 
         this.iconResults = results.flat();
 
-        const merged = [...openMojiResults, ...iconifyResults];
+    } catch (err) {
 
-        this.iconResults = merged;
-      } catch (err) {
         console.error(err);
 
         this.showToast("Erro ao buscar imagens");
-      } finally {
+
+    } finally {
+
         this.loadingIcons = false;
-      }
-    },
+
+    }
+
+},
     async searchOpenMoji(query) {
       await this.loadOpenMoji();
 
