@@ -17,42 +17,39 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700&family=Inter:wght@400;500;600;700&display=swap"
-          rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700&family=Inter:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
 
 </head>
 
 <body class="min-h-screen bg-gradient-to-br from-indigo-50 via-slate-50 to-white">
 
-<div
-    x-data="launcher()"
-    class="min-h-screen flex flex-col items-center justify-center p-6">
+    <div x-data="launcher()" class="min-h-screen flex flex-col items-center justify-center p-6">
 
-    <!-- Logo -->
+        <!-- Logo -->
 
-    <div class="text-center mb-12">
+        <div class="text-center mb-12">
 
-        <div class="text-indigo-500 text-sm font-bold uppercase tracking-[.25em]">
-            Bem vindo ao
+            <div class="text-indigo-500 text-sm font-bold uppercase tracking-[.25em]">
+                Bem vindo ao
+            </div>
+
+            <h1 class="text-6xl font-['Baloo_2'] leading-none">
+                Atypicom
+            </h1>
+
+            <p class="mt-3 text-slate-500">
+                Escolha um módulo para iniciar
+            </p>
+
         </div>
 
-        <h1 class="text-6xl font-['Baloo_2'] leading-none">
-            Atypicom
-        </h1>
+        <!-- Aplicações -->
 
-        <p class="mt-3 text-slate-500">
-            Escolha um módulo para iniciar
-        </p>
+        <div class="w-full max-w-lg">
 
-    </div>
-
-    <!-- Aplicações -->
-
-    <div class="w-full max-w-lg">
-
-        <button
-            @click="open('phrases')"
-            class="w-full rounded-[28px]
+            <button @click="open('phrases')" class="w-full rounded-[28px]
                    bg-white
                    p-6
                    shadow-xl
@@ -60,57 +57,99 @@
                    hover:shadow-2xl
                    transition">
 
-            <div class="flex items-center gap-5">
+                <div class="flex items-center gap-5">
 
-                <div class="w-16 h-16 rounded-2xl bg-indigo-100 flex items-center justify-center text-3xl">
-                    💬
+                    <div class="w-16 h-16 rounded-2xl bg-indigo-100 flex items-center justify-center text-3xl">
+                        💬
+                    </div>
+
+                    <div class="text-left">
+
+                        <div class="font-bold text-2xl font-['Baloo_2']">
+                            Formando Frases
+                        </div>
+
+                        <div class="text-slate-500 text-sm">
+                            Comunicação visual utilizando cartões
+                        </div>
+                        <div class="text-slate-500 text-sm italic">
+                            Comunicação Aumentativa e Alternativa (AAC)
+                        </div>
+                    </div>
+
                 </div>
 
-                <div class="text-left">
 
-                    <div class="font-bold text-2xl font-['Baloo_2']">
-                        Minha Frase
+
+
+            </button>
+
+        </div>
+
+        <br>
+        <div class="w-full max-w-lg">
+
+            <button @click="open('memory')" class="w-full rounded-[28px]
+               bg-white
+               p-6
+               shadow-xl
+               hover:-translate-y-1
+               hover:shadow-2xl
+               transition">
+
+                <div class="flex items-center gap-5">
+
+                    <div class="w-16 h-16 rounded-2xl bg-indigo-100 flex items-center justify-center text-3xl">
+                        🧩
                     </div>
 
-                    <div class="text-slate-500 text-sm">
-                        Comunicação visual utilizando cartões
+                    <div class="text-left">
+
+                        <div class="font-bold text-2xl font-['Baloo_2']">
+                            Jogo da Memória
+                        </div>
+
+                        <div class="text-slate-500 text-sm">
+                            Treino cognitivo com pares de cartões
+                        </div>
+
                     </div>
-                    <div class="text-slate-500 text-sm italic">
-                        Comunicação Aumentativa e Alternativa (AAC)
-                    </div>
+
                 </div>
 
-            </div>
+            </button>
 
-        </button>
+        </div>
 
     </div>
 
-</div>
+    <script>
 
-<script>
+        function launcher() {
 
-function launcher() {
+            return {
 
-    return {
+                open(screen) {
 
-        open(screen) {
+                    switch (screen) {
 
-            switch (screen) {
+                        case "phrases":
+                            window.location.href = "modules/phrases/index.html";
+                            break;
 
-                case "phrases":
-                    window.location.href = "modules/phrases/index.html";
-                    break;
+                        case "memory":
+                            window.location.href = "modules/memory/index.html";
+                            break;
+
+                    }
+
+                }
 
             }
 
         }
 
-    }
-
-}
-
-</script>
+    </script>
 
 </body>
 

@@ -1,0 +1,76 @@
+<header class="flex-shrink-0 p-2 md:p-3">
+
+  <div class="flex items-center justify-between rounded-[24px] bg-white/85 backdrop-blur-xl p-4 shadow-[0_10px_30px_rgba(0,0,0,.06)]">
+
+    <!-- HOME -->
+    <button
+      @click="window.location.href='../../index.html'"
+      class="w-10 h-10 rounded-full bg-white/80 border border-slate-200 flex items-center justify-center shadow hover:bg-slate-100 transition"
+      title="Voltar ao AAC Studio">
+
+      🏠
+    </button>
+
+    <!-- CENTRO: STATUS DO JOGO -->
+    <div class="text-center leading-tight">
+
+      <!-- nível / modo -->
+      <div class="text-[11px] uppercase tracking-[.16em] font-bold text-indigo-500">
+        Memory Game
+      </div>
+
+      <!-- estado dinâmico -->
+      <div class="text-[22px] md:text-[26px] font-bold font-['Baloo_2']"
+           x-text="gameStatus.title || 'Pronto para jogar'">
+      </div>
+
+      <!-- subtítulo (opcional: tempo, pares, etc) -->
+      <div class="text-[11px] text-slate-500 mt-0.5"
+           x-text="gameStatus.subtitle || 'Selecione uma configuração e inicie'">
+      </div>
+
+    </div>
+
+    <!-- PAINEL DIREITO -->
+    <div class="flex items-center gap-2">
+
+      <!-- RESTART -->
+      <button
+        class="w-10 h-10 rounded-2xl bg-white/80 border border-slate-200 flex items-center justify-center shadow hover:bg-slate-100 transition"
+        title="Reiniciar"
+        @click="restartGame()">
+
+        🔄
+      </button>
+
+      <!-- SETTINGS -->
+      <button
+        class="w-10 h-10 rounded-2xl bg-white/80 border border-slate-200 flex items-center justify-center shadow hover:bg-slate-100 transition"
+        title="Configurações"
+        @click="settings.open = true">
+
+        ⚙️
+      </button>
+
+    </div>
+
+  </div>
+
+  <!-- STATUS BAR (opcional leve, estilo HUD) -->
+  <div class="mt-2 flex items-center justify-between text-xs text-slate-500 px-2">
+
+    <div>
+      🧠 Pares: <span class="font-semibold" x-text="stats.totalPairs"></span>
+    </div>
+
+    <div>
+      🎯 Encontrados: <span class="font-semibold" x-text="stats.foundPairs"></span>
+    </div>
+
+    <div>
+      ⏱ Tempo: <span class="font-semibold" x-text="stats.time"></span>
+    </div>
+
+  </div>
+
+</header>

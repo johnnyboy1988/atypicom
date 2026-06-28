@@ -1,0 +1,200 @@
+<!-- SETTINGS MODAL -->
+<div
+  x-show="settings.open"
+  x-transition.opacity
+  class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+  style="display:none">
+
+  <div
+    @click.outside="settings.open = false"
+    class="w-full max-w-5xl max-h-[92vh] overflow-hidden rounded-[32px] bg-white shadow-2xl flex flex-col">
+
+    <!-- HEADER -->
+    <div class="flex items-center justify-between border-b border-slate-100 p-5">
+
+      <div>
+
+        <div class="text-[28px] font-bold font-['Baloo_2']">
+          Configuração do jogo
+        </div>
+
+        <div class="text-sm text-slate-500">
+          Ajuste regras, filtros e inicie uma nova partida
+        </div>
+
+      </div>
+
+      <button
+        class="w-10 h-10 rounded-2xl bg-slate-100 text-xl hover:bg-slate-200 transition"
+        @click="settings.open = false">
+
+        ×
+      </button>
+
+    </div>
+
+    <!-- BODY -->
+    <div class="flex-1 overflow-auto p-5 space-y-8">
+
+      <!-- CATEGORIAS -->
+      <section>
+
+        <div class="text-sm font-bold text-slate-700 mb-3">
+          Categorias
+        </div>
+
+        <div class="flex flex-wrap gap-2">
+
+          <template x-for="category in categories" :key="category.name">
+
+            <button
+              class="rounded-full px-3 py-2 text-xs font-semibold border transition-all duration-200"
+              :style="
+                settings.categories.includes(category.name)
+                  ? `background:${category.color}; border-color:${category.color}; color:white;`
+                  : `background:white; border-color:${category.color}40; color:${category.color};`
+              "
+              :class="settings.categories.includes(category.name)
+                ? 'shadow-md scale-105'
+                : 'hover:scale-105'"
+              @click="toggleSettingCategory(category.name)">
+
+              <span x-text="category.name"></span>
+
+            </button>
+
+          </template>
+
+        </div>
+
+      </section>
+
+      <!-- TAGS -->
+      <section>
+
+        <div class="text-sm font-bold text-slate-700 mb-3">
+          Tags
+        </div>
+
+        <div class="flex flex-wrap gap-2">
+
+          <template x-for="tag in tags" :key="tag.name">
+
+            <button
+              class="rounded-full px-3 py-2 text-xs font-semibold border transition-all duration-200"
+              :style="
+                settings.tags.includes(tag.name)
+                  ? `background:${tag.color}; border-color:${tag.color}; color:white;`
+                  : `background:white; border-color:#e2e8f0; color:#334155;`
+              "
+              :class="settings.tags.includes(tag.name)
+                ? 'shadow-md'
+                : 'hover:border-slate-300'"
+              @click="toggleSettingTag(tag.name)">
+
+              <span x-text="tag.name"></span>
+
+            </button>
+
+          </template>
+
+        </div>
+
+      </section>
+
+      <!-- TAMANHO DO GRID -->
+      <section>
+
+        <div class="text-sm font-bold text-slate-700 mb-3">
+          Tamanho do tabuleiro
+        </div>
+
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+
+          <template x-for="size in [4,6,8,10]" :key="size">
+
+            <label
+              class="flex items-center justify-between rounded-2xl border p-3 cursor-pointer transition"
+              :class="settings.gridSize === size
+                ? 'border-indigo-500 bg-indigo-50'
+                : 'border-slate-200 hover:border-slate-300'">
+
+              <span class="font-semibold">
+                <span x-text="size"></span> × <span x-text="size"></span>
+              </span>
+
+              <input
+                type="radio"
+                name="gridSize"
+                :value="size"
+                x-model.number="settings.gridSize">
+
+            </label>
+
+          </template>
+
+        </div>
+
+        <!-- ajuste automático aviso -->
+        <div class="text-xs text-slate-500 mt-2">
+          O tamanho pode ser ajustado automaticamente conforme a coleção disponível.
+        </div>
+
+      </section>
+
+      <!-- MODO DE JOGO -->
+      <section>
+
+        <div class="text-sm font-bold text-slate-700 mb-3">
+          Modo de jogo
+        </div>
+
+        <div class="flex flex-col md:flex-row gap-3">
+
+          <label class="flex-1 border rounded-2xl p-3 cursor-pointer"
+                 :class="settings.mode === 'image-text'
+                   ? 'border-indigo-500 bg-indigo-50'
+                   : 'border-slate-200'">
+
+            <div class="font-semibold">Imagem + Texto</div>
+            <div class="text-xs text-slate-500">Modo completo AAC</div>
+
+            <input type="radio" value="image-text" x-model="settings.mode" class="hidden">
+          </label>
+
+        </div>
+
+      </section>
+
+      <!-- AÇÕES -->
+      <section class="pt-2">
+
+        <div class="flex flex-col md:flex-row gap-3">
+
+          <!-- START GAME -->
+          <button
+            class="flex-1 rounded-2xl bg-gradient-to-r from-indigo-600 to-teal-500 text-white py-4 font-bold shadow-xl hover:scale-[1.01] transition"
+            @click="startGameFromSettings()">
+
+            Iniciar jogo
+
+          </button>
+
+          <!-- RESET -->
+          <button
+            class="rounded-2xl bg-slate-100 px-6 py-4 font-semibold hover:bg-slate-200 transition"
+            @click="resetSettings()">
+
+            Resetar
+
+          </button>
+
+        </div>
+
+      </section>
+
+    </div>
+
+  </div>
+
+</div>

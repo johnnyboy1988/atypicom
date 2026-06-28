@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+
+  <title>Memory AAC Studio</title>
+
+  <!-- Alpine plugins -->
+  <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3.x.x/dist/cdn.min.js"></script>
+
+  <!-- Alpine -->
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Fonts (compatível com Phrases) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700&family=Inter:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
+
+</head>
+
+<body>
+
+<div
+  x-data="memoryApp()"
+  x-init="init()"
+  class="flex flex-col h-dvh overflow-hidden
+         bg-gradient-to-b from-indigo-50 via-slate-50 to-white">
+
+  <!-- HEADER -->
+  <div id="header-container" class="flex-shrink-0"></div>
+  <!-- MAIN -->
+  <main class="flex flex-col flex-1 min-h-0 overflow-hidden gap-2 md:gap-3 px-2 md:px-3">
+
+    <!-- GAME CONTROL / START PANEL (substitui composer do phrases) -->
+    <div id="game-control-container"></div>
+
+    <!-- FILTERS (mesma base visual do phrases, mas vai influenciar o jogo) -->
+    <div id="filters-container"></div>
+
+    <!-- BOARD -->
+    <div id="board-container" class="flex-1 min-h-0"></div>
+
+  </main>
+
+  <!-- SETTINGS MODAL (centro de controle do jogo) -->
+  <div id="modal-container"></div>
+
+</div>
+<!-- DATA -->
+<script src="./js/data/collections/store_fritzgeralds.js"></script>
+
+<!-- ENGINE PRIMEIRO -->
+<script src="./js/game.js"></script>
+
+<!-- HELPERS -->
+<script src="./js/filters.js"></script>
+
+<!-- APP POR ÚLTIMO -->
+<script src="./js/app.js"></script>
+
+<!-- LOADER -->
+<script src="./js/component-loader.js"></script>
+
+</body>
+</html>
