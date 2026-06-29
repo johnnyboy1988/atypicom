@@ -71,6 +71,8 @@ function aacApp() {
     async init() {
       await loadComponents();
 
+      this.Speech = window.Speech;
+
       this.createForm.categoryColor = this.randomColor();
       this.createForm.newTagColor = this.randomColor();
 
@@ -365,89 +367,24 @@ function aacApp() {
 
       return index;
     },
-
     async playPhrase() {
-      if (!this.phrase.length || this.isPlaying) {
-        return;
-      }
+      await Speech.play(
+        this.phrase,
 
-      this.isPlaying = true;
+        (item) => this.displayText(item),
 
-      for (const item of this.phrase) {
-        this.playingUid = item.uid;
+        {
+          onStart: (item) => {
+            this.playingUid = item.uid;
+          },
 
-        const text = this.displayText(item);
-
-        await this.speakText(text);
-      }
-
-      this.playingUid = null;
-      this.isPlaying = false;
+          onEnd: () => {
+            this.playingUid = null;
+          },
+        },
+      );
     },
-    playTone(seed, duration) {
-      return new Promise((resolve) => {
-        if (!this.audioCtx) {
-          setTimeout(resolve, duration);
-          return;
-        }
 
-        const osc = this.audioCtx.createOscillator();
-
-        const gain = this.audioCtx.createGain();
-
-        osc.type = "sine";
-
-        osc.frequency.value = 320 + seed * 70;
-
-        gain.gain.setValueAtTime(0.0001, this.audioCtx.currentTime);
-
-        gain.gain.exponentialRampToValueAtTime(
-          0.08,
-          this.audioCtx.currentTime + 0.02,
-        );
-
-        gain.gain.exponentialRampToValueAtTime(
-          0.0001,
-          this.audioCtx.currentTime + duration / 1000,
-        );
-
-        osc.connect(gain);
-        gain.connect(this.audioCtx.destination);
-
-        osc.start();
-
-        osc.stop(this.audioCtx.currentTime + duration / 1000);
-
-        osc.onended = () => resolve();
-      });
-    },
-    speakText(text) {
-      return new Promise((resolve) => {
-        const utterance = new SpeechSynthesisUtterance(text);
-
-        utterance.lang = "pt-BR";
-        utterance.rate = 0.8;
-        utterance.pitch = 1;
-        utterance.volume = 1;
-
-        utterance.onend = () => {
-          console.log("Terminou:", text);
-          resolve();
-        };
-
-        utterance.onerror = (e) => {
-          console.error("Erro:", e);
-          resolve();
-        };
-
-        speechSynthesis.speak(utterance);
-      });
-    },
-    async waitSpeechIdle() {
-      while (speechSynthesis.speaking || speechSynthesis.pending) {
-        await this.wait(50);
-      }
-    },
     async searchIconify(query) {
       const response = await fetch(
         `https://api.iconify.design/search?query=${encodeURIComponent(query)}&limit=60`,
@@ -465,54 +402,46 @@ function aacApp() {
         url: `https://api.iconify.design/${iconName}.svg`,
       }));
     },
-async searchIcons() {
-
-    if (
+    async searchIcons() {
+      if (
         !this.configMode.iconProviders.iconify &&
         !this.configMode.iconProviders.openmoji
-    ) {
+      ) {
         this.showToast("Selecione ao menos uma biblioteca de ícones");
         return;
-    }
+      }
 
-    const query = this.createForm.search.trim();
+      const query = this.createForm.search.trim();
 
-    if (!query) {
+      if (!query) {
         this.showToast("Digite algo para buscar");
         return;
-    }
+      }
 
-    this.loadingIcons = true;
+      this.loadingIcons = true;
 
-    try {
-
+      try {
         const promises = [];
 
         if (this.configMode.iconProviders.iconify) {
-            promises.push(this.searchIconify(query));
+          promises.push(this.searchIconify(query));
         }
 
         if (this.configMode.iconProviders.openmoji) {
-            promises.push(this.searchOpenMoji(query));
+          promises.push(this.searchOpenMoji(query));
         }
 
         const results = await Promise.all(promises);
 
         this.iconResults = results.flat();
-
-    } catch (err) {
-
+      } catch (err) {
         console.error(err);
 
         this.showToast("Erro ao buscar imagens");
-
-    } finally {
-
+      } finally {
         this.loadingIcons = false;
-
-    }
-
-},
+      }
+    },
     async searchOpenMoji(query) {
       await this.loadOpenMoji();
 

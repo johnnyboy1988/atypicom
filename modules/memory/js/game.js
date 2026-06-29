@@ -1,138 +1,97 @@
 class MemoryGame {
-
   constructor(vm) {
-
-    // referência para o Alpine (view-model)
     this.vm = vm;
 
-    // estado interno do jogo
     this.lock = false;
     this.openCards = [];
 
     this.pairs = [];
     this.cards = [];
-
   }
-
-  // =========================
-  // PAIRS
-  // =========================
 
   createPairs(collection) {
-
-    return collection.map(item => ({
+    return collection.map((item) => ({
       id: item.id,
-      text: item.text || item.name,
+      text: item.frontText ,
       image: item.image || null,
       category: item.category,
-      tags: item.tags || []
+      tags: item.tags || [],
     }));
-
   }
 
-  // =========================
-  // CARD FACTORY
-  // =========================
-
   createCard(pair) {
-
     return {
-      id: pair.id + '-' + Math.random().toString(36).slice(2),
+      id: pair.id + "-" + Math.random().toString(36).slice(2),
       pairId: pair.id,
       text: pair.text,
       image: pair.image,
 
       flipped: false,
-      matched: false
+      matched: false,
     };
-
   }
 
-  // =========================
-  // SHUFFLE
-  // =========================
-
   shuffle(array) {
-
     for (let i = array.length - 1; i > 0; i--) {
-
       const j = Math.floor(Math.random() * (i + 1));
 
       [array[i], array[j]] = [array[j], array[i]];
-
     }
 
     return array;
-
   }
 
-  // =========================
-  // BUILD GAME
-  // =========================
+  build(collection, settings) {
+    this.reset();
 
-build(collection, settings) {
+    this.pairs = this.createPairs(collection);
 
-  this.reset();
+    const gridSize = Number(settings?.gridSize || 4);
 
-  this.pairs = this.createPairs(collection);
+    const maxCards = gridSize * gridSize;
+    const maxPairs = Math.floor(maxCards / 2);
 
-  const gridSize = Number(settings?.gridSize || 4);
+    const limitedPairs = this.pairs.slice(0, maxPairs);
 
-  // 🔥 CAPACIDADE MÁXIMA DO GRID
-  const maxCards = gridSize * gridSize;
-  const maxPairs = Math.floor(maxCards / 2);
+    const cards = this.shuffle(
+      limitedPairs.flatMap((pair) => [
+        this.createCard(pair),
+        this.createCard(pair),
+      ]),
+    );
 
-  // 🔥 corta a coleção para caber no grid
-  const limitedPairs = this.pairs.slice(0, maxPairs);
+    this.cards = cards;
 
-  const cards = this.shuffle(
-    limitedPairs.flatMap(pair => [
-      this.createCard(pair),
-      this.createCard(pair)
-    ])
-  );
-
-  this.cards = cards;
-
-  return {
-    pairs: limitedPairs,
-    cards,
-    gridSize
-  };
-}
-  // =========================
-  // GRID SIZE AUTO CALC
-  // =========================
+    return {
+      pairs: limitedPairs,
+      cards,
+      gridSize,
+    };
+  }
 
   calculateBoardSize(pairCount) {
-
     const totalCards = pairCount * 2;
 
     let best = 2;
 
     for (let size = 2; size <= 8; size += 2) {
-
       if (size * size <= totalCards) {
         best = size;
       }
-
     }
 
     return best;
-
   }
 
-  // =========================
-  // GAME LOGIC (FLIP)
-  // =========================
-
-  flip(card) {
+  async flip(card) {
 
     if (this.lock) return;
+    if (window.Speech.isPlaying) return;
     if (card.flipped || card.matched) return;
 
     card.flipped = true;
 
+    await window.Speech.speakCard(card);
     this.openCards.push(card);
 
     if (this.openCards.length < 2) return;
@@ -142,7 +101,6 @@ build(collection, settings) {
     const [a, b] = this.openCards;
 
     if (a.pairId === b.pairId) {
-
       a.matched = true;
       b.matched = true;
 
@@ -157,51 +115,33 @@ build(collection, settings) {
     }
 
     setTimeout(() => {
-
       a.flipped = false;
       b.flipped = false;
 
       this.openCards = [];
       this.lock = false;
-
     }, 800);
-
   }
 
-  // =========================
-  // WIN CONDITION
-  // =========================
-
   checkWin() {
-
     const total = this.vm.stats.totalPairs;
     const found = this.vm.stats.foundPairs;
 
     if (found >= total) {
-
-      this.vm.gameStatus.title = 'Parabéns!';
-      this.vm.gameStatus.subtitle = 'Você completou o jogo';
+      this.vm.gameStatus.title = "Parabéns!";
+      this.vm.gameStatus.subtitle = "Você completou o jogo";
 
       this.lock = true;
-
     }
-
   }
 
-  // =========================
-  // RESET GAME ENGINE
-  // =========================
-
   reset() {
-
     this.lock = false;
     this.openCards = [];
 
     this.pairs = [];
     this.cards = [];
-
   }
-
 }
 
 window.MemoryGame = MemoryGame;
