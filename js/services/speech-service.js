@@ -28,32 +28,46 @@ class SpeechService {
       this.isPlaying = false;
     }
   }
-  speak(text, options = {}) {
+ speak(text, options = {}) {
+
+    if (this.isPlaying) {
+        return Promise.resolve(false);
+    }
+
+    this.isPlaying = true;
+
     return new Promise((resolve) => {
-      speechSynthesis.cancel();
 
-      const utterance = new SpeechSynthesisUtterance(text);
+        const utterance = new SpeechSynthesisUtterance(text);
 
-      utterance.lang = options.lang ?? "pt-BR";
-      utterance.rate = options.rate ?? 0.8;
-      utterance.pitch = options.pitch ?? 1;
-      utterance.volume = options.volume ?? 1;
+        utterance.lang = options.lang ?? "pt-BR";
+        utterance.rate = options.rate ?? 0.8;
+        utterance.pitch = options.pitch ?? 1;
+        utterance.volume = options.volume ?? 1;
 
-      utterance.onend = () => {
-        console.log("Terminou:", text);
+        const finish = () => {
+            this.isPlaying = false;
+            resolve(true);
+        };
 
-        resolve();
-      };
+        utterance.onend = finish;
 
-      utterance.onerror = (err) => {
-        console.error("Erro:", err);
+        utterance.onerror = (e) => {
 
-        resolve();
-      };
+            this.isPlaying = false;
 
-      speechSynthesis.speak(utterance);
+            if (e.error !== "interrupted") {
+                console.error(e);
+            }
+
+            resolve(false);
+        };
+
+        speechSynthesis.speak(utterance);
+
     });
-  }
+
+}
 
   async waitIdle() {
     while (speechSynthesis.speaking || speechSynthesis.pending) {

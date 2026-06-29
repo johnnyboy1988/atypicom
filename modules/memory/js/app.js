@@ -14,7 +14,11 @@ function memoryApp() {
       gridSize: 4,
       mode: "image-text",
     },
-
+celebration: {
+    show: false,
+    title: "",
+    subtitle: ""
+},
     stats: {
       totalPairs: 0,
       foundPairs: 0,
@@ -123,5 +127,18 @@ function memoryApp() {
     flipCard(card) {
       this.game.flip(card);
     },
+    async celebrate(title, subtitle) {
+
+    this.celebration.title = title;
+    this.celebration.subtitle = subtitle;
+    this.celebration.show = true;
+
+    await window.Speech.speak("Parabéns! Você completou o jogo!");
+
+    setTimeout(() => {
+        this.celebration.show = false;
+    }, 3500);
+
+},
   };
 }
