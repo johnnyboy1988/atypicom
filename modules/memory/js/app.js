@@ -14,15 +14,16 @@ function memoryApp() {
       gridSize: 4,
       mode: "image-text",
     },
-celebration: {
-    show: false,
-    title: "",
-    subtitle: ""
-},
+    celebration: {
+      show: false,
+      title: "",
+      subtitle: "",
+    },
     stats: {
       totalPairs: 0,
       foundPairs: 0,
       time: "00:00",
+      attempts: 0,
     },
 
     gameStatus: {
@@ -91,6 +92,7 @@ celebration: {
         totalPairs: 0,
         foundPairs: 0,
         time: "00:00",
+        attempts: 0,
       };
 
       // reset status
@@ -128,17 +130,15 @@ celebration: {
       this.game.flip(card);
     },
     async celebrate(title, subtitle) {
+      this.celebration.title = title;
+      this.celebration.subtitle = subtitle;
+      this.celebration.show = true;
 
-    this.celebration.title = title;
-    this.celebration.subtitle = subtitle;
-    this.celebration.show = true;
+      await window.Speech.speak("Parabéns! Você completou o jogo!");
 
-    await window.Speech.speak("Parabéns! Você completou o jogo!");
-
-    setTimeout(() => {
+      setTimeout(() => {
         this.celebration.show = false;
-    }, 3500);
-
-},
+      }, 3500);
+    },
   };
 }

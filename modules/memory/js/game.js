@@ -146,6 +146,8 @@ async flip(card) {
         return;
     }
 
+    this.vm.stats.attempts++;
+
     const [a, b] = this.openCards;
 
     if (a.pairId === b.pairId) {
