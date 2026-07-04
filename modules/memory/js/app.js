@@ -13,6 +13,7 @@ function memoryApp() {
       tags: [],
       gridSize: 4,
       mode: "image-text",
+      useCategoryColors: true,
     },
     celebration: {
       show: false,
@@ -72,6 +73,11 @@ function memoryApp() {
       this.gameStatus.subtitle = `${result.pairs.length} pares`;
 
       this.settings.open = false;
+    },
+    getCategoryColor(categoryName) {
+      return (
+        this.categories.find((c) => c.name === categoryName)?.color || "#CBD5E1"
+      );
     },
     reset() {
       // reset UI state
