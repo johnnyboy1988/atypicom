@@ -3,7 +3,6 @@ function memoryApp() {
 
     cards: [],
     visibleCards: [],
-
     settings: {
       open: false,
       categories: [],
