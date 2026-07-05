@@ -22,7 +22,7 @@ window.AACStore = {
       id: 3,
       category: "Lugares",
       tags: ["Casa", "Rotina"],
-      image: "https://cdn-icons-png.flaticon.com/512/619/619034.png",
+      image: "https://img.icons8.com/?size=100&id=SL1Q0YmE4CA0&format=png&color=000000",
       frontText: "Banheiro",
       backText: "Ir ao banheiro",
     },

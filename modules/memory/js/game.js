@@ -15,7 +15,7 @@ class MemoryGame {
   }
 
   createPairs(collection) {
-    return collection.map((item) => ({
+    return this.shuffle([...collection]).map((item) => ({
       id: item.id,
       text: item.frontText,
       image: item.image || null,
@@ -150,7 +150,6 @@ class MemoryGame {
     this.lock = true;
 
     await this.vm.celebrate("🎉 Parabéns!", "Você completou o jogo!");
-
   }
 
   reset() {
