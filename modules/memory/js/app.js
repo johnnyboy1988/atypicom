@@ -1,8 +1,5 @@
 function memoryApp() {
   return {
-    // =========================
-    // STATE GLOBAL (UI)
-    // =========================
 
     cards: [],
     visibleCards: [],
