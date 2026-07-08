@@ -85,16 +85,14 @@
          bg-white
          border-[3px]
          shadow-[0_10px_24px_rgba(15,23,42,.08)]
-         p-2.5 md:p-3
+         p-2 md:p-2.5
          transition-all duration-300" :class="playingUid === item.uid ? 'aac-speaking z-10' : ''" :style="`
     background:linear-gradient(
-      180deg,
+      135deg,
       ${getCategory(item.category)?.color} 0%,
-      #ffffff 100%
+      #ffffff 70%
     );
-
     border-color:${getCategory(item.category)?.color || '#CBD5E1'};
-
     ${
       playingUid === item.uid
         ? `
@@ -111,75 +109,71 @@
     }
   `">
 
-        <!-- REMOVE -->
-
-        <button class="absolute top-2 right-2 flex items-center justify-center
-             w-[24px] h-[24px]
-             rounded-[8px]
-             bg-white/90
-             text-sm font-bold z-20" @click="removeFromPhrase(index)">
+        <!-- REMOVE BUTTON -->
+        <button class="absolute top-1.5 right-1.5 flex items-center justify-center
+         w-[20px] h-[20px] md:w-[24px] md:h-[24px]
+         rounded-[6px] md:rounded-[8px]
+         bg-white/90 hover:bg-white
+         text-sm font-bold z-20 
+         transition-all duration-200" @click="removeFromPhrase(index)">
           ×
         </button>
 
-        <!-- IMAGE -->
+        <!-- CONTEÚDO PRINCIPAL - Layout Horizontal -->
+        <div class="flex items-center gap-2 md:gap-3">
 
-        <div class="overflow-hidden rounded-[14px]
-             w-[46px] h-[46px]
-             md:w-[58px] md:h-[58px]
-             mb-2">
+          <!-- IMAGE -->
+          <div class="flex-shrink-0 overflow-hidden rounded-[12px] md:rounded-[14px]
+           w-[40px] h-[40px] md:w-[50px] md:h-[50px]">
+            <img class="object-cover w-full h-full" :src="item.image">
+          </div>
 
-          <img class="object-cover w-full h-full" :src="item.image">
-
-        </div>
-
-        <!-- TITLE -->
-
-        <div class="text-[15px] md:text-[20px]
-             leading-none font-bold
-             font-['Baloo_2']
-             mb-2" x-text="displayText(item)">
-        </div>
-
-        <!-- CATEGORY -->
-
-        <div class="mb-2">
-
-          <span class="inline-flex items-center rounded-full
-               px-2 py-1
-               text-[8px] md:text-[10px]
-               font-bold uppercase tracking-[.08em]" :style="`
-          background:${getCategory(item.category)?.color || '#CBD5E1'}20;
-          color:${getCategory(item.category)?.color || '#64748B'};
-        `" x-text="item.category">
-          </span>
-
-        </div>
-
-        <!-- TAGS -->
-
-        <div class="flex flex-wrap gap-1">
-
-          <template x-for="tagName in (item.tags || []).slice(0,2)" :key="tagName">
-            <div class="px-2 py-1 rounded-full
-                 text-[8px] md:text-[9px]
-                 font-semibold" :style="`
-            background:${getTag(tagName)?.color || '#E2E8F0'}30;
-            color:${getTag(tagName)?.color || '#475569'};
-          `" x-text="tagName">
+          <!-- TEXTO E CATEGORIA -->
+          <div class="flex-1 min-w-0">
+            <!-- TITLE -->
+            <div class="text-[14px] md:text-[18px] 
+             leading-tight font-bold
+             font-['Baloo_2'] 
+             truncate" x-text="displayText(item)">
             </div>
 
-          </template>
+            <!-- CATEGORY BADGE - Movida para lado do texto -->
+            <div class="mt-0.5">
+              <span class="inline-flex items-center rounded-full
+               px-1.5 py-0.5 md:px-2 md:py-0.5
+               text-[7px] md:text-[9px]
+               font-bold uppercase tracking-[.08em]" :style="`
+            background:${getCategory(item.category)?.color || '#CBD5E1'}25;
+            color:${getCategory(item.category)?.color || '#64748B'};
+            border: 1px solid ${getCategory(item.category)?.color || '#CBD5E1'}40;
+          `" x-text="item.category">
+              </span>
+            </div>
+          </div>
+
+          <!-- TAGS - Movido para o lado direito -->
+          <div class="flex-shrink-0 flex flex-col gap-0.5">
+            <template x-for="tagName in (item.tags || []).slice(0,2)" :key="tagName">
+              <div class="px-1.5 py-0.5 rounded-full
+               text-[6px] md:text-[8px]
+               font-semibold whitespace-nowrap
+               text-center" :style="`
+            background:${getTag(tagName)?.color || '#E2E8F0'}30;
+            color:${getTag(tagName)?.color || '#475569'};
+            border: 1px solid ${getTag(tagName)?.color || '#CBD5E1'}30;
+          `" x-text="tagName">
+              </div>
+            </template>
+          </div>
 
         </div>
 
         <!-- OVERLAY -->
-
         <button class="absolute inset-0 opacity-0" @pointerdown="startDragFromPhrase($event,index)"
           @click="flipCard(item.uid)">
         </button>
 
       </div>
-
     </template>
 
   </div>

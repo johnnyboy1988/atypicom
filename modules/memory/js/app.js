@@ -1,6 +1,5 @@
 function memoryApp() {
   return {
-
     cards: [],
     visibleCards: [],
     settings: {
@@ -34,21 +33,90 @@ function memoryApp() {
     // engine do jogo (classe)
     game: null,
     async init() {
-      console.log("[Memory] init");
 
       await loadComponents();
 
-      this.categories = window.CARD_CATEGORIES || [];
-      this.tags = window.CARD_TAGS || [];
+      const collectionData = this.extractCollectionData();
 
-      // store única (overwrite)
+      this.categories = collectionData.categories;
+      this.tags = collectionData.tags;
+      this.cards = collectionData.cards;
+
       this.activeCollection = window.AACStore || null;
 
       this.game = new MemoryGame(this);
 
       this.resetGameState();
     },
+    extractCollectionData() {
+      const collection = this.activeCollection;
 
+      if (!collection) {
+        console.warn("[Memory] Nenhuma coleção ativa encontrada");
+        return { categories: [], tags: [], cards: [] };
+      }
+
+      const categories = collection.categories || [];
+
+      let tags = [];
+
+      if (collection.tags && collection.tags.length > 0) {
+        tags = collection.tags;
+      } else {
+        const tagSet = new Set();
+        collection.cards.forEach((card) => {
+          if (card.tags && Array.isArray(card.tags)) {
+            card.tags.forEach((tag) => tagSet.add(tag));
+          }
+        });
+
+        if (tagSet.size > 0) {
+          tags = Array.from(tagSet);
+        } else {
+          tags = categories.map((cat) => cat.name);
+        }
+      }
+
+      const cards = collection.cards || [];
+
+      return { categories, tags, cards };
+    },
+    getCategoryWithColor(categoryName) {
+      const category = this.categories.find((cat) => cat.name === categoryName);
+      return category || { name: categoryName, color: "#CCCCCC" };
+    },
+
+    getColorForCategory(categoryName) {
+      const category = this.getCategoryWithColor(categoryName);
+      return category.color;
+    },
+    getCardsWithColors() {
+      return this.cards.map((card) => ({
+        ...card,
+        color: this.getColorForCategory(card.category),
+      }));
+    },
+    getCardsByCategory() {
+      const grouped = {};
+
+      this.cards.forEach((card) => {
+        if (!grouped[card.category]) {
+          grouped[card.category] = [];
+        }
+        grouped[card.category].push(card);
+      });
+
+      return grouped;
+    },
+    getCardsByTag(tagName) {
+      return this.cards.filter(
+        (card) => card.tags && card.tags.includes(tagName),
+      );
+    },
+
+    getCardsByCategoryName(categoryName) {
+      return this.cards.filter((card) => card.category === categoryName);
+    },
     // =========================
     // GAME CONTROL
     // =========================

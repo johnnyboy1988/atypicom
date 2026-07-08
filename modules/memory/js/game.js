@@ -32,6 +32,7 @@ class MemoryGame {
 
       text: pair.text,
       image: pair.image,
+      category: pair.category,
 
       flipped: false,
       matched: false,

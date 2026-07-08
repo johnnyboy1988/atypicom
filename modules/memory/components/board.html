@@ -68,33 +68,33 @@
                   ❓
                 </div>
               </template>
+              <template x-if="card.flipped || card.matched">
+                <div
+                  class="flex flex-col items-center justify-center text-center p-1 md:p-2 w-full h-full rounded-2xl transition-colors"
+                  :style="settings.useCategoryColors
+                    ? {
+                        backgroundColor: getCategoryColor(card.category) + '33',
+                        color: '#1e293b',
+                        border: `2px solid ${getCategoryColor(card.category)}`
+                      }
+                    : {
+                        backgroundColor: '#fff',
+                        color: '#334155'
+                      }">
 
-              <!-- BACK -->
-<template x-if="card.flipped || card.matched">
-  <div
-    class="flex flex-col items-center justify-center text-center p-1 md:p-2 w-full h-full rounded-2xl transition-colors"
-    :style="settings.useCategoryColors
-    ? {
-        backgroundColor: getCategoryColor(card.category),
-        color: '#fff'
-      }
-    : {
-        backgroundColor: '#fff',
-        color: '#334155'
-      }">
+                  <template x-if="card.image">
+                    <img :src="card.image" class="w-8 h-8 md:w-14 md:h-14 lg:w-20 lg:h-20 object-contain mb-0.5 md:mb-1"
+                      :class="{
+                        'w-10 h-10 md:w-16 md:h-16 lg:w-24 lg:h-24': !card.text || card.text.length < 3
+                      }">
+                  </template>
 
-    <template x-if="card.image">
-      <img
-        :src="card.image"
-        class="w-6 h-6 md:w-10 md:h-10 lg:w-14 lg:h-14 object-contain mb-1">
-    </template>
+                  <div class="text-[10px] md:text-sm lg:text-base font-bold leading-tight break-words mt-0.5">
+                    <span x-text="card.text"></span>
+                  </div>
 
-    <div class="text-[10px] md:text-sm lg:text-base font-bold leading-tight break-words">
-      <span x-text="card.text"></span>
-    </div>
-
-  </div>
-</template>
+                </div>
+              </template>
 
             </button>
 
