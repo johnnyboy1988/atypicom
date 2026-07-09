@@ -39,7 +39,44 @@
             <div class="text-[22px] font-bold font-['Baloo_2'] mb-4">
                 Configurações
             </div>
-
+            <!-- ============================================ -->
+            <!-- NOVO: MODO DE FILTRO -->
+            <!-- ============================================ -->
+            <div class="border border-slate-200 rounded-2xl p-4 bg-white mb-3">
+                <div class="text-sm font-semibold mb-3">
+                    Modo de filtro
+                </div>
+                <div class="flex gap-2">
+                    <button class="flex-1 rounded-xl py-2 px-3 font-semibold text-sm transition-all duration-200"
+                            :class="filterMode === 'AND' 
+                                ? 'bg-indigo-600 text-white shadow-md' 
+                                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
+                            @click="filterMode = 'AND'">
+                        <span class="flex items-center justify-center gap-2">
+                            <span>E</span>
+                            <span class="text-[10px] opacity-70">(todos)</span>
+                        </span>
+                    </button>
+                    <button class="flex-1 rounded-xl py-2 px-3 font-semibold text-sm transition-all duration-200"
+                            :class="filterMode === 'OR' 
+                                ? 'bg-indigo-600 text-white shadow-md' 
+                                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
+                            @click="filterMode = 'OR'">
+                        <span class="flex items-center justify-center gap-2">
+                            <span>OU</span>
+                            <span class="text-[10px] opacity-70">(qualquer)</span>
+                        </span>
+                    </button>
+                </div>
+                <div class="text-xs text-slate-500 mt-2">
+                    <span x-show="filterMode === 'AND'">
+                        🔒 Mostra apenas cards que correspondem a <strong>todas</strong> as categorias e tags selecionadas
+                    </span>
+                    <span x-show="filterMode === 'OR'">
+                        🔓 Mostra cards que correspondem a <strong>qualquer</strong> categoria ou tag selecionada
+                    </span>
+                </div>
+            </div>
             <!-- CREATE CARD -->
             <label class="flex items-center justify-between py-3 border-b">
                 <span class="font-semibold">Criar Card</span>

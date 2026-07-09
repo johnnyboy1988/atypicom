@@ -8,7 +8,7 @@ function aacApp() {
     phrase: [],
     uidCounter: 1,
 
-    filterMode: "categories",
+    filterMode: "OR",
 
     showCreateModal: false,
 
@@ -83,36 +83,74 @@ function aacApp() {
       window.addEventListener("pointerup", this.onPointerUp.bind(this));
     },
     toggleCategory(category) {
-      const idx = this.selectedCategories.indexOf(category);
-
-      if (idx >= 0) {
-        this.selectedCategories.splice(idx, 1);
+      if (this.filterMode === 'OR') {
+        if (this.selectedCategories.includes(category)) {
+          this.selectedCategories = [];
+        } else {
+          this.selectedCategories = [category];
+        }
       } else {
-        this.selectedCategories.push(category);
+        const idx = this.selectedCategories.indexOf(category);
+        if (idx >= 0) {
+          this.selectedCategories.splice(idx, 1);
+        } else {
+          this.selectedCategories.push(category);
+        }
       }
     },
 
     toggleTag(tag) {
-      const idx = this.selectedTags.indexOf(tag);
-
-      if (idx >= 0) {
-        this.selectedTags.splice(idx, 1);
+      if (this.filterMode === 'OR') {
+        if (this.selectedTags.includes(tag)) {
+          this.selectedTags = [];
+        } else {
+          this.selectedTags = [tag];
+        }
       } else {
-        this.selectedTags.push(tag);
+        const idx = this.selectedTags.indexOf(tag);
+        if (idx >= 0) {
+          this.selectedTags.splice(idx, 1);
+        } else {
+          this.selectedTags.push(tag);
+        }
       }
     },
-    get filteredCards() {
-      return this.cards.filter((card) => {
-        const categoryMatch =
-          this.selectedCategories.length === 0 ||
-          this.selectedCategories.includes(card.category);
+   get filteredCards() {
+    return this.cards.filter((card) => {
+        const hasCategories = this.selectedCategories.length > 0;
+        const hasTags = this.selectedTags.length > 0;
 
-        const tagMatch =
-          this.selectedTags.length === 0 ||
-          (card.tags || []).some((tag) => this.selectedTags.includes(tag));
-        return categoryMatch && tagMatch;
-      });
-    },
+        // Se não há filtros, mostra tudo
+        if (!hasCategories && !hasTags) {
+            return true;
+        }
+
+        // Verifica match de categoria
+        const categoryMatch = !hasCategories || 
+            this.selectedCategories.includes(card.category);
+
+        // Verifica match de tags
+        const tagMatch = !hasTags || 
+            (card.tags || []).some((tag) => this.selectedTags.includes(tag));
+
+        // Modo AND: precisa corresponder a TODOS os filtros
+        if (this.filterMode === 'AND') {
+            // Se há categorias selecionadas, precisa corresponder
+            if (hasCategories && !categoryMatch) return false;
+            // Se há tags selecionadas, precisa corresponder
+            if (hasTags && !tagMatch) return false;
+            return true;
+        }
+
+        // Modo OR: corresponde a QUALQUER filtro
+        // Se há categorias, precisa corresponder a pelo menos uma
+        if (hasCategories && categoryMatch) return true;
+        // Se há tags, precisa corresponder a pelo menos uma
+        if (hasTags && tagMatch) return true;
+        
+        return false;
+    });
+},
     getCategory(name) {
       return this.categories.find((c) => c.name === name);
     },
