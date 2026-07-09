@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+
+  <title>Jokenpô - Pedra, Papel e Tesoura</title>
+
+  <!-- Alpine -->
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* Animações */
+    @keyframes shake {
+      0%, 100% { transform: rotate(0deg); }
+      25% { transform: rotate(-15deg); }
+      75% { transform: rotate(15deg); }
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+    }
+
+    @keyframes pulse-glow {
+      0%, 100% { 
+        box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
+      }
+      50% { 
+        box-shadow: 0 0 40px rgba(99, 102, 241, 0.6);
+      }
+    }
+
+    .shake-animation {
+      animation: shake 0.5s ease-in-out;
+    }
+
+    .float-animation {
+      animation: float 2s ease-in-out infinite;
+    }
+
+    .pulse-glow {
+      animation: pulse-glow 1.5s ease-in-out infinite;
+    }
+
+    /* Scroll personalizado */
+    .choices-scroll::-webkit-scrollbar {
+      height: 6px;
+    }
+    .choices-scroll::-webkit-scrollbar-track {
+      background: rgba(226, 232, 240, 0.3);
+      border-radius: 10px;
+    }
+    .choices-scroll::-webkit-scrollbar-thumb {
+      background: #94a3b8;
+      border-radius: 10px;
+    }
+    .choices-scroll::-webkit-scrollbar-thumb:hover {
+      background: #64748b;
+    }
+
+    .choices-scroll {
+      scrollbar-width: thin;
+      scrollbar-color: #94a3b8 transparent;
+    }
+
+    /* Cartas */
+    .choice-card {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .choice-card:hover {
+      transform: translateY(-8px) scale(1.02);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    }
+    .choice-card:active {
+      transform: scale(0.95);
+    }
+
+    .choice-card.selected {
+      transform: translateY(-12px) scale(1.08);
+      box-shadow: 0 25px 50px rgba(99, 102, 241, 0.3);
+    }
+
+    /* Dropzone */
+    .dropzone-active {
+      border-color: #6366F1;
+      background: rgba(99, 102, 241, 0.08);
+    }
+
+    /* Estilos específicos para Jogador 2 */
+    .choice-card-p2 {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .choice-card-p2:hover {
+      transform: translateY(-8px) scale(1.02);
+      box-shadow: 0 20px 40px rgba(239, 68, 68, 0.15);
+    }
+    .choice-card-p2:active {
+      transform: scale(0.95);
+    }
+
+    .choice-card-p2.selected {
+      transform: translateY(-12px) scale(1.08);
+      box-shadow: 0 25px 50px rgba(239, 68, 68, 0.3);
+    }
+  </style>
+  <style>
+  /* ... estilos existentes ... */
+
+  /* Animação de "pensando" */
+  @keyframes thinking {
+    0%, 100% { transform: scale(1) rotate(0deg); }
+    25% { transform: scale(1.1) rotate(-5deg); }
+    75% { transform: scale(1.1) rotate(5deg); }
+  }
+
+  .thinking {
+    animation: thinking 0.6s ease-in-out infinite;
+  }
+
+  /* Animação de revelação */
+  @keyframes reveal {
+    0% { transform: scale(0.5) rotate(-180deg); opacity: 0; }
+    100% { transform: scale(1) rotate(0deg); opacity: 1; }
+  }
+
+  .reveal {
+    animation: reveal 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  }
+
+  /* Animação de pulso para o VS */
+  @keyframes pulse-vs {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+  }
+
+  .pulse-vs {
+    animation: pulse-vs 0.8s ease-in-out infinite;
+  }
+</style>
+</head>
+
+<body>
+
+<div x-data="jokenpoApp()" x-init="init()"
+     class="flex flex-col h-screen max-h-screen overflow-hidden
+            bg-gradient-to-b from-indigo-50 via-slate-50 to-white">
+
+  <!-- HEADER -->
+  <div id="header-container" class="flex-shrink-0"></div>
+
+  <!-- MAIN -->
+  <main class="flex flex-col flex-1 min-h-0 overflow-hidden gap-2 md:gap-3 p-2 md:px-3 md:pt-0 md:pb-3">
+    
+    <!-- ESCOLHAS DO JOGADOR 2 (topo) -->
+    <div id="choices-player2-container" class="flex-shrink-0" style="height: 120px; max-height: 140px;"></div>
+
+    <!-- ARENA (dropzone) -->
+    <div id="arena-container" class="flex-1 min-h-0"></div>
+
+    <!-- ESCOLHAS DO JOGADOR 1 (base) -->
+    <div id="choices-player1-container" class="flex-shrink-0" style="height: 120px; max-height: 140px;"></div>
+
+  </main>
+
+</div>
+
+<script src="../../js/services/speech-service.js"></script>
+<script src="./js/app.js"></script>
+<script src="./js/component-loader.js"></script>
+</body>
+
+</html>

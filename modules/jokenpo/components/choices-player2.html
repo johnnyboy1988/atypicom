@@ -1,0 +1,69 @@
+<!-- ESCOLHAS DO JOGADOR 2 -->
+<section class="flex flex-col h-full
+                rounded-[16px] md:rounded-[20px]
+                bg-white/80 backdrop-blur-xl
+                p-1.5 md:p-2
+                shadow-[0_10px_30px_rgba(0,0,0,.08)]">
+
+  <div class="flex-shrink-0 flex items-center justify-between mb-1">
+    <div class="flex items-center gap-2">
+      <span class="text-[11px] md:text-[14px] font-bold font-['Baloo_2'] text-red-500">
+        👤 Jogador 2
+      </span>
+      <span class="text-[8px] md:text-[10px] text-slate-400" x-show="twoPlayerMode">
+        (Oponente)
+      </span>
+      <span class="text-[8px] md:text-[10px] text-slate-400" x-show="!twoPlayerMode">
+        (CPU)
+      </span>
+    </div>
+    <div class="text-[8px] md:text-[10px] text-slate-400">
+      <span x-show="twoPlayerMode">Arraste para a <span class="text-red-500 font-bold">direita</span></span>
+      <span x-show="!twoPlayerMode">🤖 CPU joga sozinha</span>
+    </div>
+  </div>
+
+  <!-- CARDS - Visível apenas no modo 2 jogadores -->
+  <div class="flex-1 min-h-0 overflow-x-auto overflow-y-hidden choices-scroll"
+       x-show="twoPlayerMode">
+    <div class="flex gap-2 md:gap-3 h-full items-center">
+      
+      <template x-for="choice in choices" :key="choice.id">
+        <button class="choice-card-p2 flex-shrink-0
+                       w-[70px] md:w-[100px]
+                       p-1.5 md:p-2
+                       rounded-[12px] md:rounded-[16px]
+                       bg-white
+                       border-2 border-slate-200
+                       shadow-[0_4px_12px_rgba(0,0,0,.06)]
+                       text-center
+                       hover:border-red-400
+                       transition-all duration-200"
+                :class="selectedChoice2 !== null && selectedChoice2 === choice.id ? 'selected border-red-500' : ''"
+                @pointerdown="startDrag($event, choice, 'player2')"
+                @click="playChoice(choice, 'player2')">
+
+          <!-- Verificação segura com fallback -->
+          <div class="flex flex-col items-center">
+            <div class="text-[20px] md:text-[32px] mb-0.5" 
+                 x-text="choice ? choice.emoji : '❓'"></div>
+            <div class="text-[9px] md:text-[12px] font-bold font-['Baloo_2'] text-slate-700"
+                 x-text="choice ? choice.name : '???'"></div>
+          </div>
+
+        </button>
+      </template>
+
+    </div>
+  </div>
+
+  <!-- INDICADOR DE CPU (modo vs CPU) -->
+  <div class="flex-1 flex items-center justify-center"
+       x-show="!twoPlayerMode">
+    <div class="text-center text-slate-400">
+      <div class="text-[24px] md:text-[36px] mb-1">🤖</div>
+      <div class="text-[9px] md:text-[11px] font-medium">CPU está pronta!</div>
+    </div>
+  </div>
+
+</section>

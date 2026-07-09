@@ -1,0 +1,144 @@
+<!-- ARENA -->
+<section class="relative flex flex-col flex-1 min-h-0
+                rounded-[20px] md:rounded-[30px]
+                bg-white/85
+                p-2.5 md:p-4
+                shadow-[0_10px_30px_rgba(0,0,0,.06)]">
+
+  <!-- PLACAR -->
+  <div class="flex items-center justify-between flex-shrink-0 mb-2 md:mb-3">
+    <div class="text-center">
+      <div class="text-[10px] md:text-xs font-bold uppercase text-slate-500" 
+           x-text="twoPlayerMode ? '👤 Jogador 1' : '👤 Você'"></div>
+      <div class="text-[24px] md:text-[32px] font-bold font-['Baloo_2'] text-indigo-600" 
+           x-text="player1Score">0</div>
+    </div>
+
+    <div class="text-center">
+      <div class="text-[10px] md:text-xs font-bold uppercase text-slate-500">⚔️</div>
+      <div class="text-[14px] md:text-[18px] font-bold font-['Baloo_2'] text-slate-400" 
+           x-text="roundsPlayed">0</div>
+    </div>
+
+    <div class="text-center">
+      <div class="text-[10px] md:text-xs font-bold uppercase text-slate-500" 
+           x-text="twoPlayerMode ? '👤 Jogador 2' : '🤖 CPU'"></div>
+      <div class="text-[24px] md:text-[32px] font-bold font-['Baloo_2'] text-red-500" 
+           x-text="twoPlayerMode ? player2Score : cpuScore">0</div>
+    </div>
+  </div>
+
+  <!-- DROPZONE -->
+  <div x-ref="dropzone" 
+       class="flex-1 min-h-0
+              rounded-[18px] md:rounded-[28px]
+              border-2 border-dashed border-slate-300
+              p-2 md:p-3
+              transition-all duration-300
+              bg-[linear-gradient(to_right,rgba(148,163,184,.08)_1px,transparent_1px),linear-gradient(to_bottom,rgba(148,163,184,.08)_1px,transparent_1px)]
+              bg-[size:18px_18px] md:bg-[size:24px_24px]"
+       :class="dragOver ? 'dropzone-active border-indigo-500' : ''">
+
+    <!-- CONTEÚDO DA ARENA -->
+    <div class="flex items-center justify-center h-full gap-4 md:gap-8">
+
+      <!-- JOGADOR 1 (esquerda) -->
+      <div class="flex flex-col items-center gap-2">
+        <div class="text-[10px] md:text-xs font-bold uppercase text-slate-400">
+          <span x-text="twoPlayerMode ? 'Jogador 1' : 'Você'"></span>
+        </div>
+        <div class="w-[80px] h-[80px] md:w-[120px] md:h-[120px] 
+                    rounded-[20px] md:rounded-[28px]
+                    bg-white shadow-lg
+                    flex items-center justify-center
+                    text-[40px] md:text-[64px]
+                    transition-all duration-300"
+             :class="player1Choice && !twoPlayerMode ? 'border-4 border-indigo-400' : 
+                     player1Choice && twoPlayerMode && !isRevealing && !result ? 'border-2 border-dashed border-slate-300' :
+                     player1Choice && twoPlayerMode && (isRevealing || result) ? 'border-4 border-indigo-400' :
+                     'border-2 border-dashed border-slate-300'">
+          <!-- Modo 2 jogadores: só revela quando isRevealing ou result -->
+          <span x-show="twoPlayerMode && !isRevealing && !result && !isWaiting">❓</span>
+          <span x-show="twoPlayerMode && isWaiting && !player1Choice">❓</span>
+          <span x-show="twoPlayerMode && isWaiting && player1Choice && !player2Choice">❓</span>
+          <span x-show="twoPlayerMode && (isRevealing || result) && player1Choice" x-text="player1Choice.emoji"></span>
+          
+          <!-- Modo vs CPU: mostra imediatamente -->
+          <span x-show="!twoPlayerMode && player1Choice" x-text="player1Choice.emoji"></span>
+          <span x-show="!twoPlayerMode && !player1Choice">❓</span>
+        </div>
+        <div class="text-[12px] md:text-base font-bold font-['Baloo_2'] text-slate-600" 
+             x-text="twoPlayerMode 
+               ? (isRevealing || result ? (player1Choice ? player1Choice.name : 'Aguardando...') : (player1Choice ? '✅ Escolhido!' : 'Aguardando...'))
+               : (player1Choice ? player1Choice.name : 'Aguardando...')"></div>
+      </div>
+
+      <!-- VS / RESULTADO -->
+      <div class="flex flex-col items-center min-w-[60px]">
+        <div class="text-[20px] md:text-[32px] font-bold font-['Baloo_2'] transition-all duration-300"
+             :class="isThinking ? 'animate-pulse text-indigo-400' : 
+                     isWaiting ? 'animate-pulse text-yellow-500' :
+                     result === 'win' ? 'text-green-500' : 
+                     result === 'lose' ? 'text-red-500' : 
+                     result === 'draw' ? 'text-yellow-500' : 'text-slate-400'">
+          <span x-show="isThinking">💭</span>
+          <span x-show="isWaiting && !isThinking">⏳</span>
+          <span x-show="!isThinking && !isWaiting && result === 'win'">🏆</span>
+          <span x-show="!isThinking && !isWaiting && result === 'lose'">💔</span>
+          <span x-show="!isThinking && !isWaiting && result === 'draw'">🤝</span>
+          <span x-show="!isThinking && !isWaiting && !result">VS</span>
+        </div>
+        <div class="text-[10px] md:text-sm font-semibold text-slate-500 mt-1 text-center min-h-[20px]"
+             x-text="resultMessage"></div>
+      </div>
+
+      <!-- JOGADOR 2 / CPU (direita) -->
+      <div class="flex flex-col items-center gap-2">
+        <div class="text-[10px] md:text-xs font-bold uppercase text-slate-400">
+          <span x-text="twoPlayerMode ? 'Jogador 2' : 'CPU'"></span>
+        </div>
+        <div class="w-[80px] h-[80px] md:w-[120px] md:h-[120px] 
+                    rounded-[20px] md:rounded-[28px]
+                    bg-white shadow-lg
+                    flex items-center justify-center
+                    text-[40px] md:text-[64px]
+                    transition-all duration-300"
+             :class="twoPlayerMode 
+               ? (player2Choice && (isRevealing || result) ? 'border-4 border-red-400' : 'border-2 border-dashed border-slate-300')
+               : (cpuChoice ? 'border-4 border-red-400' : 'border-2 border-dashed border-slate-300')">
+          
+          <!-- Modo 2 Jogadores -->
+          <span x-show="twoPlayerMode && !isRevealing && !result && !isWaiting">❓</span>
+          <span x-show="twoPlayerMode && isWaiting && !player2Choice">❓</span>
+          <span x-show="twoPlayerMode && isWaiting && player2Choice && !player1Choice">❓</span>
+          <span x-show="twoPlayerMode && (isRevealing || result) && player2Choice" x-text="player2Choice.emoji"></span>
+          <span x-show="twoPlayerMode && (isRevealing || result) && !player2Choice">❓</span>
+          
+          <!-- Modo vs CPU -->
+          <span x-show="!twoPlayerMode && isThinking">🤔</span>
+          <span x-show="!twoPlayerMode && !isThinking && !cpuChoice && !result">❓</span>
+          <span x-show="!twoPlayerMode && cpuChoice" x-text="cpuChoice ? cpuChoice.emoji : '❓'"></span>
+        </div>
+        <div class="text-[12px] md:text-base font-bold font-['Baloo_2'] text-slate-600" 
+             x-text="twoPlayerMode 
+               ? (isRevealing || result ? (player2Choice ? player2Choice.name : 'Aguardando...') : (player2Choice ? '✅ Escolhido!' : 'Aguardando...'))
+               : (cpuChoice ? cpuChoice.name : (isThinking ? 'Pensando...' : 'Aguardando...'))"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- BOTÃO REINICIAR -->
+  <button class="absolute bottom-3 right-3
+                 md:bottom-[18px] md:right-[18px]
+                 px-4 py-2 md:px-6 md:py-3
+                 rounded-full
+                 bg-gradient-to-br from-indigo-600 to-teal-500
+                 text-white text-[12px] md:text-[14px] font-bold
+                 shadow-[0_16px_35px_rgba(79,70,229,.25)]
+                 hover:scale-105 transition-transform"
+          @click="resetGame()">
+    🔄 Reiniciar
+  </button>
+
+</section>
