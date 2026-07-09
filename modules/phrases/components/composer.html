@@ -1,185 +1,201 @@
 <!-- COMPOSER -->
 <style>
   @keyframes speakingPulse {
-    0% {
-      transform: scale(1);
-    }
-
-    50% {
-      transform: scale(1.06);
-    }
-
-    100% {
-      transform: scale(1);
-    }
+    0% { transform: scale(1); }
+    50% { transform: scale(1.06); }
+    100% { transform: scale(1); }
   }
 
   .aac-speaking {
     animation: speakingPulse .9s ease-in-out infinite;
   }
+
+  /* SCROLL PERSONALIZADO */
+  .composer-scroll {
+    overflow-y: auto;
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+  }
+
+  .composer-scroll::-webkit-scrollbar {
+    width: 6px;
+  }
+  .composer-scroll::-webkit-scrollbar-track {
+    background: rgba(226, 232, 240, 0.3);
+    border-radius: 10px;
+  }
+  .composer-scroll::-webkit-scrollbar-thumb {
+    background: #94a3b8;
+    border-radius: 10px;
+  }
+  .composer-scroll::-webkit-scrollbar-thumb:hover {
+    background: #64748b;
+  }
+
+  .composer-scroll {
+    scrollbar-width: thin;
+    scrollbar-color: #94a3b8 transparent;
+  }
 </style>
 
-<section class="relative flex flex-col
-               flex-1
-               min-h-0
-               overflow-hidden
-               rounded-[20px] md:rounded-[30px]
-               bg-white/85
-               p-2.5 md:p-4
-               shadow-[0_10px_30px_rgba(0,0,0,.06)]">
+<section class="flex flex-col flex-1 min-h-0
+                rounded-[20px] md:rounded-[30px]
+                bg-white/85
+                p-2.5 md:p-4
+                shadow-[0_10px_30px_rgba(0,0,0,.06)]">
 
-  <!-- TOP -->
-
+  <!-- TOP - Fixo -->
   <div class="flex items-center justify-between flex-shrink-0 mb-2 md:mb-3">
-
     <div>
-
       <div class="text-[18px] md:text-[26px] leading-none font-bold font-['Baloo_2']">
         Área de composição
       </div>
-
       <div class="hidden md:block text-sm text-slate-500">
-        Toque a arraste
+        Toque e arraste
       </div>
-
     </div>
-
     <button
-      class="px-3 py-2 rounded-xl md:rounded-2xl border border-slate-200 bg-slate-50 text-[11px] md:text-sm font-semibold"
+      class="px-3 py-2 rounded-xl md:rounded-2xl border border-slate-200 bg-slate-50 text-[11px] md:text-sm font-semibold hover:bg-slate-100 transition"
       @click="clearPhrase()">
       Limpar
     </button>
-
   </div>
 
-  <!-- DROPZONE -->
+  <!-- 
+    CONTAINER COM LIMITE DE ALTURA 
+    - max-h-[50vh] garante que nunca ultrapasse 50% da viewport
+    - overflow-hidden impede que o conteúdo vaze
+    - flex-1 min-h-0 permite que ele ocupe o espaço disponível mas com limite
+  -->
+  <div class="flex-1 min-h-0 max-h-[42vh] overflow-hidden composer-scroll">
+    <div x-ref="dropzone" 
+         class="h-full min-h-0
+                rounded-[18px] md:rounded-[28px]
+                border-2 border-dashed border-slate-300
+                p-2 md:p-3
+                transition-all duration-200
+                bg-[linear-gradient(to_right,rgba(148,163,184,.08)_1px,transparent_1px),linear-gradient(to_bottom,rgba(148,163,184,.08)_1px,transparent_1px)]
+                bg-[size:18px_18px] md:bg-[size:24px_24px]"
+         :class="drag.overDropzone ? 'border-indigo-500 bg-indigo-50/40' : ''">
 
-  <div x-ref="dropzone" class="flex-1 min-h-0 overflow-auto
-                 grid grid-cols-2 md:grid-cols-4
-                 auto-rows-max
-                 content-start
-                 gap-2 md:gap-3
-                 rounded-[18px] md:rounded-[28px]
-                 border-2 border-dashed border-slate-300
-                 p-2 md:p-3
-                 transition-all duration-200
-                 bg-[linear-gradient(to_right,rgba(148,163,184,.08)_1px,transparent_1px),linear-gradient(to_bottom,rgba(148,163,184,.08)_1px,transparent_1px)]
-                 bg-[size:18px_18px] md:bg-[size:24px_24px]"
-    :class="drag.overDropzone ? 'border-indigo-500 bg-indigo-50/40' : ''">
-
-    <!-- EMPTY -->
-
-    <template x-if="phrase.length === 0">
-
-      <div
-        class="col-span-full flex items-center justify-center w-full h-full text-center text-slate-500 text-sm md:text-base font-['Baloo_2'] p-4">
-        Arraste cartões para formar uma frase
-      </div>
-
-    </template>
-    <!-- PHRASE CARDS -->
-
-    <template x-for="(item,index) in phrase" :key="item.uid">
-      <div data-gjs-name="Phrase Card Wrapper" class="relative overflow-hidden
-         rounded-[18px] md:rounded-[22px]
-         bg-white
-         border-[3px]
-         shadow-[0_10px_24px_rgba(15,23,42,.08)]
-         p-2 md:p-2.5
-         transition-all duration-300" :class="playingUid === item.uid ? 'aac-speaking z-10' : ''" :style="`
-    background:linear-gradient(
-      135deg,
-      ${getCategory(item.category)?.color} 0%,
-      #ffffff 70%
-    );
-    border-color:${getCategory(item.category)?.color || '#CBD5E1'};
-    ${
-      playingUid === item.uid
-        ? `
-          transform:scale(1.08);
-          box-shadow:
-            0 0 0 4px ${getCategory(item.category)?.color || '#6366F1'},
-            0 0 25px ${getCategory(item.category)?.color || '#6366F1'},
-            0 0 60px ${getCategory(item.category)?.color || '#6366F1'};
-        `
-        : `
-          box-shadow:
-            0 10px 24px rgba(15,23,42,.08);
-        `
-    }
-  `">
-
-        <!-- REMOVE BUTTON -->
-        <button class="absolute top-1.5 right-1.5 flex items-center justify-center
-         w-[20px] h-[20px] md:w-[24px] md:h-[24px]
-         rounded-[6px] md:rounded-[8px]
-         bg-white/90 hover:bg-white
-         text-sm font-bold z-20 
-         transition-all duration-200" @click="removeFromPhrase(index)">
-          ×
-        </button>
-
-        <!-- CONTEÚDO PRINCIPAL - Layout Horizontal -->
-        <div class="flex items-center gap-2 md:gap-3">
-
-          <!-- IMAGE -->
-          <div class="flex-shrink-0 overflow-hidden rounded-[12px] md:rounded-[14px]
-           w-[40px] h-[40px] md:w-[50px] md:h-[50px]">
-            <img class="object-cover w-full h-full" :src="item.image">
+      <!-- GRID - Sem content-start para evitar problemas -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-3 w-full">
+        
+        <!-- EMPTY -->
+        <template x-if="phrase.length === 0">
+          <div class="col-span-full flex items-center justify-center min-h-[80px] text-center text-slate-500 text-sm md:text-base font-['Baloo_2'] p-4">
+            Arraste cartões para formar uma frase
           </div>
+        </template>
 
-          <!-- TEXTO E CATEGORIA -->
-          <div class="flex-1 min-w-0">
-            <!-- TITLE -->
-            <div class="text-[14px] md:text-[18px] 
-             leading-tight font-bold
-             font-['Baloo_2'] 
-             truncate" x-text="displayText(item)">
-            </div>
+        <!-- PHRASE CARDS -->
+        <template x-for="(item,index) in phrase" :key="item.uid">
+          <div data-gjs-name="Phrase Card Wrapper" 
+               class="relative overflow-hidden
+                      rounded-[18px] md:rounded-[22px]
+                      bg-white
+                      border-[3px]
+                      shadow-[0_10px_24px_rgba(15,23,42,.08)]
+                      p-2 md:p-2.5
+                      transition-all duration-300" 
+               :class="playingUid === item.uid ? 'aac-speaking z-10' : ''" 
+               :style="`
+          background:linear-gradient(
+            135deg,
+            ${getCategory(item.category)?.color} 0%,
+            #ffffff 70%
+          );
+          border-color:${getCategory(item.category)?.color || '#CBD5E1'};
+          ${
+            playingUid === item.uid
+              ? `
+                transform:scale(1.08);
+                box-shadow:
+                  0 0 0 4px ${getCategory(item.category)?.color || '#6366F1'},
+                  0 0 25px ${getCategory(item.category)?.color || '#6366F1'},
+                  0 0 60px ${getCategory(item.category)?.color || '#6366F1'};
+              `
+              : `
+                box-shadow:
+                  0 10px 24px rgba(15,23,42,.08);
+              `
+          }
+        `">
 
-            <!-- CATEGORY BADGE - Movida para lado do texto -->
-            <div class="mt-0.5">
-              <span class="inline-flex items-center rounded-full
-               px-1.5 py-0.5 md:px-2 md:py-0.5
-               text-[7px] md:text-[9px]
-               font-bold uppercase tracking-[.08em]" :style="`
-            background:${getCategory(item.category)?.color || '#CBD5E1'}25;
-            color:${getCategory(item.category)?.color || '#64748B'};
-            border: 1px solid ${getCategory(item.category)?.color || '#CBD5E1'}40;
-          `" x-text="item.category">
-              </span>
-            </div>
-          </div>
+            <!-- REMOVE BUTTON -->
+            <button class="absolute top-1.5 right-1.5 flex items-center justify-center
+                           w-[20px] h-[20px] md:w-[24px] md:h-[24px]
+                           rounded-[6px] md:rounded-[8px]
+                           bg-white/90 hover:bg-white
+                           text-sm font-bold z-20 
+                           transition-all duration-200" 
+                    @click="removeFromPhrase(index)">
+              ×
+            </button>
 
-          <!-- TAGS - Movido para o lado direito -->
-          <div class="flex-shrink-0 flex flex-col gap-0.5">
-            <template x-for="tagName in (item.tags || []).slice(0,2)" :key="tagName">
-              <div class="px-1.5 py-0.5 rounded-full
-               text-[6px] md:text-[8px]
-               font-semibold whitespace-nowrap
-               text-center" :style="`
-            background:${getTag(tagName)?.color || '#E2E8F0'}30;
-            color:${getTag(tagName)?.color || '#475569'};
-            border: 1px solid ${getTag(tagName)?.color || '#CBD5E1'}30;
-          `" x-text="tagName">
+            <!-- CONTEÚDO PRINCIPAL - Layout Horizontal -->
+            <div class="flex items-center gap-2 md:gap-3">
+              <!-- IMAGE -->
+              <div class="flex-shrink-0 overflow-hidden rounded-[12px] md:rounded-[14px]
+                           w-[40px] h-[40px] md:w-[50px] md:h-[50px]">
+                <img class="object-cover w-full h-full" :src="item.image">
               </div>
-            </template>
+
+              <!-- TEXTO E CATEGORIA -->
+              <div class="flex-1 min-w-0">
+                <div class="text-[14px] md:text-[18px] 
+                           leading-tight font-bold
+                           font-['Baloo_2'] 
+                           truncate" 
+                     x-text="displayText(item)">
+                </div>
+                <div class="mt-0.5">
+                  <span class="inline-flex items-center rounded-full
+                               px-1.5 py-0.5 md:px-2 md:py-0.5
+                               text-[7px] md:text-[9px]
+                               font-bold uppercase tracking-[.08em]" 
+                        :style="`
+                    background:${getCategory(item.category)?.color || '#CBD5E1'}25;
+                    color:${getCategory(item.category)?.color || '#64748B'};
+                    border: 1px solid ${getCategory(item.category)?.color || '#CBD5E1'}40;
+                  `" 
+                        x-text="item.category">
+                  </span>
+                </div>
+              </div>
+
+              <!-- TAGS -->
+              <div class="flex-shrink-0 flex flex-col gap-0.5">
+                <template x-for="tagName in (item.tags || []).slice(0,2)" :key="tagName">
+                  <div class="px-1.5 py-0.5 rounded-full
+                               text-[6px] md:text-[8px]
+                               font-semibold whitespace-nowrap
+                               text-center" 
+                       :style="`
+                    background:${getTag(tagName)?.color || '#E2E8F0'}30;
+                    color:${getTag(tagName)?.color || '#475569'};
+                    border: 1px solid ${getTag(tagName)?.color || '#CBD5E1'}30;
+                  `" 
+                       x-text="tagName">
+                  </div>
+                </template>
+              </div>
+            </div>
+
+            <!-- OVERLAY -->
+            <button class="absolute inset-0 opacity-0" 
+                    @pointerdown="startDragFromPhrase($event,index)"
+                    @click="flipCard(item.uid)">
+            </button>
+
           </div>
-
-        </div>
-
-        <!-- OVERLAY -->
-        <button class="absolute inset-0 opacity-0" @pointerdown="startDragFromPhrase($event,index)"
-          @click="flipCard(item.uid)">
-        </button>
+        </template>
 
       </div>
-    </template>
-
+    </div>
   </div>
 
-  <!-- PLAY -->
-
+  <!-- PLAY BUTTON - Fixo -->
   <button class="absolute bottom-3 right-3
                  md:bottom-[18px] md:right-[18px]
                  w-[52px] h-[52px]
@@ -187,7 +203,9 @@
                  rounded-full
                  bg-gradient-to-br from-indigo-600 to-teal-500
                  text-white text-[20px] md:text-[24px]
-                 shadow-[0_16px_35px_rgba(79,70,229,.25)]" @click="playPhrase()">
+                 shadow-[0_16px_35px_rgba(79,70,229,.25)]
+                 hover:scale-105 transition-transform" 
+          @click="playPhrase()">
     🔊
   </button>
 

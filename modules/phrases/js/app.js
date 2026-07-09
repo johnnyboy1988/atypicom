@@ -300,9 +300,6 @@ function aacApp() {
 
       if (inside) {
         if (this.drag.source === "library") {
-          if (this.phrase.length >= 5) {
-            this.showToast("Máximo de 5 cartões");
-          } else {
             const insertAt = this.drag.insertIndex ?? this.phrase.length;
 
             this.phrase.splice(
@@ -310,7 +307,6 @@ function aacApp() {
               0,
               this.createPhraseCard(this.drag.card),
             );
-          }
         } else if (this.drag.source === "phrase") {
           const item = this.phrase[this.drag.sourceIndex];
 
