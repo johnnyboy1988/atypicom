@@ -15,8 +15,8 @@
       </span>
     </div>
     <div class="text-[8px] md:text-[10px] text-slate-400">
-      <span x-show="!twoPlayerMode">Arraste para a arena</span>
-      <span x-show="twoPlayerMode">Arraste para a <span class="text-indigo-600 font-bold">esquerda</span></span>
+      <span x-show="!twoPlayerMode">Clique para jogar</span>
+      <span x-show="twoPlayerMode">Clique para escolher</span>
     </div>
   </div>
 
@@ -36,13 +36,11 @@
                        hover:border-indigo-400
                        transition-all duration-200"
                 :class="selectedChoice !== null && selectedChoice === choice.id ? 'selected border-indigo-500' : ''"
-                @pointerdown="startDrag($event, choice, 'player1')"
                 @click="playChoice(choice, 'player1')">
 
-          <!-- Verificação segura com fallback -->
           <div class="flex flex-col items-center">
             <div class="text-[20px] md:text-[32px] mb-0.5" 
-                 x-text="choice ? choice.emoji : '❓'"></div>
+                 x-text="choice ? getChoiceEmoji(choice) : '❓'"></div>
             <div class="text-[9px] md:text-[12px] font-bold font-['Baloo_2'] text-slate-700"
                  x-text="choice ? choice.name : '???'"></div>
           </div>

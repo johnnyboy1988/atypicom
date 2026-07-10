@@ -19,15 +19,14 @@
 
     <!-- PAINEL DIREITO -->
     <div class="flex items-center gap-2">
-           <button class="w-10 h-10 rounded-full bg-white/80 border border-slate-200 flex items-center justify-center shadow hover:bg-slate-100 transition"
+      <button class="w-10 h-10 rounded-full bg-white/80 border border-slate-200 flex items-center justify-center shadow hover:bg-slate-100 transition"
               @click="resetGame()">
         🔄
       </button>
-       <button class="w-10 h-10 rounded-full bg-white/80 border border-slate-200 flex items-center justify-center shadow hover:bg-slate-100 transition"
+      <button class="w-10 h-10 rounded-full bg-white/80 border border-slate-200 flex items-center justify-center shadow hover:bg-slate-100 transition"
               @click="showSettings = !showSettings">
         ⚙️
       </button>
-
     </div>
   </div>
 
@@ -67,9 +66,34 @@
         </div>
       </div>
 
-      <!-- ============================================ -->
-      <!-- NOVO: TEMPO DE EXIBIÇÃO DO RESULTADO        -->
-      <!-- ============================================ -->
+      <!-- ESTILO DOS ÍCONES -->
+      <div class="border border-slate-200 rounded-2xl p-4 bg-white mb-3">
+        <div class="text-sm font-semibold mb-3">🎨 Estilo dos ícones</div>
+        <div class="flex gap-2">
+          <button class="flex-1 rounded-xl py-2 px-3 font-semibold text-sm transition-all duration-200"
+                  :class="!useHandIcons ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
+                  @click="useHandIcons = false">
+            <span class="flex items-center justify-center gap-2">
+              <span>🪨📄✂️</span>
+              <span class="text-[10px]">Objetos</span>
+            </span>
+          </button>
+          <button class="flex-1 rounded-xl py-2 px-3 font-semibold text-sm transition-all duration-200"
+                  :class="useHandIcons ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
+                  @click="useHandIcons = true">
+            <span class="flex items-center justify-center gap-2">
+              <span>✊✋✌️</span>
+              <span class="text-[10px]">Mãos</span>
+            </span>
+          </button>
+        </div>
+        <div class="text-xs text-slate-500 mt-2">
+          <span x-show="!useHandIcons">🪨 Pedra, 📄 Papel, ✂️ Tesoura (objetos)</span>
+          <span x-show="useHandIcons">✊ Pedra, ✋ Papel, ✌️ Tesoura (mãos)</span>
+        </div>
+      </div>
+
+      <!-- TEMPO DE EXIBIÇÃO DO RESULTADO -->
       <div class="border border-slate-200 rounded-2xl p-4 bg-white mb-3">
         <div class="text-sm font-semibold mb-3">⏱️ Tempo de exibição do resultado</div>
         
@@ -84,6 +108,9 @@
           <button class="flex-1 rounded-xl py-2 px-3 font-semibold text-sm transition-all duration-200"
                   :class="clearDelay === 7000 ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
                   @click="clearDelay = 7000">7s</button>
+          <button class="flex-1 rounded-xl py-2 px-3 font-semibold text-sm transition-all duration-200"
+                  :class="clearDelay === 10000 ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
+                  @click="clearDelay = 10000">10s</button>
         </div>
         
         <!-- Input personalizado -->
@@ -153,10 +180,10 @@
           <span class="text-2xl">💡</span>
           <div>
             <span x-show="!twoPlayerMode">
-              Arraste sua escolha para a arena e veja quem vence!
+              Clique em uma opção para jogar contra a CPU!
             </span>
             <span x-show="twoPlayerMode">
-              Jogador 1 arrasta para a <span class="font-bold text-indigo-600">esquerda</span> e Jogador 2 para a <span class="font-bold text-red-500">direita</span>!
+              Jogador 1 e Jogador 2 escolhem suas jogadas!
             </span>
           </div>
         </div>

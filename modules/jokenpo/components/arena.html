@@ -28,16 +28,13 @@
     </div>
   </div>
 
-  <!-- DROPZONE -->
-  <div x-ref="dropzone" 
-       class="flex-1 min-h-0
+  <!-- ARENA -->
+  <div class="flex-1 min-h-0
               rounded-[18px] md:rounded-[28px]
               border-2 border-dashed border-slate-300
               p-2 md:p-3
-              transition-all duration-300
               bg-[linear-gradient(to_right,rgba(148,163,184,.08)_1px,transparent_1px),linear-gradient(to_bottom,rgba(148,163,184,.08)_1px,transparent_1px)]
-              bg-[size:18px_18px] md:bg-[size:24px_24px]"
-       :class="dragOver ? 'dropzone-active border-indigo-500' : ''">
+              bg-[size:18px_18px] md:bg-[size:24px_24px]">
 
     <!-- CONTEÚDO DA ARENA -->
     <div class="flex items-center justify-center h-full gap-4 md:gap-8">
@@ -57,20 +54,24 @@
                      player1Choice && twoPlayerMode && !isRevealing && !result ? 'border-2 border-dashed border-slate-300' :
                      player1Choice && twoPlayerMode && (isRevealing || result) ? 'border-4 border-indigo-400' :
                      'border-2 border-dashed border-slate-300'">
+          
           <!-- Modo 2 jogadores: só revela quando isRevealing ou result -->
           <span x-show="twoPlayerMode && !isRevealing && !result && !isWaiting">❓</span>
           <span x-show="twoPlayerMode && isWaiting && !player1Choice">❓</span>
           <span x-show="twoPlayerMode && isWaiting && player1Choice && !player2Choice">❓</span>
-          <span x-show="twoPlayerMode && (isRevealing || result) && player1Choice" x-text="player1Choice.emoji"></span>
+          <span x-show="twoPlayerMode && (isRevealing || result) && player1Choice" 
+                x-text="getChoiceEmoji(player1Choice)"></span>
           
-          <!-- Modo vs CPU: mostra imediatamente -->
-          <span x-show="!twoPlayerMode && player1Choice" x-text="player1Choice.emoji"></span>
-          <span x-show="!twoPlayerMode && !player1Choice">❓</span>
+          <!-- Modo vs CPU: SÓ MOSTRA QUANDO REVELAR (junto com a CPU) -->
+          <span x-show="!twoPlayerMode && isThinking && !player1Choice">❓</span>
+          <span x-show="!twoPlayerMode && !isThinking && !player1Choice && !cpuChoice && !result">❓</span>
+          <span x-show="!twoPlayerMode && !isThinking && player1Choice" 
+                x-text="getChoiceEmoji(player1Choice)"></span>
         </div>
         <div class="text-[12px] md:text-base font-bold font-['Baloo_2'] text-slate-600" 
              x-text="twoPlayerMode 
                ? (isRevealing || result ? (player1Choice ? player1Choice.name : 'Aguardando...') : (player1Choice ? '✅ Escolhido!' : 'Aguardando...'))
-               : (player1Choice ? player1Choice.name : 'Aguardando...')"></div>
+               : (isThinking ? 'Pensando...' : (player1Choice ? player1Choice.name : 'Aguardando...'))"></div>
       </div>
 
       <!-- VS / RESULTADO -->
@@ -111,13 +112,15 @@
           <span x-show="twoPlayerMode && !isRevealing && !result && !isWaiting">❓</span>
           <span x-show="twoPlayerMode && isWaiting && !player2Choice">❓</span>
           <span x-show="twoPlayerMode && isWaiting && player2Choice && !player1Choice">❓</span>
-          <span x-show="twoPlayerMode && (isRevealing || result) && player2Choice" x-text="player2Choice.emoji"></span>
+          <span x-show="twoPlayerMode && (isRevealing || result) && player2Choice" 
+                x-text="getChoiceEmoji(player2Choice)"></span>
           <span x-show="twoPlayerMode && (isRevealing || result) && !player2Choice">❓</span>
           
           <!-- Modo vs CPU -->
-          <span x-show="!twoPlayerMode && isThinking">🤔</span>
+          <span x-show="!twoPlayerMode && isThinking">❓</span>
           <span x-show="!twoPlayerMode && !isThinking && !cpuChoice && !result">❓</span>
-          <span x-show="!twoPlayerMode && cpuChoice" x-text="cpuChoice ? cpuChoice.emoji : '❓'"></span>
+          <span x-show="!twoPlayerMode && cpuChoice" 
+                x-text="getChoiceEmoji(cpuChoice)"></span>
         </div>
         <div class="text-[12px] md:text-base font-bold font-['Baloo_2'] text-slate-600" 
              x-text="twoPlayerMode 
@@ -127,18 +130,4 @@
 
     </div>
   </div>
-
-  <!-- BOTÃO REINICIAR -->
-  <button class="absolute bottom-3 right-3
-                 md:bottom-[18px] md:right-[18px]
-                 px-4 py-2 md:px-6 md:py-3
-                 rounded-full
-                 bg-gradient-to-br from-indigo-600 to-teal-500
-                 text-white text-[12px] md:text-[14px] font-bold
-                 shadow-[0_16px_35px_rgba(79,70,229,.25)]
-                 hover:scale-105 transition-transform"
-          @click="resetGame()">
-    🔄 Reiniciar
-  </button>
-
 </section>
