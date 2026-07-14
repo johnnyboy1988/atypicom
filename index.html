@@ -28,25 +28,19 @@
     <div x-data="launcher()" class="min-h-screen flex flex-col items-center justify-center p-6">
 
         <!-- Logo -->
-
         <div class="text-center mb-12">
-
             <div class="text-indigo-500 text-sm font-bold uppercase tracking-[.25em]">
                 Bem vindo ao
             </div>
-
             <h1 class="text-6xl font-['Baloo_2'] leading-none">
                 Atypicom
             </h1>
-
             <p class="mt-3 text-slate-500">
                 Escolha um módulo para iniciar
             </p>
-
         </div>
 
         <!-- Aplicações -->
-
         <div class="w-full max-w-lg space-y-4">
 
             <!-- Módulo 1: Formando Frases -->
@@ -59,17 +53,13 @@
                    transition">
 
                 <div class="flex items-center gap-5">
-
                     <div class="w-16 h-16 rounded-2xl bg-indigo-100 flex items-center justify-center text-3xl">
                         💬
                     </div>
-
                     <div class="text-left">
-
                         <div class="font-bold text-2xl font-['Baloo_2']">
                             Formando Frases
                         </div>
-
                         <div class="text-slate-500 text-sm">
                             Comunicação visual utilizando cartões
                         </div>
@@ -77,7 +67,6 @@
                             Comunicação Aumentativa e Alternativa (AAC)
                         </div>
                     </div>
-
                 </div>
 
             </button>
@@ -92,23 +81,17 @@
                    transition">
 
                 <div class="flex items-center gap-5">
-
                     <div class="w-16 h-16 rounded-2xl bg-indigo-100 flex items-center justify-center text-3xl">
                         🧩
                     </div>
-
                     <div class="text-left">
-
                         <div class="font-bold text-2xl font-['Baloo_2']">
                             Jogo da Memória
                         </div>
-
                         <div class="text-slate-500 text-sm">
                             Treino cognitivo com pares de cartões
                         </div>
-
                     </div>
-
                 </div>
 
             </button>
@@ -123,17 +106,13 @@
                    transition">
 
                 <div class="flex items-center gap-5">
-
                     <div class="w-16 h-16 rounded-2xl bg-indigo-100 flex items-center justify-center text-3xl">
                         ✌️
                     </div>
-
                     <div class="text-left">
-
                         <div class="font-bold text-2xl font-['Baloo_2']">
                             Pedra, Papel e Tesoura
                         </div>
-
                         <div class="text-slate-500 text-sm">
                             Jogue contra a CPU, ou contra outro jogador localmente
                         </div>
@@ -141,7 +120,34 @@
                             Divertido e interativo
                         </div>
                     </div>
+                </div>
 
+            </button>
+
+            <!-- Módulo 4: Leitor de Frases -->
+            <button @click="open('reader')" class="w-full rounded-[28px]
+                   bg-white
+                   p-6
+                   shadow-xl
+                   hover:-translate-y-1
+                   hover:shadow-2xl
+                   transition">
+
+                <div class="flex items-center gap-5">
+                    <div class="w-16 h-16 rounded-2xl bg-indigo-100 flex items-center justify-center text-3xl">
+                        📖
+                    </div>
+                    <div class="text-left">
+                        <div class="font-bold text-2xl font-['Baloo_2']">
+                            Leitor de Frases
+                        </div>
+                        <div class="text-slate-500 text-sm">
+                            Estimule a linguagem com frases prontas
+                        </div>
+                        <div class="text-slate-500 text-sm italic">
+                            Alfabetização e desenvolvimento linguístico
+                        </div>
+                    </div>
                 </div>
 
             </button>
@@ -182,6 +188,10 @@
 
                         case "jokenpo":
                             window.location.href = "modules/jokenpo/index.html";
+                            break;
+
+                        case "reader":
+                            window.location.href = "modules/reader/index.html";
                             break;
 
                     }

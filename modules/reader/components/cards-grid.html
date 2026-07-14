@@ -1,0 +1,101 @@
+<!-- CARDS GRID -->
+<section class="flex flex-col flex-1 min-h-0 h-full overflow-hidden
+                rounded-[20px] md:rounded-[30px]
+                bg-white/85
+                p-2.5 md:p-4
+                shadow-[0_10px_30px_rgba(0,0,0,.06)]">
+
+  <div class="flex-shrink-0 flex items-center justify-between mb-2">
+    <div>
+      <div class="text-[14px] md:text-[18px] font-bold font-['Baloo_2'] text-slate-700">
+        <span x-text="selectedCategory === 'Todas' ? 'Todas as frases' : selectedCategory"></span>
+        <span class="text-sm font-normal text-slate-400 ml-2"
+              x-text="'(' + filteredCards.length + ' frases)'"></span>
+      </div>
+    </div>
+    <div class="text-xs text-slate-400">
+      <span x-show="speakingId">🔊 falando...</span>
+    </div>
+  </div>
+
+  <!-- CONTAINER COM SCROLL -->
+  <div class="flex-1 min-h-0 h-0 overflow-y-auto overflow-x-hidden reader-scroll pr-1">
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4 pb-2">
+
+      <template x-for="card in filteredCards" :key="card.id">
+        <button class="phrase-card relative
+                       rounded-[18px] md:rounded-[22px]
+                       border-2 border-slate-200
+                       shadow-[0_8px_20px_rgba(0,0,0,.06)]
+                       p-3 md:p-4
+                       text-left
+                       transition-all duration-300
+                       hover:border-indigo-300
+                       flex flex-col items-center text-center"
+                :style="`
+                  background: linear-gradient(180deg, ${getCategoryColor(card.category)}15 0%, ${getCategoryColor(card.category)}08 40%, #ffffff 100%);
+                  border-color: ${getCategoryColor(card.category)}25;
+                  ${speakingId === card.id ? `box-shadow: 0 0 0 4px ${getCategoryColor(card.category)}30, 0 20px 40px rgba(0,0,0,.1); border-color: ${getCategoryColor(card.category)}` : ''}
+                `"
+                :class="speakingId === card.id ? 'speaking' : ''"
+                @click="speakCard(card)">
+
+          <!-- IMAGEM -->
+          <div class="w-12 h-12 md:w-16 md:h-16 rounded-[14px] overflow-hidden bg-white/90 shadow-sm mb-2 flex-shrink-0">
+            <img x-show="card.image" :src="card.image" class="w-full h-full object-cover" loading="lazy">
+            <div x-show="!card.image" class="w-full h-full flex items-center justify-center text-2xl text-slate-300">
+              📝
+            </div>
+          </div>
+
+          <!-- FRENTE -->
+          <div class="text-[16px] md:text-[20px] font-bold font-['Baloo_2'] text-slate-800 leading-tight"
+               x-text="card.frontText">
+          </div>
+
+          <!-- VERSO (texto completo) -->
+          <div class="text-[11px] md:text-[13px] text-slate-600 mt-1 leading-tight line-clamp-2"
+               x-text="card.backText">
+          </div>
+
+          <!-- CATEGORIA BADGE -->
+          <div class="mt-2">
+            <span class="inline-flex items-center rounded-full px-2 py-0.5 text-[8px] md:text-[10px] font-bold uppercase tracking-[.08em] bg-white/65"
+                  :style="`color:${getCategoryColor(card.category)}; border: 1px solid ${getCategoryColor(card.category)}25`"
+                  x-text="card.category">
+            </span>
+          </div>
+
+          <!-- TAGS -->
+          <div class="flex flex-wrap gap-1 mt-1.5 justify-center">
+            <template x-for="tag in (card.tags || []).slice(0,2)" :key="tag">
+              <span class="px-1.5 py-0.5 rounded-full text-[6px] md:text-[8px] font-semibold bg-white/65"
+                    :style="`color:${getTagColor(tag)}; border: 1px solid ${getTagColor(tag)}20`"
+                    x-text="tag">
+              </span>
+            </template>
+          </div>
+
+          <!-- OVERLAY DE FALA -->
+          <div x-show="speakingId === card.id"
+               class="absolute inset-0 rounded-[18px] md:rounded-[22px] flex items-center justify-center
+                      bg-white/20 backdrop-blur-[2px]">
+            <div class="text-4xl md:text-5xl animate-pulse">🔊</div>
+          </div>
+
+        </button>
+      </template>
+
+      <!-- EMPTY STATE -->
+      <template x-if="filteredCards.length === 0">
+        <div class="col-span-full flex flex-col items-center justify-center h-[200px] text-center text-slate-400">
+          <div class="text-5xl mb-3">📭</div>
+          <div class="text-lg font-bold">Nenhuma frase encontrada</div>
+          <div class="text-sm">Tente selecionar outra categoria ou tag</div>
+        </div>
+      </template>
+
+    </div>
+  </div>
+
+</section>

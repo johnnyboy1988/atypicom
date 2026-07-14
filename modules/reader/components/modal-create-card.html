@@ -1,0 +1,181 @@
+<!-- CREATE CARD MODAL -->
+<div x-show="showCreateModal" x-transition.opacity
+     class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" style="display:none">
+
+  <div @click.outside="showCreateModal = false"
+       class="w-full max-w-5xl max-h-[92vh] overflow-hidden rounded-[32px] bg-white shadow-2xl">
+
+    <!-- HEADER -->
+    <div class="flex items-center justify-between border-b border-slate-100 p-5">
+      <div>
+        <div class="text-[28px] font-bold font-['Baloo_2']">
+          Criar frase
+        </div>
+        <div class="text-sm text-slate-500">
+          Crie frases personalizadas para o leitor
+        </div>
+      </div>
+      <button class="flex items-center justify-center w-10 h-10 rounded-2xl bg-slate-100 text-xl hover:bg-slate-200 transition"
+              @click="showCreateModal = false">
+        ×
+      </button>
+    </div>
+
+    <!-- BODY -->
+    <div class="grid md:grid-cols-2 gap-6 p-5 overflow-auto max-h-[calc(92vh-88px)]">
+
+      <!-- LEFT -->
+      <div class="space-y-5">
+
+        <!-- FRONT TEXT -->
+        <div>
+          <label class="block text-sm font-semibold mb-2">
+            Texto da frente (resumo)
+          </label>
+          <input x-model="createForm.frontText" type="text" placeholder="Ex: Água"
+                 class="w-full rounded-2xl border border-slate-200 p-3 outline-none focus:border-indigo-500">
+        </div>
+
+        <!-- BACK TEXT -->
+        <div>
+          <label class="block text-sm font-semibold mb-2">
+            Frase completa (verso)
+          </label>
+          <input x-model="createForm.backText" type="text" placeholder="Ex: Quero água, por favor"
+                 class="w-full rounded-2xl border border-slate-200 p-3 outline-none focus:border-indigo-500">
+        </div>
+
+        <!-- CATEGORY -->
+        <div>
+          <label class="block text-sm font-semibold mb-2">
+            Categoria
+          </label>
+          <select x-model="createForm.category"
+                  class="w-full rounded-2xl border border-slate-200 p-3 outline-none focus:border-indigo-500">
+            <template x-for="category in categories" :key="category.name">
+              <option :value="category.name" x-text="category.name"></option>
+            </template>
+          </select>
+        </div>
+
+        <!-- TAGS -->
+        <div>
+          <label class="block text-sm font-semibold mb-2">
+            Tags
+          </label>
+          <div class="flex gap-2">
+            <select x-model="selectedTagToAdd"
+                    class="flex-1 rounded-2xl border border-slate-200 p-3 outline-none focus:border-indigo-500">
+              <option value="">Selecione uma tag</option>
+              <template x-for="tag in tags" :key="tag.name">
+                <option :value="tag.name" x-text="tag.name"></option>
+              </template>
+            </select>
+            <button class="px-4 rounded-2xl bg-slate-900 text-white font-semibold"
+                    @click="addTagToCard(selectedTagToAdd)">
+              +
+            </button>
+          </div>
+
+          <div class="flex flex-wrap gap-2 mt-4">
+            <template x-for="tag in createForm.tags" :key="tag">
+              <div class="flex items-center gap-2 rounded-full bg-indigo-100 px-3 py-2 text-sm font-semibold text-indigo-800">
+                <span x-text="tag"></span>
+                <button class="text-indigo-500 hover:text-red-500" @click="removeTag(tag)">×</button>
+              </div>
+            </template>
+            <template x-if="createForm.tags.length === 0">
+              <div class="text-sm text-slate-400">Nenhuma tag adicionada</div>
+            </template>
+          </div>
+        </div>
+
+        <!-- SEARCH ICON -->
+        <div>
+          <label class="block text-sm font-semibold mb-2">
+            Buscar ícone
+          </label>
+          <div class="flex gap-2">
+            <input x-model="createForm.search" type="text" placeholder="Ex: water"
+                   class="flex-1 rounded-2xl border border-slate-200 p-3 outline-none focus:border-indigo-500"
+                   @keydown.enter.prevent="searchIcons()">
+            <button class="px-5 rounded-2xl bg-indigo-600 text-white font-bold"
+                    @click="searchIcons()">
+              <span x-show="!loadingIcons">Buscar</span>
+              <span x-show="loadingIcons">...</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- ICON RESULTS -->
+        <div class="max-h-[250px] overflow-y-auto pr-1">
+          <template x-if="loadingIcons">
+            <div class="flex items-center justify-center h-[120px]">
+              <div class="text-sm font-semibold text-slate-400 animate-pulse">Buscando ícones...</div>
+            </div>
+          </template>
+          <template x-if="!loadingIcons && iconResults.length === 0">
+            <div class="flex flex-col items-center justify-center h-[120px] rounded-3xl border-2 border-dashed border-slate-200 bg-slate-50 text-center p-4">
+              <div class="text-3xl mb-2">🔍</div>
+              <div class="font-bold text-slate-700">Nenhum ícone encontrado</div>
+            </div>
+          </template>
+          <template x-if="!loadingIcons && iconResults.length > 0">
+            <div class="grid grid-cols-4 gap-2">
+              <template x-for="icon in iconResults" :key="icon.name">
+                <button class="rounded-xl border-2 bg-white p-2 transition-all duration-200"
+                        :class="createForm.selectedImage === icon.url ? 'border-indigo-600 ring-2 ring-indigo-100' : 'border-slate-200 hover:border-indigo-300'"
+                        @click="createForm.selectedImage = icon.url">
+                  <img :src="icon.url" :alt="icon.name" class="w-10 h-10 object-contain mx-auto">
+                </button>
+              </template>
+            </div>
+          </template>
+        </div>
+
+      </div>
+
+      <!-- RIGHT: PREVIEW -->
+      <div>
+        <div class="text-sm font-semibold mb-3">Preview da frase</div>
+        <div class="rounded-[30px] bg-gradient-to-b from-indigo-100 to-white p-6 shadow-xl">
+          <div class="w-16 h-16 rounded-[18px] overflow-hidden bg-white shadow mb-4 mx-auto">
+            <template x-if="createForm.selectedImage">
+              <img :src="createForm.selectedImage" class="w-full h-full object-contain">
+            </template>
+            <template x-if="!createForm.selectedImage">
+              <div class="flex items-center justify-center w-full h-full text-2xl text-slate-300">📝</div>
+            </template>
+          </div>
+          <div class="text-[28px] leading-none font-bold font-['Baloo_2'] text-center"
+               x-text="createForm.frontText || 'Frase'"></div>
+          <div class="text-sm text-slate-500 text-center mt-2"
+               x-text="createForm.backText || 'Frase completa...'"></div>
+          <div class="mt-3 text-center">
+            <span class="inline-flex rounded-full px-3 py-1 text-xs font-bold"
+                  :style="`background:${getCategoryColor(createForm.category)}25; color:${getCategoryColor(createForm.category)}`"
+                  x-text="createForm.category || 'Categoria'"></span>
+          </div>
+          <div class="flex flex-wrap gap-1 mt-2 justify-center">
+            <template x-for="tag in createForm.tags" :key="tag">
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold text-white"
+                    :style="`background:${getTagColor(tag)}`"
+                    x-text="tag"></span>
+            </template>
+          </div>
+        </div>
+
+        <button class="w-full mt-4 rounded-[22px] bg-gradient-to-r from-indigo-600 to-teal-500 py-4 text-white font-bold shadow-xl hover:scale-[1.01] transition"
+                @click="saveCard()">
+          Salvar frase
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div x-show="toast.show" x-transition
+     class="fixed bottom-5 left-1/2 z-[60] -translate-x-1/2 rounded-2xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white shadow-2xl"
+     style="display:none" x-text="toast.message"></div>
