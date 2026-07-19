@@ -239,7 +239,7 @@ class MazeGenerator {
         }
       }
     } else {
-      console.log('[MazeGenerator] Queijo em', endR, endC, 'já é acessível!');
+    //   console.log('[MazeGenerator] Queijo em', endR, endC, 'já é acessível!');
     }
   }
 

@@ -26,13 +26,13 @@ function mazeApp() {
         await loadComponents();
       }
       
-      console.log('[Maze] MazeGenerator:', typeof MazeGenerator);
+    //   console.log('[Maze] MazeGenerator:', typeof MazeGenerator);
       this.resetGame();
     },
 
     resetGame() {
       if (typeof MazeGenerator === 'undefined') {
-        console.error('[Maze] MazeGenerator não carregado');
+        // console.error('[Maze] MazeGenerator não carregado')
         return;
       }
       
@@ -54,7 +54,7 @@ function mazeApp() {
       
       this._version++; // <-- INCREMENTA VERSÃO
       
-      console.log('[Maze] Jogo reiniciado');
+    //   console.log('[Maze] Jogo reiniciado');
       this.debugMaze();
     },
 

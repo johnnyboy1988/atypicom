@@ -18,5 +18,5 @@ async function loadComponents() {
     }
   }));
 
-  console.log('[ComponentLoader] Todos os componentes carregados');
+  // console.log('[ComponentLoader] Todos os componentes carregados');
 }
