@@ -23,7 +23,7 @@ const READER_COLLECTION = {
       category: "Lugares",
       tags: ["Casa", "Rotina"],
       image: "https://img.icons8.com/?size=100&id=SL1Q0YmE4CA0&format=png&color=000000",
-      frontText: "Eu vou ao banheiro agora",
+      frontText: "Eu quero ir no banheiro agora",
       backText: "Eu vou ao banheiro agora"
     },
     {
@@ -71,8 +71,8 @@ const READER_COLLECTION = {
       category: "Emoções",
       tags: ["Favoritos"],
       image: "https://cdn-icons-png.flaticon.com/512/742/742752.png",
-      frontText: "Eu estou muito triste agora",
-      backText: "Eu estou muito triste agora"
+      frontText: "Eu estou muito triste",
+      backText: "Eu estou muito triste"
     },
     {
       id: 10,
@@ -80,7 +80,7 @@ const READER_COLLECTION = {
       tags: ["Médico"],
       image: "https://cdn-icons-png.flaticon.com/512/4320/4320337.png",
       frontText: "Eu estou sentindo muita dor",
-      backText: "Eu estou sentindo muita dor"
+      backText: "Eu me machuquei"
     },
     {
       id: 11,
@@ -151,7 +151,7 @@ const READER_COLLECTION = {
       category: "Comida",
       tags: ["Casa"],
       image: "https://cdn-icons-png.flaticon.com/512/7093/7093198.png",
-      frontText: "Eu como pão com manteiga",
+      frontText: "Eu como torradinha, com pão e manteiga",
       backText: "Eu como pão com manteiga"
     },
     {
@@ -175,8 +175,8 @@ const READER_COLLECTION = {
       category: "Objetos",
       tags: ["Casa"],
       image: "https://cdn-icons-png.flaticon.com/512/744/744465.png",
-      frontText: "Eu ando de carro prata",
-      backText: "Eu ando de carro prata"
+      frontText: "Olha um carro vermelho",
+      backText: "Olha um carro"
     },
     {
       id: 23,
@@ -263,7 +263,7 @@ const READER_COLLECTION = {
       category: "Pessoas",
       tags: ["Escola"],
       image: "https://cdn-icons-png.flaticon.com/512/1995/1995574.png",
-      frontText: "Eu falo com o professor",
+      frontText: "Eu devo obedecer a professora",
       backText: "Eu falo com a professora"
     },
     {
@@ -287,8 +287,8 @@ const READER_COLLECTION = {
       category: "Pessoas",
       tags: ["Casa"],
       image: "https://cdn-icons-png.flaticon.com/512/6740/6740296.png",
-      frontText: "Eu vou visitar o vovô",
-      backText: "Eu vou visitar a vovó"
+      frontText: "Eu vou visitar a vovó",
+      backText: "Eu vou visitar o vovô"
     },
     {
       id: 37,
@@ -375,7 +375,7 @@ const READER_COLLECTION = {
       category: "Comunicação",
       tags: ["Favoritos"],
       image: "https://cdn-icons-png.flaticon.com/512/845/845646.png",
-      frontText: "Eu respondo que sim",
+      frontText: "Sim",
       backText: "Eu respondo que sim"
     },
     {
@@ -383,7 +383,7 @@ const READER_COLLECTION = {
       category: "Comunicação",
       tags: ["Favoritos"],
       image: "https://cdn-icons-png.flaticon.com/512/1828/1828843.png",
-      frontText: "Eu respondo que não",
+      frontText: "Não",
       backText: "Eu respondo que não"
     },
     {
