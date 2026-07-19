@@ -15,8 +15,8 @@ const READER_COLLECTION = {
       category: "Ações",
       tags: ["Casa", "Escola"],
       image: "https://cdn-icons-png.flaticon.com/512/1046/1046784.png",
-      frontText: "Eu gosto de comer frutas",
-      backText: "Eu gosto de comer frutas"
+      frontText: "Eu gosto de comer xis",
+      backText: "Eu gosto de comer xis"
     },
     {
       id: 3,
@@ -40,7 +40,7 @@ const READER_COLLECTION = {
       tags: ["Casa", "Favoritos"],
       image: "https://cdn-icons-png.flaticon.com/512/4140/4140051.png",
       frontText: "Eu amo a minha mamãe",
-      backText: "Eu amo o meu papai"
+      backText: "Eu amo a minha mamãe"  
     },
     {
       id: 6,
@@ -48,7 +48,7 @@ const READER_COLLECTION = {
       tags: ["Casa"],
       image: "https://cdn-icons-png.flaticon.com/512/4140/4140048.png",
       frontText: "Eu amo o meu papai",
-      backText: "Eu amo a minha mamãe"
+      backText: "Eu amo o meu papai",
     },
     {
       id: 7,
