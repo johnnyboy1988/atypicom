@@ -150,7 +150,7 @@ class MazeGenerator {
 
     // Se não houver candidatos com a distância mínima, usa todos os caminhos
     if (candidates.length === 0) {
-      console.log('[MazeGenerator] Nenhum candidato com distância >=', this.minDistance, '. Usando todos os caminhos.');
+    //   console.log('[MazeGenerator] Nenhum candidato com distância >=', this.minDistance, '. Usando todos os caminhos.');
       
       // Fallback: todos os caminhos
       for (let r = 0; r < this.size; r++) {
@@ -174,7 +174,7 @@ class MazeGenerator {
     const randomIndex = Math.floor(Math.random() * topCandidates.length);
     const selected = topCandidates[randomIndex];
 
-    console.log('[MazeGenerator] Queijo selecionado com distância:', selected.distance);
+    // console.log('[MazeGenerator] Queijo selecionado com distância:', selected.distance);
     
     return { row: selected.row, col: selected.col };
   }
@@ -207,7 +207,7 @@ class MazeGenerator {
     const neighbors = this.getValidNeighbors(endR, endC);
     
     if (neighbors.length === 0) {
-      console.log('[MazeGenerator] Queijo em', endR, endC, 'inacessível! Abrindo caminho...');
+      // console.log('[MazeGenerator] Queijo em', endR, endC, 'inacessível! Abrindo caminho...');
       
       const directions = [
         [-1, 0], [1, 0], [0, -1], [0, 1]
@@ -223,7 +223,7 @@ class MazeGenerator {
         const nc = endC + dc;
         if (nr >= 0 && nr < this.size && nc >= 0 && nc < this.size) {
           if (this.grid[nr][nc] === 0) {
-            console.log('[MazeGenerator] Caminho aberto para o queijo via:', nr, nc);
+            // console.log('[MazeGenerator] Caminho aberto para o queijo via:', nr, nc);
             return;
           }
         }
@@ -234,7 +234,7 @@ class MazeGenerator {
         const nc = endC + dc;
         if (nr >= 0 && nr < this.size && nc >= 0 && nc < this.size) {
           this.grid[nr][nc] = 0;
-          console.log('[MazeGenerator] Forçando caminho para o queijo via:', nr, nc);
+        //   console.log('[MazeGenerator] Forçando caminho para o queijo via:', nr, nc);
           return;
         }
       }
