@@ -1,0 +1,34 @@
+<!-- CONTROLES / INFO -->
+<section class="flex-shrink-0">
+  <div class="flex items-center justify-between gap-3 flex-wrap">
+    
+    <!-- Info do jogo -->
+    <div class="flex items-center gap-4">
+      <div class="flex items-center gap-2 bg-white/80 rounded-full px-3 py-1.5 shadow-sm">
+        <span class="text-sm">🐭</span>
+        <span class="text-sm font-bold text-slate-700">Passos:</span>
+        <span class="text-sm font-bold text-indigo-600" x-text="steps">0</span>
+      </div>
+      
+      <div class="flex items-center gap-2 bg-white/80 rounded-full px-3 py-1.5 shadow-sm">
+        <span class="text-sm">🧀</span>
+        <span class="text-sm font-bold text-slate-700">Distância:</span>
+        <span class="text-sm font-bold text-green-600" x-text="distance">?</span>
+      </div>
+    </div>
+
+    <!-- Status -->
+    <div class="flex items-center gap-2">
+      <span x-show="!gameOver && !won" class="text-sm text-slate-500">🐭 Encontre o queijo!</span>
+      <span x-show="gameOver && !won" class="text-sm font-bold text-red-500">😅 Ops! Você se perdeu!</span>
+      <span x-show="won" class="text-sm font-bold text-green-500">🎉 Parabéns! Você venceu!</span>
+      
+      <button x-show="gameOver || won"
+              class="px-4 py-1.5 rounded-full bg-indigo-600 text-white text-sm font-bold hover:bg-indigo-500 transition"
+              @click="resetGame()">
+        Jogar novamente
+      </button>
+    </div>
+
+  </div>
+</section>

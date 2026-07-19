@@ -1,0 +1,71 @@
+<!-- LABIRINTO -->
+<section class="flex-1 min-h-0 overflow-hidden
+                rounded-[20px] md:rounded-[30px]
+                bg-white/85
+                p-2 md:p-4
+                shadow-[0_10px_30px_rgba(0,0,0,.06)]">
+
+  <div class="maze-wrapper">
+    <div class="maze-grid" id="mazeGrid">
+
+      <!-- USANDO _version NA CHAVE PARA FORÇAR RE-RENDERIZAÇÃO -->
+      <template x-for="item in cells" :key="`${item.row}-${item.col}-${_version}`">
+
+        <div class="maze-cell"
+             :class="item.cell === 1 ? 'wall' : 'path'"
+             :style="isHighlighted(item.row, item.col)
+                ? 'background: #dbeafe; border-color: #3b82f6; transform: scale(1.05); box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);'
+                : ''"
+             @click="handleCellClick(item.row, item.col)"
+             :data-row="item.row"
+             :data-col="item.col">
+
+          <!-- RATINHO -->
+          <span
+            class="emoji mouse"
+            x-show="isMouse(item.row, item.col)"
+            :style="isSelected()
+              ? 'transform: scale(1.3); filter: drop-shadow(0 0 15px #3b82f6);'
+              : ''">
+            🐭
+          </span>
+
+          <!-- QUEIJO -->
+          <span
+            class="emoji cheese"
+            x-show="isCheese(item.row, item.col)">
+            🧀
+          </span>
+
+          <!-- ESPAÇO VAZIO -->
+          <span
+            class="empty-dot"
+            x-show="
+              !isMouse(item.row, item.col) &&
+              !isCheese(item.row, item.col) &&
+              item.cell === 0
+            ">
+            ·
+          </span>
+
+          <!-- MOVIMENTO VÁLIDO -->
+          <div
+            x-show="isHighlighted(item.row, item.col)"
+            class="absolute inset-0 flex items-center justify-center pointer-events-none">
+
+            <div
+              class="w-6 h-6 md:w-8 md:h-8 rounded-full
+                     bg-blue-500/40 animate-pulse
+                     border-2 border-blue-500/60">
+            </div>
+
+          </div>
+
+        </div>
+
+      </template>
+
+    </div>
+  </div>
+
+</section>

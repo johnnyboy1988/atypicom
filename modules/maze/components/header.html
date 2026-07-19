@@ -1,0 +1,82 @@
+<header class="flex-shrink-0 p-2 md:p-3">
+  <div class="flex items-center justify-between rounded-[24px] bg-white/85 backdrop-blur-xl p-4 shadow-[0_10px_30px_rgba(0,0,0,.06)]">
+
+    <!-- Voltar -->
+    <button @click="window.location.href='../../index.html'"
+            class="w-10 h-10 rounded-full bg-white/80 border border-slate-200 flex items-center justify-center shadow hover:bg-slate-100 transition"
+            title="Voltar ao AAC Studio">
+      🏠
+    </button>
+
+    <div class="text-center">
+      <div class="text-[11px] uppercase tracking-[.16em] font-bold text-indigo-500">
+        Jogo de labirinto
+      </div>
+      <div class="text-[22px] md:text-[26px] font-bold font-['Baloo_2']">
+        🐭 Labirinto do Ratinho
+      </div>
+      <div class="text-[11px] text-slate-500 mt-0.5">
+        Arraste o ratinho até o queijo 🧀
+      </div>
+    </div>
+
+    <!-- PAINEL DIREITO -->
+    <div class="flex items-center gap-2">
+      <button class="w-10 h-10 rounded-full bg-white/80 border border-slate-200 flex items-center justify-center shadow hover:bg-slate-100 transition"
+              @click="resetGame()">
+        🔄
+      </button>
+      <button class="w-10 h-10 rounded-full bg-white/80 border border-slate-200 flex items-center justify-center shadow hover:bg-slate-100 transition"
+              @click="showHelp = !showHelp">
+        ❓
+      </button>
+    </div>
+
+  </div>
+
+  <!-- Modal de Ajuda -->
+  <div x-show="showHelp" x-transition.opacity
+       class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" style="display:none">
+
+    <div @click.outside="showHelp = false" 
+         class="w-full max-w-md rounded-[28px] bg-white shadow-2xl p-6">
+
+      <div class="text-[22px] font-bold font-['Baloo_2'] mb-4">
+        🐭 Como jogar
+      </div>
+
+      <div class="space-y-3 text-sm text-slate-600">
+        <div class="flex items-start gap-3 p-3 bg-slate-50 rounded-xl">
+          <span class="text-2xl">🐭</span>
+          <div>
+            <span class="font-bold">Ajude o ratinho</span> a encontrar o <span class="font-bold text-yellow-500">queijo 🧀</span>
+          </div>
+        </div>
+        <div class="flex items-start gap-3 p-3 bg-slate-50 rounded-xl">
+          <span class="text-2xl">👆</span>
+          <div>
+            <span class="font-bold">Arraste</span> o ratinho para as células conectadas
+          </div>
+        </div>
+        <div class="flex items-start gap-3 p-3 bg-slate-50 rounded-xl">
+          <span class="text-2xl">📏</span>
+          <div>
+            O caminho <span class="font-bold text-green-500">verde</span> mostra quantos passos você já deu
+          </div>
+        </div>
+        <div class="flex items-start gap-3 p-3 bg-blue-50 rounded-xl border border-blue-200">
+          <span class="text-2xl">💡</span>
+          <div>
+            Siga as linhas do labirinto! Nem todo caminho leva ao queijo
+          </div>
+        </div>
+      </div>
+
+      <button class="w-full mt-5 rounded-2xl bg-indigo-600 text-white py-3 font-bold hover:bg-indigo-500 transition"
+              @click="showHelp = false">
+        Entendi!
+      </button>
+
+    </div>
+  </div>
+</header>

@@ -151,7 +151,33 @@
                 </div>
 
             </button>
+            <!-- Módulo 5: Labirinto do Ratinho -->
+            <button @click="open('maze')" class="w-full rounded-[28px]
+       bg-white
+       p-6
+       shadow-xl
+       hover:-translate-y-1
+       hover:shadow-2xl
+       transition">
 
+                <div class="flex items-center gap-5">
+                    <div class="w-16 h-16 rounded-2xl bg-indigo-100 flex items-center justify-center text-3xl">
+                        🐭
+                    </div>
+                    <div class="text-left">
+                        <div class="font-bold text-2xl font-['Baloo_2']">
+                            Labirinto do Ratinho
+                        </div>
+                        <div class="text-slate-500 text-sm">
+                            Arraste o ratinho até o queijo 🧀
+                        </div>
+                        <div class="text-slate-500 text-sm italic">
+                            Raciocínio lógico e orientação espacial
+                        </div>
+                    </div>
+                </div>
+
+            </button>
         </div>
 
         <!-- Footer -->
@@ -192,6 +218,9 @@
 
                         case "reader":
                             window.location.href = "modules/reader/index.html";
+                            break;
+                        case "maze":
+                            window.location.href = "modules/maze/index.html";
                             break;
 
                     }
