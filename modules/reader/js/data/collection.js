@@ -404,24 +404,70 @@ const READER_COLLECTION = {
     }
   ],
   categories: [
-    { name: "Comida", color: "#F97316" },
-    { name: "Ações", color: "#3B82F6" },
-    { name: "Emoções", color: "#EC4899" },
-    { name: "Pessoas", color: "#8B5CF6" },
-    { name: "Lugares", color: "#14B8A6" },
-    { name: "Saúde", color: "#22C55E" },
-    { name: "Objetos", color: "#6366F1" },
-    { name: "Transportes", color: "#06B6D4" },
-    { name: "Rotina", color: "#84CC16" },
-    { name: "Sensações", color: "#EAB308" },
-    { name: "Comunicação", color: "#EF4444" }
+    { 
+      name: "Comida", 
+      color: "#F97316" 
+    },
+    { 
+      name: "Ações", 
+      color: "#3B82F6" 
+    },
+    { 
+      name: "Emoções", 
+      color: "#EC4899" 
+    },
+    { 
+      name: "Pessoas", 
+      color: "#8B5CF6" 
+    },
+    { 
+      name: "Lugares", 
+      color: "#14B8A6" 
+    },
+    { 
+      name: "Saúde", 
+      color: "#22C55E" 
+    },
+    { 
+      name: "Objetos", 
+      color: "#6366F1" 
+    },
+    { 
+      name: "Transportes", 
+      color: "#06B6D4" 
+    },
+    { 
+      name: "Rotina", 
+      color: "#84CC16" 
+    },
+    { 
+      name: "Sensações", 
+      color: "#EAB308" 
+    },
+    { 
+      name: "Comunicação", 
+      color: "#EF4444" }
   ],
   tags: [
-    { name: "Favoritos", color: "#F59E0B" },
-    { name: "Rotina", color: "#10B981" },
-    { name: "Escola", color: "#3B82F6" },
-    { name: "Casa", color: "#8B5CF6" },
-    { name: "Médico", color: "#EF4444" }
+    { 
+      name: "Favoritos", 
+      color: "#F59E0B" 
+    },
+    { 
+      name: "Rotina", 
+      color: "#10B981" 
+    },
+    { 
+      name: "Escola", 
+      color: "#3B82F6" 
+    },
+    { 
+      name: "Casa", 
+      color: "#8B5CF6" 
+    },
+    { 
+      name: "Médico", 
+      color: "#EF4444" }
   ]
 }
     // Exportar para uso
