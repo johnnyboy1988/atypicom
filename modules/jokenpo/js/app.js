@@ -12,6 +12,7 @@ function jokenpoApp() {
     cpuChoice: null,
     selectedChoice: null,
     selectedChoice2: null,
+    bothPlayersChosen: false,
 
     isWaiting: false,
     isThinking: false,
@@ -340,7 +341,7 @@ playRound(playerChoice, player = 'player1') {
       this.cpuScore = 0;
       this.roundsPlayed = 0;
       this.clearDelay = 3000;
-
+      this.bothPlayersChosen = false;
       setTimeout(() => {
         this.isCooldown = false;
       }, this.minDelay);

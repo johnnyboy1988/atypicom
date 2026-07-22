@@ -35,7 +35,13 @@
                        text-center
                        hover:border-indigo-400
                        transition-all duration-200"
-                :class="selectedChoice !== null && selectedChoice === choice.id ? 'selected border-indigo-500' : ''"
+                :class="
+                  // SÓ MOSTRA O DESTAQUE SE:
+                  // 1. Não for modo 2 jogadores, OU
+                  // 2. For modo 2 jogadores E ambos já escolheram
+                  (!twoPlayerMode || (twoPlayerMode && bothPlayersChosen)) && 
+                  selectedChoice !== null && selectedChoice === choice.id ? 'selected border-indigo-500' : ''
+                "
                 @click="playChoice(choice, 'player1')">
 
           <div class="flex flex-col items-center">
