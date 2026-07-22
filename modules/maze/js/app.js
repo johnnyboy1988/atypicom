@@ -183,7 +183,7 @@ function mazeApp() {
     // ===== HANDLER ÚNICO PARA CLIQUE =====
 
     async handleCellClick(row, col) {
-      console.log("[Maze] Clique:", row, col);
+      // console.log("[Maze] Clique:", row, col);
 
       if (this.gameOver || this.won) return;
 
