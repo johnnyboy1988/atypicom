@@ -20,6 +20,11 @@
 
     <style>
         /* Estilos do labirinto */
+        /* ============================================
+   ESTILOS DO LABIRINTO
+   ============================================ */
+
+        /* --- Células do labirinto --- */
         .maze-cell {
             transition: all 0.2s ease;
             aspect-ratio: 1 / 1;
@@ -46,6 +51,7 @@
             border: 1px solid #86efac;
         }
 
+        /* --- Conectores --- */
         .maze-cell .connector {
             font-size: 24px;
             line-height: 1;
@@ -56,6 +62,7 @@
             color: #16a34a;
         }
 
+        /* --- Emojis --- */
         .maze-cell .emoji {
             font-size: 32px;
             line-height: 1;
@@ -72,37 +79,15 @@
             animation: cheeseGlow 1.5s ease-in-out infinite;
         }
 
-        @keyframes mouseIdle {
-
-            0%,
-            100% {
-                transform: translateY(0px);
-            }
-
-            50% {
-                transform: translateY(-3px);
-            }
+        /* --- Espaço vazio --- */
+        .maze-cell .empty-dot {
+            font-size: 24px;
+            color: #cbd5e1;
+            line-height: 1;
+            user-select: none;
         }
 
-        @keyframes cheeseGlow {
-
-            0%,
-            100% {
-                transform: scale(1);
-            }
-
-            50% {
-                transform: scale(1.1);
-            }
-        }
-
-        .maze-cell.dragover {
-            background: #dbeafe;
-            border-color: #3b82f6;
-            transform: scale(1.05);
-            box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
-        }
-
+        /* --- Número do passo --- */
         .maze-cell .step-number {
             position: absolute;
             bottom: 2px;
@@ -112,7 +97,15 @@
             font-weight: bold;
         }
 
-        /* Grid container */
+        /* --- Drag Over --- */
+        .maze-cell.dragover {
+            background: #dbeafe;
+            border-color: #3b82f6;
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+        }
+
+        /* --- Grid container --- */
         .maze-grid {
             display: grid;
             grid-template-columns: repeat(8, 1fr);
@@ -132,7 +125,89 @@
             height: 100%;
         }
 
-        /* Scroll personalizado */
+
+        /* ============================================
+   ANIMAÇÕES
+   ============================================ */
+
+        /* --- Mouse parado --- */
+        @keyframes mouseIdle {
+
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-3px);
+            }
+        }
+
+        /* --- Brilho do queijo --- */
+        @keyframes cheeseGlow {
+
+            0%,
+            100% {
+                transform: scale(1);
+                filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.5));
+            }
+
+            50% {
+                transform: scale(1.1);
+                filter: drop-shadow(0 0 30px rgba(255, 215, 0, 0.9));
+            }
+        }
+
+        /* --- Queijo na vitória --- */
+        @keyframes cheeseWin {
+
+            0%,
+            100% {
+                transform: scale(1) rotate(0deg);
+            }
+
+            25% {
+                transform: scale(1.2) rotate(-10deg);
+            }
+
+            75% {
+                transform: scale(1.2) rotate(10deg);
+            }
+        }
+
+        /* --- Confetes caindo --- */
+        @keyframes confettiFall {
+            0% {
+                transform: translateY(-10vh) rotate(0deg) scale(1);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(110vh) rotate(720deg) scale(0.5);
+                opacity: 0;
+            }
+        }
+
+        /* --- Estrelas piscando --- */
+        @keyframes starPulse {
+
+            0%,
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: 0.5;
+                transform: scale(1.2);
+            }
+        }
+
+
+        /* ============================================
+   SCROLL PERSONALIZADO
+   ============================================ */
+
         .maze-scroll::-webkit-scrollbar {
             width: 4px;
         }
@@ -156,64 +231,127 @@
             scrollbar-color: #94a3b8 transparent;
         }
 
-        /* Responsivo */
-        @media (max-width: 480px) {
-            .maze-cell .emoji {
-                font-size: 24px;
-            }
 
-            .maze-cell .connector {
-                font-size: 18px;
-            }
+        /* ============================================
+   CONFETES
+   ============================================ */
 
-            .maze-grid {
-                max-width: 100%;
-                gap: 1px;
-                padding: 1px;
-            }
+        .confetti {
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
         }
 
-        .maze-cell .empty-dot {
-            font-size: 24px;
-            color: #cbd5e1;
-            line-height: 1;
-            user-select: none;
-        }
 
-        .maze-cell .emoji {
-            font-size: 32px;
-            line-height: 1;
-            transition: all 0.3s ease;
-        }
 
-        .maze-cell .emoji.mouse {
-            animation: mouseIdle 1.5s ease-in-out infinite;
-        }
+        /* ============================================
+   ESTILOS DO LABIRINTO
+   ============================================ */
 
-        .maze-cell .emoji.cheese {
-            animation: cheeseGlow 1.5s ease-in-out infinite;
-        }
+/* --- Grid container --- */
+.maze-grid {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 3px; /* Aumentado de 2px para 3px */
+  max-width: 560px; /* Aumentado de 480px para 560px */
+  margin: 0 auto;
+  background: #e2e8f0;
+  padding: 3px; /* Aumentado de 2px para 3px */
+  border-radius: 16px; /* Aumentado de 12px para 16px */
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
 
-        .maze-cell .empty-dot {
-            font-size: 24px;
-            color: #cbd5e1;
-            line-height: 1;
-            user-select: none;
-        }
+/* --- Células do labirinto --- */
+.maze-cell {
+  transition: all 0.2s ease;
+  aspect-ratio: 1 / 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  cursor: default;
+  user-select: none;
+  position: relative;
+  min-height: 50px; /* Altura mínima para garantir clique */
+  min-width: 50px;  /* Largura mínima para garantir clique */
+}
 
-        .maze-cell .emoji {
-            font-size: 32px;
-            line-height: 1;
-            transition: all 0.3s ease;
-        }
+/* --- Emojis maiores --- */
+.maze-cell .emoji {
+  font-size: 38px; /* Aumentado de 32px para 38px */
+  line-height: 1;
+  z-index: 2;
+  position: relative;
+  transition: all 0.3s ease;
+}
 
-        .maze-cell .emoji.mouse {
-            animation: mouseIdle 1.5s ease-in-out infinite;
-        }
+/* --- Espaço vazio --- */
+.maze-cell .empty-dot {
+  font-size: 28px; /* Aumentado de 24px para 28px */
+  color: #cbd5e1;
+  line-height: 1;
+  user-select: none;
+}
 
-        .maze-cell .emoji.cheese {
-            animation: cheeseGlow 1.5s ease-in-out infinite;
-        }
+/* --- Indicador de movimento válido --- */
+.maze-cell .valid-move-indicator {
+  width: 30px;  /* Aumentado */
+  height: 30px; /* Aumentado */
+  border-radius: 50%;
+  background: rgba(59, 130, 246, 0.3);
+  border: 2px solid rgba(59, 130, 246, 0.5);
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+/* --- Animação do indicador --- */
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 0.5; }
+  50% { transform: scale(1.2); opacity: 1; }
+}
+
+/* --- Responsivo para telas menores --- */
+@media (max-width: 640px) {
+  .maze-grid {
+    max-width: 100%;
+    gap: 2px;
+    padding: 2px;
+    border-radius: 12px;
+  }
+  
+  .maze-cell .emoji {
+    font-size: 28px;
+  }
+  
+  .maze-cell .empty-dot {
+    font-size: 20px;
+  }
+  
+  .maze-cell {
+    min-height: 40px;
+    min-width: 40px;
+  }
+}
+
+@media (max-width: 480px) {
+  .maze-cell .emoji {
+    font-size: 22px;
+  }
+  
+  .maze-cell .empty-dot {
+    font-size: 16px;
+  }
+  
+  .maze-cell {
+    min-height: 32px;
+    min-width: 32px;
+  }
+  
+  .maze-grid {
+    gap: 1px;
+    padding: 1px;
+    border-radius: 8px;
+  }
+}
     </style>
 </head>
 
@@ -240,6 +378,8 @@
 
     <script src="./js/maze-generator.js"></script>
     <script src="./js/component-loader.js"></script>
+    <script src="../../js/services/speech-service.js"></script>
+
     <script src="./js/app.js"></script>
 
 </body>
