@@ -401,7 +401,39 @@ const READER_COLLECTION = {
       image: "https://cdn-icons-png.flaticon.com/512/742/742799.png",
       frontText: "Eu peço por favor",
       backText: "Eu peço por favor"
-    }
+    },
+    {
+      id: 51,
+      category: "Poemas",
+      tags: ["Favoritos"],
+      image: "",
+      frontText: "Batatinha quando nasce",
+      backText:  "Batatinha quando nasce, espalha a rama pelo chão. Menininha quando dorme, põe a mão no coração.",
+    },
+    {
+      id: 52,
+      category: "Poemas",
+      tags: ["Favoritos"],
+      image: "",
+      frontText: "O cravo brigou com a rosa em debaixo de uma sacada. O cravo saiu ferido e a rosa, despedaçada. O cravo ficou doente, a rosa foi visitar. O cravo teve um desmaio, e a rosa pôs-se a chorar.",
+      backText: "O cravo brigou com a rosa"
+    },    
+    {
+      id: 53,
+      category: "Poemas",
+      tags: ["Favoritos"],
+      image: "",
+      frontText: "Cai, cai, balão, Cai, cai, balão, Na rua do Sabão. Não cai, não cai, não cai, Não cai na rua do Sabão.",
+      backText: "Cai, cai, balão"
+    },
+    {
+      id: 54,
+      category: "Poemas",
+      tags: ["Favoritos"],
+      image: "",
+      frontText: "A barata diz que tem Sete saias de filó. É mentira da barata, Ela tem é uma só. Ah! Ah! Ah! Oh! Oh! Oh! Ela tem é uma só.",
+      backText: "A barata diz que tem Sete saias de filó"
+    },
   ],
   categories: [
     { 
@@ -446,7 +478,13 @@ const READER_COLLECTION = {
     },
     { 
       name: "Comunicação", 
-      color: "#EF4444" }
+      color: "#EF4444" 
+    },
+    { 
+      name: "Poemas", 
+      color: "#4b17c5" 
+    },
+    
   ],
   tags: [
     { 
@@ -467,7 +505,8 @@ const READER_COLLECTION = {
     },
     { 
       name: "Médico", 
-      color: "#EF4444" }
+      color: "#EF4444" 
+    }
   ]
 }
     // Exportar para uso
