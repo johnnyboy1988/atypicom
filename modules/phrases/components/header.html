@@ -31,169 +31,186 @@
         </button>
 
     </div>
+    
+    <!-- MODAL CONFIGURAÇÕES -->
     <div x-show="configMode.open" x-transition.opacity
         class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" style="display:none">
 
-        <div @click.outside="configMode.open = false" class="w-full max-w-md rounded-[28px] bg-white shadow-2xl p-5">
+        <div @click.outside="configMode.open = false" 
+             class="w-full max-w-md max-h-[85vh] overflow-hidden rounded-[28px] bg-white shadow-2xl flex flex-col">
 
-            <div class="text-[22px] font-bold font-['Baloo_2'] mb-4">
-                Configurações
-            </div>
-            <!-- ============================================ -->
-            <!-- NOVO: MODO DE FILTRO -->
-            <!-- ============================================ -->
-            <div class="border border-slate-200 rounded-2xl p-4 bg-white mb-3">
-                <div class="text-sm font-semibold mb-3">
-                    Modo de filtro
+            <!-- HEADER FIXO -->
+            <div class="flex-shrink-0 p-5 border-b border-slate-100">
+                <div class="text-[22px] font-bold font-['Baloo_2']">
+                    Configurações
                 </div>
-                <div class="flex gap-2">
-                    <button class="flex-1 rounded-xl py-2 px-3 font-semibold text-sm transition-all duration-200"
-                            :class="filterMode === 'AND' 
-                                ? 'bg-indigo-600 text-white shadow-md' 
-                                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
-                            @click="filterMode = 'AND'">
-                        <span class="flex items-center justify-center gap-2">
-                            <span>E</span>
-                            <span class="text-[10px] opacity-70">(todos)</span>
+            </div>
+
+            <!-- CONTEÚDO COM SCROLL -->
+            <div class="flex-1 overflow-y-auto p-5 space-y-3">
+                
+                <!-- ============================================ -->
+                <!-- MODO DE FILTRO -->
+                <!-- ============================================ -->
+                <div class="border border-slate-200 rounded-2xl p-4 bg-white">
+                    <div class="text-sm font-semibold mb-3">
+                        Modo de filtro
+                    </div>
+                    <div class="flex gap-2">
+                        <button class="flex-1 rounded-xl py-2 px-3 font-semibold text-sm transition-all duration-200"
+                                :class="filterMode === 'AND' 
+                                    ? 'bg-indigo-600 text-white shadow-md' 
+                                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
+                                @click="filterMode = 'AND'">
+                            <span class="flex items-center justify-center gap-2">
+                                <span>E</span>
+                                <span class="text-[10px] opacity-70">(todos)</span>
+                            </span>
+                        </button>
+                        <button class="flex-1 rounded-xl py-2 px-3 font-semibold text-sm transition-all duration-200"
+                                :class="filterMode === 'OR' 
+                                    ? 'bg-indigo-600 text-white shadow-md' 
+                                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
+                                @click="filterMode = 'OR'">
+                            <span class="flex items-center justify-center gap-2">
+                                <span>OU</span>
+                                <span class="text-[10px] opacity-70">(qualquer)</span>
+                            </span>
+                        </button>
+                    </div>
+                    <div class="text-xs text-slate-500 mt-2">
+                        <span x-show="filterMode === 'AND'">
+                            🔒 Mostra apenas cards que correspondem a <strong>todas</strong> as categorias e tags selecionadas
                         </span>
-                    </button>
-                    <button class="flex-1 rounded-xl py-2 px-3 font-semibold text-sm transition-all duration-200"
-                            :class="filterMode === 'OR' 
-                                ? 'bg-indigo-600 text-white shadow-md' 
-                                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
-                            @click="filterMode = 'OR'">
-                        <span class="flex items-center justify-center gap-2">
-                            <span>OU</span>
-                            <span class="text-[10px] opacity-70">(qualquer)</span>
+                        <span x-show="filterMode === 'OR'">
+                            🔓 Mostra cards que correspondem a <strong>qualquer</strong> categoria ou tag selecionada
                         </span>
+                    </div>
+                </div>
+                
+                <!-- CREATE CARD -->
+                <label class="flex items-center justify-between py-3 border-b border-slate-100">
+                    <span class="font-semibold">Criar Card</span>
+                    <input type="checkbox" x-model="configMode.createCard">
+                </label>
+                
+                <!-- EDIT CARD -->
+                <label class="flex items-center justify-between py-3 border-b border-slate-100">
+                    <span class="font-semibold">Editar Cards</span>
+                    <input type="checkbox" x-model="configMode.editCard">
+                </label>
+                
+                <!-- ICON LIBRARIES -->
+                <div class="border border-slate-200 rounded-2xl p-4 bg-white">
+
+                    <div class="text-sm font-semibold mb-3">
+                        Bibliotecas de ícones
+                    </div>
+
+                    <div class="space-y-3">
+
+                        <label class="flex items-center justify-between rounded-xl border border-slate-200 p-3">
+
+                            <div>
+
+                                <div class="font-semibold">
+                                    Iconify
+                                </div>
+
+                                <div class="text-xs text-slate-500">
+                                    Milhares de ícones de múltiplos repositórios
+                                </div>
+
+                            </div>
+
+                            <input type="checkbox" x-model="configMode.iconProviders.iconify">
+                        </label>
+
+                        <label class="flex items-center justify-between rounded-xl border border-slate-200 p-3">
+
+                            <div>
+
+                                <div class="font-semibold">
+                                    OpenMoji
+                                </div>
+
+                                <div class="text-xs text-slate-500">
+                                    Emojis livres e ilustrados
+                                </div>
+
+                            </div>
+
+                            <input type="checkbox" x-model="configMode.iconProviders.openmoji">
+                        </label>
+
+                    </div>
+
+                </div>
+
+                <!-- CREATE TAG -->
+                <label class="flex items-center justify-between py-3 border-b border-slate-100">
+                    <span class="font-semibold">Criar Tag</span>
+                    <input type="checkbox" x-model="configMode.createTag">
+                </label>
+
+                <!-- CREATE CATEGORY -->
+                <label class="flex items-center justify-between py-3 border-b border-slate-100">
+                    <span class="font-semibold">Criar Categoria</span>
+                    <input type="checkbox" x-model="configMode.createCategory">
+                </label>
+
+                <!-- IMPORT JSON -->
+                <div class="border border-slate-200 rounded-2xl p-4 bg-white">
+
+                    <div class="text-sm font-semibold mb-2">
+                        Importação de dados
+                    </div>
+
+                    <div class="text-xs text-slate-500 mb-3">
+                        Carregue um arquivo JSON com cards, categorias e tags
+                    </div>
+
+                    <input type="file" accept="application/json" class="hidden" x-ref="fileInput"
+                        @change="importJson($event)">
+
+                    <button
+                        class="w-full rounded-xl bg-indigo-600 text-white py-2 font-semibold hover:bg-indigo-500 transition"
+                        @click="$refs.fileInput.click()">
+
+                        Selecionar arquivo
                     </button>
-                </div>
-                <div class="text-xs text-slate-500 mt-2">
-                    <span x-show="filterMode === 'AND'">
-                        🔒 Mostra apenas cards que correspondem a <strong>todas</strong> as categorias e tags selecionadas
-                    </span>
-                    <span x-show="filterMode === 'OR'">
-                        🔓 Mostra cards que correspondem a <strong>qualquer</strong> categoria ou tag selecionada
-                    </span>
-                </div>
-            </div>
-            <!-- CREATE CARD -->
-            <label class="flex items-center justify-between py-3 border-b">
-                <span class="font-semibold">Criar Card</span>
-                <input type="checkbox" x-model="configMode.createCard">
-            </label>
-            <!-- EDIT CARD -->
-            <label class="flex items-center justify-between py-3 border-b">
-                <span class="font-semibold">Editar Cards</span>
-                <input type="checkbox" x-model="configMode.editCard">
-            </label>
-            <!-- ICON LIBRARIES -->
-            <div class="border border-slate-200 rounded-2xl p-4 bg-white">
 
-
-                <div class="text-sm font-semibold m-3">
-                    Bibliotecas de ícones
                 </div>
 
-                <div class="space-y-3">
+                <!-- EXPORT JSON -->
+                <div class="border border-slate-200 rounded-2xl p-4 bg-white">
 
-                    <label class="flex items-center justify-between rounded-xl border border-slate-200 p-3">
+                    <div class="text-sm font-semibold mb-2">
+                        Exportar dados
+                    </div>
 
-                        <div>
+                    <div class="text-xs text-slate-500 mb-3">
+                        Baixe um backup completo do seu storage
+                    </div>
 
-                            <div class="font-semibold">
-                                Iconify
-                            </div>
+                    <button
+                        class="w-full rounded-xl bg-emerald-600 text-white py-2 font-semibold hover:bg-emerald-500 transition"
+                        @click="exportJson()">
 
-                            <div class="text-xs text-slate-500">
-                                Milhares de ícones de múltiplos repositórios
-                            </div>
-
-                        </div>
-
-                        <input type="checkbox" x-model="configMode.iconProviders.iconify">
-                    </label>
-
-                    <label class="flex items-center justify-between rounded-xl border border-slate-200 p-3">
-
-                        <div>
-
-                            <div class="font-semibold">
-                                OpenMoji
-                            </div>
-
-                            <div class="text-xs text-slate-500">
-                                Emojis livres e ilustrados
-                            </div>
-
-                        </div>
-
-                        <input type="checkbox" x-model="configMode.iconProviders.openmoji">
-                    </label>
+                        Baixar backup
+                    </button>
 
                 </div>
 
             </div>
 
-            <!-- CREATE TAG -->
-            <label class="flex items-center justify-between py-3 border-b">
-                <span class="font-semibold">Criar Tag</span>
-                <input type="checkbox" x-model="configMode.createTag">
-            </label>
-
-            <!-- CREATE CATEGORY -->
-            <label class="flex items-center justify-between py-3">
-                <span class="font-semibold">Criar Categoria</span>
-                <input type="checkbox" x-model="configMode.createCategory">
-            </label>
-
-            <!-- IMPORT JSON -->
-            <div class="border border-slate-200 rounded-2xl p-4 bg-white">
-
-                <div class="text-sm font-semibold mb-2">
-                    Importação de dados
-                </div>
-
-                <div class="text-xs text-slate-500 mb-3">
-                    Carregue um arquivo JSON com cards, categorias e tags
-                </div>
-
-                <input type="file" accept="application/json" class="hidden" x-ref="fileInput"
-                    @change="importJson($event)">
-
-                <button
-                    class="w-full rounded-xl bg-indigo-600 text-white py-2 font-semibold hover:bg-indigo-500 transition"
-                    @click="$refs.fileInput.click()">
-
-                    Selecionar arquivo
+            <!-- BOTÃO FECHAR FIXO -->
+            <div class="flex-shrink-0 p-5 border-t border-slate-100">
+                <button class="w-full rounded-2xl bg-indigo-600 text-white py-3 font-bold hover:bg-indigo-500 transition"
+                        @click="configMode.open = false">
+                    Fechar
                 </button>
-
             </div>
-
-            <!-- EXPORT JSON -->
-            <div class="border border-slate-200 rounded-2xl p-4 bg-white mt-3">
-
-                <div class="text-sm font-semibold mb-2">
-                    Exportar dados
-                </div>
-
-                <div class="text-xs text-slate-500 mb-3">
-                    Baixe um backup completo do seu storage
-                </div>
-
-                <button
-                    class="w-full rounded-xl bg-emerald-600 text-white py-2 font-semibold hover:bg-emerald-500 transition"
-                    @click="exportJson()">
-
-                    Baixar backup
-                </button>
-
-            </div>
-
-            <button class="w-full mt-5 rounded-2xl bg-indigo-600 text-white py-3 font-bold"
-                @click="configMode.open = false">
-                Fechar
-            </button>
 
         </div>
     </div>
