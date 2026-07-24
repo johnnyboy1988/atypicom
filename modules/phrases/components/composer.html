@@ -38,7 +38,8 @@
   }
 </style>
 
-<section class="flex flex-col flex-1 min-h-0
+<section class="relative
+                flex flex-col flex-1 min-h-0
                 rounded-[20px] md:rounded-[30px]
                 bg-white/85
                 p-2.5 md:p-4
@@ -67,7 +68,7 @@
     - overflow-hidden impede que o conteúdo vaze
     - flex-1 min-h-0 permite que ele ocupe o espaço disponível mas com limite
   -->
-  <div class="flex-1 min-h-0 max-h-[42vh] overflow-hidden composer-scroll">
+  <div class="flex-1 min-h-0 max-h-[30vh] overflow-hidden composer-scroll">
     <div x-ref="dropzone" 
          class="h-full min-h-0
                 rounded-[18px] md:rounded-[28px]
@@ -195,8 +196,7 @@
     </div>
   </div>
 
-  <!-- PLAY BUTTON - Fixo -->
-  <button class="absolute bottom-3 right-3
+ <button class="absolute bottom-3 right-3
                  md:bottom-[18px] md:right-[18px]
                  w-[52px] h-[52px]
                  md:w-[64px] md:h-[64px]
@@ -204,9 +204,12 @@
                  bg-gradient-to-br from-indigo-600 to-teal-500
                  text-white text-[20px] md:text-[24px]
                  shadow-[0_16px_35px_rgba(79,70,229,.25)]
-                 hover:scale-105 transition-transform" 
+                 hover:scale-105
+                 transition-transform"
           @click="playPhrase()">
+
     🔊
+
   </button>
 
 </section>

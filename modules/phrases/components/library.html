@@ -2,7 +2,7 @@
 
 <section class="flex flex-col
                flex-shrink-0
-               h-[210px] md:h-[260px]
+               h-[280px] md:h-[360px]
                overflow-hidden
                rounded-[20px] md:rounded-[28px]
                bg-white/80
@@ -12,97 +12,214 @@
 
   <!-- TOP -->
 
-  <div class="flex items-center justify-between flex-shrink-0 mb-2">
+  <div class="flex items-center justify-between
+              flex-shrink-0
+              mb-2">
 
-    <div>
 
-      <div class="text-[18px] md:text-[24px] leading-none font-bold font-['Baloo_2']">
-        Biblioteca
-      </div>
+<div>
 
-      <div class="hidden md:block text-sm text-slate-500">
-        Segure e arraste
-      </div>
-      <div x-show="editMode" class="text-xs font-bold text-amber-600 mt-1">
+  <div class="text-[18px] md:text-[24px]
+              leading-none
+              font-bold
+              font-['Baloo_2']">
 
-        Clique em um cartão para editar
+    Biblioteca
 
-      </div>
-    </div>
+  </div>
 
-    <div class="flex items-center gap-2">
+  <div class="hidden md:block
+              text-sm
+              text-slate-500">
 
-      <!-- EDITAR -->
+    Segure e arraste
 
-      <button x-show="configMode.editCard" @click="toggleEditMode()" :class="editMode
+  </div>
+
+  <div
+    x-show="editMode"
+    class="text-xs
+           font-bold
+           text-amber-600
+           mt-1">
+
+    Clique em um cartão para editar
+
+  </div>
+
+</div>
+
+
+<div class="flex items-center gap-2">
+
+  <!-- EDITAR -->
+
+  <button
+    x-show="configMode.editCard"
+    @click="toggleEditMode()"
+    :class="editMode
       ? 'bg-amber-500 text-white'
       : 'bg-slate-200 text-slate-700'"
-        class="px-3 py-2 rounded-2xl text-[11px] md:text-xs font-bold shadow-lg transition">
+    class="px-3 py-2
+           rounded-2xl
+           text-[11px] md:text-xs
+           font-bold
+           shadow-lg
+           transition">
 
-        <span x-show="!editMode">✏️ Editar</span>
-        <span x-show="editMode">✖ Sair edição</span>
+    <span x-show="!editMode">
+      ✏️ Editar
+    </span>
 
-      </button>
+    <span x-show="editMode">
+      ✖ Sair edição
+    </span>
 
-      <!-- CRIAR -->
+  </button>
 
-      <button x-show="configMode.createCard"
-        class="px-3 py-2 rounded-2xl bg-indigo-600 text-white text-[11px] md:text-xs font-bold shadow-lg" @click="
+
+  <!-- CRIAR -->
+
+  <button
+    x-show="configMode.createCard"
+    class="px-3 py-2
+           rounded-2xl
+           bg-indigo-600
+           text-white
+           text-[11px] md:text-xs
+           font-bold
+           shadow-lg"
+
+    @click="
       editMode = false;
       showCreateModal = true;
     ">
 
-        + Criar card
+    + Criar card
 
-      </button>
+  </button>
 
-    </div>
+</div>
+
 
   </div>
 
-  <!-- SCROLL -->
+  <!-- SCROLL HORIZONTAL COM 2 LINHAS -->
 
-  <div class="flex flex-1 min-h-0 gap-2 overflow-x-auto overflow-y-hidden pb-1">
+  <div class="flex-1
+              min-h-0
+              overflow-x-auto
+              overflow-y-hidden
+              pb-1">
 
-    <template x-for="card in filteredCards" :key="card.id">
 
-      <button class="flex-shrink-0 text-left
-         rounded-[16px] md:rounded-[20px]
-         min-w-[92px] max-w-[92px]
-         md:min-w-[118px] md:max-w-[118px]
-         p-2
-         shadow-[0_10px_24px_rgba(15,23,42,.08)]" :class="editMode
-    ? 'ring-4 ring-amber-400 cursor-pointer'
-    : ''" @pointerdown="!editMode && startDragFromLibrary($event,card)" @click="onLibraryCardClick(card)" :style="`
-    background:linear-gradient(
-      180deg,
-      ${getCategory(card.category)?.color || '#E2E8F0'} 0%,
-      #ffffff 72%
-    );
-  `">
+<div class="grid
+            grid-flow-col
+            grid-rows-2
+            auto-rows-fr
+            gap-2
+            h-full
+            min-h-0
+            w-max">
 
-        <div class="overflow-hidden rounded-[12px]
-                       w-10 h-10
-                       md:w-12 md:h-12
-                       mb-2">
+  <template
+    x-for="card in filteredCards"
+    :key="card.id">
 
-          <img class="object-cover w-full h-full" :src="card.image">
+    <button
+      class="text-left
+             rounded-[16px] md:rounded-[20px]
 
-        </div>
+             min-w-[120px]
+             max-w-[120px]
 
-        <div class="text-[15px] md:text-[18px]
-                       leading-none font-bold
-                       font-['Baloo_2']
-                       mb-1" x-text="card.frontText"></div>
+             md:min-w-[155px]
+             md:max-w-[155px]
 
-        <div class="text-[8px] md:text-[9px]
-                       uppercase tracking-[.12em]
-                       text-slate-500
-                       mb-1" x-text="card.category"></div>
+             h-full
+             min-h-0
 
-      </button>
+             p-2 md:p-3
 
-    </template>
+             shadow-[0_10px_24px_rgba(15,23,42,.08)]
+
+             flex
+             flex-col
+             overflow-hidden"
+
+      :class="editMode
+        ? 'ring-4 ring-amber-400 cursor-pointer'
+        : ''"
+
+      @pointerdown="
+        !editMode &&
+        startDragFromLibrary($event, card)
+      "
+
+      @click="onLibraryCardClick(card)"
+
+      :style="`
+        background-color: #E2E8F0;
+        background-image: linear-gradient(
+          180deg,
+          ${getCategory(card.category)?.color || '#E2E8F0'} 0%,
+          #ffffff 72%
+        );
+      `">
+
+<!-- IMAGE -->
+
+<div
+  class="overflow-hidden
+         rounded-[12px]
+         w-10 h-10
+         md:w-12 md:h-12
+         mb-2
+         flex-shrink-0">
+
+  <img
+    class="object-cover
+           w-full
+           h-full"
+    :src="card.image">
+
+</div>
+
+
+      <!-- FRONT TEXT -->
+
+      <div
+        class="text-[15px] md:text-[18px]
+               leading-none
+               font-bold
+               font-['Baloo_2']
+               mb-1
+               break-words"
+
+        x-text="card.frontText">
+
+      </div>
+
+
+      <!-- CATEGORY -->
+
+      <div
+        class="text-[8px] md:text-[9px]
+               uppercase
+               tracking-[.12em]
+               text-slate-500
+               truncate"
+
+        x-text="card.category">
+
+      </div>
+
+    </button>
+
+  </template>
+
+</div>
+
 
   </div>
 
