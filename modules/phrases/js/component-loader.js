@@ -1,9 +1,7 @@
 const COMPONENTS_PATH = './components';
 
 async function loadComponent(containerId, componentName) {
-
     try {
-
         const response = await fetch(
             `${COMPONENTS_PATH}/${componentName}.html`
         );
@@ -24,20 +22,20 @@ async function loadComponent(containerId, componentName) {
 
         container.innerHTML = await response.text();
 
-    } catch (error) {
+        if (window.Alpine) {
+            Alpine.initTree(container);
+        }
 
+    } catch (error) {
         console.error(
             `Erro ao carregar o componente "${componentName}":`,
             error
         );
-
         throw error;
     }
-
 }
 
 async function loadComponents() {
-
     const components = [
         ['header-container', 'header'],
         ['composer-container', 'composer'],
@@ -52,8 +50,10 @@ async function loadComponents() {
         )
     );
 
+
     document.dispatchEvent(
         new CustomEvent('components-loaded')
     );
-
 }
+
+window.loadComponents = loadComponents;

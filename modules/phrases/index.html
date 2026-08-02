@@ -29,11 +29,11 @@
 </head>
 <body>
 
-<div
-  x-data="aacApp()"
-  x-init="init()"
-  class="flex flex-col min-h-dvh
-         bg-gradient-to-b from-indigo-50 via-slate-50 to-white">
+<div id="app"
+     x-data="aacApp()"
+     x-init="init()"
+     class="flex flex-col min-h-dvh
+            bg-gradient-to-b from-indigo-50 via-slate-50 to-white">
     <div id="header-container"></div>
 
     <main class="flex flex-col flex-1 min-h-0 overflow-hidden gap-2 md:gap-3 p-2 md:px-3 md:pt-0 md:pb-3">
@@ -49,12 +49,24 @@
     <div id="modal-container"></div>
 
   </div>
+  
   <script src="../../js/safe-exit.js"></script>
-
   <script src="./js/data/collections/store_fritzgeralds.js"></script>
   <script src="./js/component-loader.js"></script>
   <script src="../../js/services/speech-service.js"></script>
   <script src="./js/app.js"></script>
+  
+  <script>
+
+    document.addEventListener('DOMContentLoaded', () => {
+      setTimeout(() => {
+        const appEl = document.getElementById('app');
+        if (appEl && appEl._x_dataStack) {
+          window.__appInstance = appEl._x_dataStack[0];
+        }
+      }, 100);
+    });
+  </script>
 
 </body>
 
