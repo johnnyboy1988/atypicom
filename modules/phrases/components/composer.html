@@ -249,8 +249,7 @@
     </div>
   </div>
 </div>
-
-<!-- MODAL CARREGAR FRASE -->
+<!-- MODAL CARREGAR FRASE - VERSÃO SIMPLES E GARANTIDA -->
 <div x-show="showLoadPhraseModal" x-transition.opacity
      class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" style="display:none">
   <div @click.outside="showLoadPhraseModal = false"
@@ -279,7 +278,24 @@
         <div class="flex items-center justify-between rounded-2xl border border-slate-200 p-4 hover:bg-slate-50 transition">
           <div>
             <div class="font-bold text-slate-700" x-text="phrase.name || 'Frase sem nome'"></div>
-            <div class="text-xs text-slate-500">
+            
+            <!-- Ícones dos cards - VERSÃO MAIS SIMPLES -->
+            <div class="flex items-center gap-1 mt-2 flex-wrap">
+              <div x-data="{ cards: phrase.cards || [] }">
+                <div x-html="cards.slice(0, 6).map(card => 
+                  `<div class='w-8 h-8 rounded-lg overflow-hidden bg-slate-100 border border-slate-200 inline-block mr-1'>
+                    ${card && card.image ? `<img class='object-cover w-full h-full' src='${card.image}' alt='${card.frontText || 'Card'}'>` : 
+                    `<div class='w-full h-full flex items-center justify-center text-slate-400 text-xs'>🖼️</div>`}
+                  </div>`
+                ).join('')">
+                </div>
+              </div>
+              <span x-show="(phrase.cards || []).length > 6" class="text-xs font-semibold text-slate-500 ml-1">
+                +<span x-text="(phrase.cards || []).length - 6"></span>
+              </span>
+            </div>
+            
+            <div class="text-xs text-slate-500 mt-1">
               <span x-text="phrase.cards ? phrase.cards.length : 0"></span> cartões • 
               <span x-text="phrase.createdAt ? new Date(phrase.createdAt).toLocaleDateString('pt-BR') : 'Data desconhecida'"></span>
             </div>
