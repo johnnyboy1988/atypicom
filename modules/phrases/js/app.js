@@ -85,7 +85,7 @@ function aacApp() {
     libraryConfigCardWidthMd: 155,
     libraryConfigShowCategory: true,
     libraryConfigShowIcons: true,
-
+    libraryConfigOrientation: 'columns', 
 
     // Adicione os métodos
     loadLibraryConfig() {
@@ -95,6 +95,7 @@ function aacApp() {
         this.libraryConfigCardWidthMd = LibraryConfig.getCardWidthMd();
         this.libraryConfigShowCategory = LibraryConfig.getShowCategory();
         this.libraryConfigShowIcons = LibraryConfig.getShowIcons();
+        this.libraryConfigOrientation = LibraryConfig.getOrientation(); 
     },
 
     updateLibraryConfig(newConfig) {

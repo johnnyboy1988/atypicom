@@ -12,6 +12,7 @@
             cardWidthMd: 140,
             showCategory: true,
             showIcons: true,
+            orientation: 'columns', 
         },
 
         // Estado atual
@@ -22,6 +23,7 @@
             cardWidthMd: 140,
             showCategory: true,
             showIcons: true,
+            orientation: 'columns',
         },
 
         // Inicializa
@@ -100,6 +102,24 @@
         setCardWidthMd(value) { this.updateConfig({ cardWidthMd: value }); },
         setShowCategory(value) { this.updateConfig({ showCategory: value }); },
         setShowIcons(value) { this.updateConfig({ showIcons: value }); },
+
+
+        getRows() { return this.state.rows; },
+        getMaxHeight() { return this.state.maxHeight; },
+        getCardWidth() { return this.state.cardWidth; },
+        getCardWidthMd() { return this.state.cardWidthMd; },
+        getShowCategory() { return this.state.showCategory; },
+        getShowIcons() { return this.state.showIcons; },
+        getOrientation() { return this.state.orientation; },
+
+        // Atalhos para atualização
+        setRows(value) { this.updateConfig({ rows: value }); },
+        setMaxHeight(value) { this.updateConfig({ maxHeight: value }); },
+        setCardWidth(value) { this.updateConfig({ cardWidth: value }); },
+        setCardWidthMd(value) { this.updateConfig({ cardWidthMd: value }); },
+        setShowCategory(value) { this.updateConfig({ showCategory: value }); },
+        setShowIcons(value) { this.updateConfig({ showIcons: value }); },
+        setOrientation(value) { this.updateConfig({ orientation: value }); },
 
         // Reseta para padrão
         reset() {

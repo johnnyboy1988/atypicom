@@ -111,7 +111,7 @@
 
   </div>
 
-  <!-- SCROLL HORIZONTAL COM LINHAS CONFIGURÁVEIS -->
+  <!-- SCROLL COM ORIENTAÇÃO CONFIGURÁVEL -->
 
   <div class="flex-1
               min-h-0
@@ -119,14 +119,15 @@
               overflow-y-hidden
               pb-1">
 
-
-    <div class="grid
-            grid-flow-col
-            auto-rows-fr
-            gap-2
-            h-full
-            min-h-0
-            w-max"
+    <!-- ORIENTAÇÃO POR COLUNAS (PADRÃO) -->
+    <div x-show="libraryConfigOrientation === 'columns'"
+         class="grid
+                grid-flow-col
+                auto-rows-fr
+                gap-2
+                h-full
+                min-h-0
+                w-max"
          :style="`grid-template-rows: repeat(${libraryConfigRows}, 1fr);`">
 
       <template x-for="card in filteredCards" :key="card.id">
@@ -212,6 +213,99 @@
 
     </div>
 
+    <!-- ORIENTAÇÃO POR LINHAS -->
+    <div x-show="libraryConfigOrientation === 'rows'"
+         class="grid
+                grid-flow-row
+                auto-cols-fr
+                gap-2
+                h-full
+                min-h-0
+                w-max"
+         :style="`grid-template-columns: repeat(${libraryConfigRows}, 1fr);`">
+
+      <template x-for="card in filteredCards" :key="card.id">
+
+        <button class="text-left
+             rounded-[16px] md:rounded-[20px]
+
+             h-full
+             min-h-0
+
+             p-2 md:p-2.5
+
+             shadow-[0_10px_24px_rgba(15,23,42,.08)]
+
+             flex
+             flex-col
+             overflow-hidden" 
+             :style="`
+               min-width: ${libraryConfigCardWidth}px;
+               max-width: ${libraryConfigCardWidth}px;
+               background-color: #E2E8F0;
+               background-image: linear-gradient(
+                 180deg,
+                 ${getCategory(card.category)?.color || '#E2E8F0'} 0%,
+                 #ffffff 72%
+               );
+             `"
+             :class="editMode
+        ? 'ring-4 ring-amber-400 cursor-pointer'
+        : ''" @pointerdown="
+        !editMode &&
+        startDragFromLibrary($event, card)
+      " @click="onLibraryCardClick(card)">
+
+          <!-- IMAGE -->
+
+          <div class="overflow-hidden
+         rounded-[12px]
+         w-8 h-8
+         md:w-10 md:h-10
+         mb-1.5
+         flex-shrink-0">
+
+            <img class="object-cover
+           w-full
+           h-full" :src="card.image">
+
+          </div>
+
+
+          <!-- FRONT TEXT -->
+
+          <div class="text-[14px] md:text-[16px]
+               leading-tight
+               font-bold
+               font-['Baloo_2']
+               mb-0.5
+               break-words
+               line-clamp-2" x-text="card.frontText">
+
+          </div>
+
+
+          <!-- CATEGORY (condicional) -->
+
+          <div x-show="libraryConfigShowCategory" 
+               class="text-[7px] md:text-[8px]
+               uppercase
+               tracking-[.12em]
+               text-slate-500
+               truncate
+               flex items-center gap-1
+               mt-auto">
+
+            <span x-show="libraryConfigShowIcons" x-html="getCategoryIcon(card.category)"></span>
+            <span x-text="card.category"></span>
+
+          </div>
+
+        </button>
+
+      </template>
+
+    </div>
 
   </div>
 
@@ -242,10 +336,41 @@
     <!-- BODY -->
     <div class="flex-1 overflow-y-auto p-5 space-y-4">
       
+      <!-- ORIENTAÇÃO -->
+      <div>
+        <label class="block text-sm font-semibold mb-2">
+          Orientação do grid
+        </label>
+        <div class="flex gap-2">
+          <button class="flex-1 rounded-xl py-2 px-3 font-semibold text-sm transition-all duration-200 flex items-center justify-center gap-2"
+                  :class="libraryConfigOrientation === 'columns' 
+                    ? 'bg-indigo-600 text-white shadow-md' 
+                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
+                  @click="updateLibraryConfig({ orientation: 'columns' })">
+            <span>📋</span> Colunas
+          </button>
+          <button class="flex-1 rounded-xl py-2 px-3 font-semibold text-sm transition-all duration-200 flex items-center justify-center gap-2"
+                  :class="libraryConfigOrientation === 'rows' 
+                    ? 'bg-indigo-600 text-white shadow-md' 
+                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
+                  @click="updateLibraryConfig({ orientation: 'rows' })">
+            <span>📊</span> Linhas
+          </button>
+        </div>
+        <div class="text-xs text-slate-500 mt-2">
+          <span x-show="libraryConfigOrientation === 'columns'">
+            🔽 Os cards são organizados de cima para baixo, coluna por coluna
+          </span>
+          <span x-show="libraryConfigOrientation === 'rows'">
+            ➡️ Os cards são organizados da esquerda para a direita, linha por linha
+          </span>
+        </div>
+      </div>
+
       <!-- NÚMERO DE LINHAS -->
       <div>
         <label class="block text-sm font-semibold mb-2">
-          Número de linhas
+          Número de linhas/colunas
         </label>
         <div class="flex gap-2">
           <button class="flex-1 rounded-xl py-2 px-3 font-semibold text-sm transition-all duration-200"
@@ -283,6 +408,14 @@
                   @click="updateLibraryConfig({ rows: 6 })">
             6
           </button>
+        </div>
+        <div class="text-xs text-slate-500 mt-1">
+          <span x-show="libraryConfigOrientation === 'columns'">
+            Número de linhas (vertical)
+          </span>
+          <span x-show="libraryConfigOrientation === 'rows'">
+            Número de colunas (horizontal)
+          </span>
         </div>
       </div>
 
@@ -337,20 +470,27 @@
         </div>
       </div>
 
-      <!-- OPÇÕES ADICIONAIS -->
-      <div class="border-t border-slate-100 pt-4 space-y-2">
-        <label class="flex items-center justify-between py-2">
-          <span class="font-semibold">Mostrar categoria</span>
-          <input type="checkbox" x-model="libraryConfigShowCategory"
-                 @change="updateLibraryConfig({ showCategory: $event.target.checked })">
-        </label>
-        <label class="flex items-center justify-between py-2">
-          <span class="font-semibold">Mostrar ícones das categorias</span>
-          <input type="checkbox" x-model="libraryConfigShowIcons"
-                 @change="updateLibraryConfig({ showIcons: $event.target.checked })">
-        </label>
-      </div>
-
+<!-- OPÇÕES ADICIONAIS -->
+<div class="border-t border-slate-100 pt-4 space-y-2">
+  <label class="flex items-center justify-between py-2">
+    <span class="font-semibold">Mostrar categoria</span>
+    <input type="checkbox" x-model="libraryConfigShowCategory"
+           @change="updateLibraryConfig({ showCategory: $event.target.checked })">
+  </label>
+  <label class="flex items-center justify-between py-2"
+         :style="!libraryConfigShowCategory ? 'opacity-40' : ''">
+    <div>
+      <span class="font-semibold">Mostrar ícones das categorias</span>
+      <span x-show="!libraryConfigShowCategory" 
+            class="text-[10px] text-slate-400 ml-1">
+        (categoria desativada)
+      </span>
+    </div>
+    <input type="checkbox" x-model="libraryConfigShowIcons"
+           :disabled="!libraryConfigShowCategory"
+           @change="updateLibraryConfig({ showIcons: $event.target.checked })">
+  </label>
+</div>
       <!-- BOTÃO RESET -->
       <button class="w-full rounded-xl bg-red-50 text-red-600 py-2 font-semibold hover:bg-red-100 transition text-sm"
               @click="resetLibraryConfig()">
