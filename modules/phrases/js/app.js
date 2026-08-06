@@ -77,6 +77,15 @@ function aacApp() {
       selectedImage: "",
     },
 
+    // ===== PROPRIEDADES SNAP-GRID =====
+    displayMode: "phrases",
+    favorites: [],
+    currentView: "categories",
+    currentFilter: null,
+    viewHistory: [],
+    currentView: "categories", // 'categories' | 'tags' | 'favorites' | 'cards'
+    currentFilter: null, //
+
     // ===== CONFIGURAÇÕES DA BIBLIOTECA =====
     showLibraryConfigModal: false,
     libraryConfigGridSize: 3,
@@ -96,92 +105,6 @@ function aacApp() {
     composerConfigShowCategory: true,
     composerConfigShowTags: true,
 
-    // ===== MÉTODOS DA BIBLIOTECA =====
-    loadLibraryConfig() {
-      if (typeof window.LibraryConfig === 'undefined') {
-        console.warn('LibraryConfig não disponível');
-        return;
-      }
-      this.libraryConfigGridSize = LibraryConfig.getGridSize();
-      this.libraryConfigMaxHeight = LibraryConfig.getMaxHeight();
-      this.libraryConfigCardWidth = LibraryConfig.getCardWidth();
-      this.libraryConfigCardWidthMd = LibraryConfig.getCardWidthMd();
-      this.libraryConfigCardHeight = LibraryConfig.getCardHeight();
-      this.libraryConfigShowCategory = LibraryConfig.getShowCategory();
-      this.libraryConfigShowIcons = LibraryConfig.getShowIcons();
-      this.libraryConfigOrientation = LibraryConfig.getOrientation();
-    },
-
-    updateLibraryConfig(newConfig) {
-      if (typeof window.LibraryConfig === 'undefined') {
-        console.warn('LibraryConfig não disponível');
-        return;
-      }
-      LibraryConfig.updateConfig(newConfig);
-      this.loadLibraryConfig();
-      // Força atualização da UI
-      this.$nextTick(() => {
-        this.$dispatch('force-update');
-      });
-    },
-
-    resetLibraryConfig() {
-      if (typeof window.LibraryConfig === 'undefined') {
-        console.warn('LibraryConfig não disponível');
-        return;
-      }
-      LibraryConfig.reset();
-      this.loadLibraryConfig();
-      this.showToast("Configuração restaurada!");
-    },
-
-    // ===== MÉTODOS DO COMPOSITOR =====
-    loadComposerConfig() {
-      if (typeof window.ComposerConfig === "undefined") {
-        console.warn("ComposerConfig não disponível");
-        return;
-      }
-      this.composerConfigMaxHeight = window.ComposerConfig.getMaxHeight();
-      this.composerConfigColumnsMobile = window.ComposerConfig.getColumnsMobile();
-      this.composerConfigColumnsDesktop = window.ComposerConfig.getColumnsDesktop();
-      this.composerConfigShowCategory = window.ComposerConfig.getShowCategory();
-      this.composerConfigShowTags = window.ComposerConfig.getShowTags();
-    },
-
-    updateComposerConfig(newConfig) {
-      if (typeof window.ComposerConfig === "undefined") {
-        console.warn("ComposerConfig não disponível");
-        return;
-      }
-      window.ComposerConfig.updateConfig(newConfig);
-      this.loadComposerConfig();
-      this.$nextTick(() => {
-        this.refreshComposer();
-      });
-    },
-
-    resetComposerConfig() {
-      if (typeof window.ComposerConfig === "undefined") {
-        console.warn("ComposerConfig não disponível");
-        return;
-      }
-      window.ComposerConfig.reset();
-      this.loadComposerConfig();
-      this.showToast("Configuração restaurada!");
-    },
-
-    refreshComposer() {
-      if (Array.isArray(this.phrase)) {
-        if (this.phrase.length > 0) {
-          this.phrase = [...this.phrase];
-        } else {
-          this.phrase = [];
-        }
-      } else {
-        this.phrase = [];
-      }
-    },
-
     // ===== INIT =====
     async init() {
       window.__appInstance = this;
@@ -195,12 +118,27 @@ function aacApp() {
       this.createForm.categoryColor = this.randomColor();
       this.createForm.newTagColor = this.randomColor();
 
+      // Sincroniza com HeaderConfig
+      this.syncHeaderConfig();
+      
+      // Listener para mudanças no HeaderConfig (de outras abas/janelas)
+      window.addEventListener('header-config-changed', (event) => {
+          const config = event.detail.config;
+          console.log('Config do header mudou:', config);
+          this.syncHeaderConfig();
+          // Força atualização da UI
+          this.$nextTick(() => {
+              this.$dispatch('force-update');
+          });
+      });
+
       this.loadPhrasesFromStorage();
+      this.loadFavoritesFromStorage();
       this.loadLibraryConfig();
       this.loadComposerConfig();
-      
+
       // Listener para forçar atualização
-      this.$el.addEventListener('force-update', () => {
+      this.$el.addEventListener("force-update", () => {
         if (Array.isArray(this.phrase)) {
           this.phrase = [...this.phrase];
         }
@@ -283,7 +221,7 @@ function aacApp() {
     getCategoryIcon(name) {
       return this.categories.find((c) => c.name === name)?.icon || "";
     },
-    
+
     getTagIcon(name) {
       return this.tags.find((t) => t.name === name)?.icon || "";
     },
@@ -958,6 +896,319 @@ function aacApp() {
         this.savedPhrases = [];
       }
     },
+    // ===== MÉTODOS DA BIBLIOTECA =====
+    loadLibraryConfig() {
+      if (typeof window.LibraryConfig === "undefined") {
+        console.warn("LibraryConfig não disponível");
+        return;
+      }
+      this.libraryConfigGridSize = LibraryConfig.getGridSize();
+      this.libraryConfigMaxHeight = LibraryConfig.getMaxHeight();
+      this.libraryConfigCardWidth = LibraryConfig.getCardWidth();
+      this.libraryConfigCardWidthMd = LibraryConfig.getCardWidthMd();
+      this.libraryConfigCardHeight = LibraryConfig.getCardHeight();
+      this.libraryConfigShowCategory = LibraryConfig.getShowCategory();
+      this.libraryConfigShowIcons = LibraryConfig.getShowIcons();
+      this.libraryConfigOrientation = LibraryConfig.getOrientation();
+    },
+
+    updateLibraryConfig(newConfig) {
+      if (typeof window.LibraryConfig === "undefined") {
+        console.warn("LibraryConfig não disponível");
+        return;
+      }
+      LibraryConfig.updateConfig(newConfig);
+      this.loadLibraryConfig();
+      // Força atualização da UI
+      this.$nextTick(() => {
+        this.$dispatch("force-update");
+      });
+    },
+
+    resetLibraryConfig() {
+      if (typeof window.LibraryConfig === "undefined") {
+        console.warn("LibraryConfig não disponível");
+        return;
+      }
+      LibraryConfig.reset();
+      this.loadLibraryConfig();
+      this.showToast("Configuração restaurada!");
+    },
+
+    // ===== MÉTODOS DO COMPOSITOR =====
+    loadComposerConfig() {
+      if (typeof window.ComposerConfig === "undefined") {
+        console.warn("ComposerConfig não disponível");
+        return;
+      }
+      this.composerConfigMaxHeight = window.ComposerConfig.getMaxHeight();
+      this.composerConfigColumnsMobile =
+        window.ComposerConfig.getColumnsMobile();
+      this.composerConfigColumnsDesktop =
+        window.ComposerConfig.getColumnsDesktop();
+      this.composerConfigShowCategory = window.ComposerConfig.getShowCategory();
+      this.composerConfigShowTags = window.ComposerConfig.getShowTags();
+    },
+
+    updateComposerConfig(newConfig) {
+      if (typeof window.ComposerConfig === "undefined") {
+        console.warn("ComposerConfig não disponível");
+        return;
+      }
+      window.ComposerConfig.updateConfig(newConfig);
+      this.loadComposerConfig();
+      this.$nextTick(() => {
+        this.refreshComposer();
+      });
+    },
+
+    resetComposerConfig() {
+      if (typeof window.ComposerConfig === "undefined") {
+        console.warn("ComposerConfig não disponível");
+        return;
+      }
+      window.ComposerConfig.reset();
+      this.loadComposerConfig();
+      this.showToast("Configuração restaurada!");
+    },
+
+    refreshComposer() {
+      if (Array.isArray(this.phrase)) {
+        if (this.phrase.length > 0) {
+          this.phrase = [...this.phrase];
+        } else {
+          this.phrase = [];
+        }
+      } else {
+        this.phrase = [];
+      }
+    },
+    // ===== FAVORITOS =====
+    toggleFavorite(cardId) {
+      const collectionId = "fritzgeralds"; // ou obter dinamicamente
+      const index = this.favorites.findIndex(
+        (f) => f.collectionId === collectionId && f.cardId === cardId,
+      );
+      if (index >= 0) {
+        this.favorites.splice(index, 1);
+      } else {
+        this.favorites.push({ collectionId, cardId });
+      }
+      this.saveFavoritesToStorage();
+    },
+
+    isFavorite(cardId) {
+      const collectionId = "fritzgeralds";
+      return this.favorites.some(
+        (f) => f.collectionId === collectionId && f.cardId === cardId,
+      );
+    },
+
+    saveFavoritesToStorage() {
+      try {
+        localStorage.setItem("favorites", JSON.stringify(this.favorites));
+      } catch (e) {
+        console.error("Erro ao salvar favoritos:", e);
+      }
+    },
+
+    loadFavoritesFromStorage() {
+      try {
+        const data = localStorage.getItem("favorites");
+        if (data) {
+          this.favorites = JSON.parse(data);
+        } else {
+          this.favorites = [];
+        }
+      } catch (e) {
+        this.favorites = [];
+      }
+    },
+
+    // ===== NAVEGAÇÃO SNAP-GRID =====
+    resetSnapGrid() {
+      this.currentView = "home";
+      this.currentFilter = null;
+      this.viewHistory = [];
+    },
+
+    navigateTo(view, filter) {
+      this.viewHistory.push({
+        view: this.currentView,
+        filter: this.currentFilter,
+      });
+      this.currentView = view;
+      this.currentFilter = filter;
+    },
+
+    navigateToCards(filter, type) {
+      this.viewHistory.push({
+        view: this.currentView,
+        filter: this.currentFilter,
+      });
+      this.currentView = "cards";
+      this.currentFilter = filter;
+    },
+
+    goBack() {
+      if (this.viewHistory.length > 0) {
+        const previous = this.viewHistory.pop();
+        this.currentView = previous.view;
+        this.currentFilter = previous.filter;
+      } else {
+        this.currentView = "home";
+        this.currentFilter = null;
+      }
+    },
+
+    get snapGridCards() {
+      if (this.currentView === "categories") {
+        // Retorna as categorias como cards
+        return this.categories.map((cat) => ({
+          id: cat.name,
+          type: "category",
+          name: cat.name,
+          color: cat.color,
+          icon: cat.icon || "📂", // Usa o ícone da categoria ou default
+        }));
+      } else if (this.currentView === "tags") {
+        return this.tags.map((tag) => ({
+          id: tag.name,
+          type: "tag",
+          name: tag.name,
+          color: tag.color,
+          icon: tag.icon || "🏷️", // Usa o ícone da tag ou default
+        }));
+      } else if (this.currentView === "favorites") {
+        const collectionId = "fritzgeralds";
+        const favIds = this.favorites
+          .filter((f) => f.collectionId === collectionId)
+          .map((f) => f.cardId);
+        return this.cards.filter((card) => favIds.includes(card.id));
+      } else if (this.currentView === "cards") {
+        if (this.currentFilter) {
+          return this.cards.filter(
+            (card) =>
+              card.category === this.currentFilter ||
+              (card.tags || []).includes(this.currentFilter),
+          );
+        }
+        return this.cards;
+      }
+      return [];
+    },
+
+    onSnapGridItemClick(item) {
+      if (item.type === "category") {
+        this.navigateTo("cards", item.name);
+      } else if (item.type === "tag") {
+        this.navigateTo("cards", item.name);
+      } else {
+        // É um card, favorita/desfavorita
+        this.toggleFavorite(item.id);
+      }
+    },
+    // ===== GETTERS SNAP-GRID =====
+    get snapGridCategories() {
+      // Retorna categorias com ícones
+      return this.categories.map((cat) => ({
+        ...cat,
+        type: "category",
+        icon: cat.icon || "📂",
+      }));
+    },
+
+    get snapGridTags() {
+      // Retorna tags com ícones
+      return this.tags.map((tag) => ({
+        ...tag,
+        type: "tag",
+        icon: tag.icon || "🏷️",
+      }));
+    },
+
+    get snapGridFavorites() {
+      const collectionId = "fritzgeralds";
+      const favIds = this.favorites
+        .filter((f) => f.collectionId === collectionId)
+        .map((f) => f.cardId);
+      return this.cards.filter((card) => favIds.includes(card.id));
+    },
+
+    get snapGridFilteredCards() {
+      if (!this.currentFilter) return [];
+      return this.cards.filter(
+        (card) =>
+          card.category === this.currentFilter ||
+          (card.tags || []).includes(this.currentFilter),
+      );
+    },
+
+    get snapGridHomeItems() {
+      // Retorna todas as categorias e tags juntas
+      const categories = this.categories.map((cat) => ({
+        ...cat,
+        type: "category",
+        icon: cat.icon || "📂",
+        count: this.getCategoryCardCount(cat.name),
+      }));
+      const tags = this.tags.map((tag) => ({
+        ...tag,
+        type: "tag",
+        icon: tag.icon || "🏷️",
+        count: this.getTagCardCount(tag.name),
+      }));
+      return [...categories, ...tags];
+    },
+    // ===== MÉTODOS DE CONTAGEM =====
+    getCategoryCardCount(categoryName) {
+      return this.cards.filter((card) => card.category === categoryName).length;
+    },
+
+    getTagCardCount(tagName) {
+      return this.cards.filter((card) => (card.tags || []).includes(tagName))
+        .length;
+    },
+
+    // ===== CLICK EM CARD SNAP-GRID =====
+    onSnapGridCardClick(card) {
+      console.log("onSnapGridCardClick:", card.frontText);
+      this.quickAdd(card);
+    },
+
+    // ===== NAVEGAÇÃO PARA CARDS =====
+    navigateToCards(filter, type) {
+      console.log("navigateToCards:", filter, type);
+      this.viewHistory.push({
+        view: this.currentView,
+        filter: this.currentFilter,
+      });
+      this.currentView = "cards";
+      this.currentFilter = filter;
+    },
+    syncHeaderConfig() {
+    if (typeof window.HeaderConfig !== 'undefined') {
+        const config = window.HeaderConfig.getConfig();
+        
+        // Sincroniza as propriedades do app
+        this.displayMode = config.displayMode || 'phrases';
+        this.filterMode = config.filterMode || 'OR';
+        this.configMode.createCard = config.createCard !== undefined ? config.createCard : true;
+        this.configMode.editCard = config.editCard || false;
+        this.configMode.createTag = config.createTag !== undefined ? config.createTag : true;
+        this.configMode.createCategory = config.createCategory !== undefined ? config.createCategory : true;
+        this.configMode.iconProviders.iconify = config.iconProviders?.iconify !== undefined ? config.iconProviders.iconify : true;
+        this.configMode.iconProviders.openmoji = config.iconProviders?.openmoji !== undefined ? config.iconProviders.openmoji : true;
+        
+        // Se estiver em snap-grid, reseta a navegação
+        if (this.displayMode === 'snap-grid') {
+            this.resetSnapGrid();
+        }
+        
+        console.log('Configurações do header sincronizadas:', config);
+    }
+},
+
   };
 
   appInstance = instance;

@@ -1,3 +1,4 @@
+<!-- LIBRARY -->
 <section class="flex flex-col
                flex-shrink-0
                overflow-hidden
@@ -5,8 +6,7 @@
                bg-white/80
                backdrop-blur-xl
                p-2 md:p-3
-               shadow-[0_-10px_30px_rgba(0,0,0,.08)]" 
-         :style="`height: ${libraryConfigMaxHeight}vh`">
+               shadow-[0_-10px_30px_rgba(0,0,0,.08)]" :style="`height: ${libraryConfigMaxHeight}vh`">
 
   <!-- TOP -->
   <div class="flex items-center justify-between flex-shrink-0 mb-2">
@@ -15,27 +15,33 @@
         Biblioteca
       </div>
       <div class="hidden md:block text-sm text-slate-500">
-        Segure e arraste
+        <span x-show="displayMode === 'phrases'">Segure e arraste</span>
+        <span x-show="displayMode === 'snap-grid'">
+          <span x-show="currentView === 'home'">🏠 Início</span>
+          <span x-show="currentView === 'cards' && currentFilter">
+            <span x-text="currentFilter"></span>
+          </span>
+        </span>
       </div>
       <div x-show="editMode" class="text-xs font-bold text-amber-600 mt-1">
         Clique em um cartão para editar
       </div>
     </div>
     <div class="flex items-center gap-2">
-      <button x-show="configMode.editCard" @click="toggleEditMode()" 
-              :class="editMode ? 'bg-amber-500 text-white' : 'bg-slate-200 text-slate-700'" 
-              class="px-3 py-2 rounded-2xl text-[11px] md:text-xs font-bold shadow-lg transition">
+      <button x-show="configMode.editCard" @click="toggleEditMode()"
+        :class="editMode ? 'bg-amber-500 text-white' : 'bg-slate-200 text-slate-700'"
+        class="px-3 py-2 rounded-2xl text-[11px] md:text-xs font-bold shadow-lg transition">
         <span x-show="!editMode">✏️ Editar</span>
         <span x-show="editMode">✖ Sair edição</span>
       </button>
-      <button x-show="configMode.editLibrary" 
-              class="px-3 py-2 rounded-2xl bg-slate-200 text-slate-700 text-[11px] md:text-xs font-bold shadow-lg hover:bg-slate-300 transition" 
-              @click="showLibraryConfigModal = true">
+      <button x-show="configMode.editLibrary"
+        class="px-3 py-2 rounded-2xl bg-slate-200 text-slate-700 text-[11px] md:text-xs font-bold shadow-lg hover:bg-slate-300 transition"
+        @click="showLibraryConfigModal = true">
         ⚙️
       </button>
-      <button x-show="configMode.createCard" 
-              class="px-3 py-2 rounded-2xl bg-indigo-600 text-white text-[11px] md:text-xs font-bold shadow-lg" 
-              @click="editMode = false; showCreateModal = true;">
+      <button x-show="configMode.createCard"
+        class="px-3 py-2 rounded-2xl bg-indigo-600 text-white text-[11px] md:text-xs font-bold shadow-lg"
+        @click="editMode = false; showCreateModal = true;">
         + Criar card
       </button>
     </div>
@@ -44,83 +50,225 @@
   <!-- SCROLL COM DIREÇÃO CONFIGURÁVEL -->
   <div class="flex-1 min-h-0 overflow-auto pb-1">
 
-    <!-- PREENCHIMENTO VERTICAL (coluna por coluna) -->
-    <template x-if="libraryConfigOrientation === 'vertical'">
-      <div class="grid grid-flow-col auto-rows-fr gap-2 h-full min-h-0 w-max"
-           :style="`grid-template-rows: repeat(${libraryConfigGridSize}, 1fr);`">
+    <!-- MODO PHRASES (comportamento atual) -->
+    <template x-if="displayMode === 'phrases'">
+      <div>
+        <template x-if="libraryConfigOrientation === 'vertical'">
+          <div class="grid grid-flow-col auto-rows-fr gap-2 h-full min-h-0 w-max"
+            :style="`grid-template-rows: repeat(${libraryConfigGridSize}, 1fr);`">
 
-        <template x-for="card in filteredCards" :key="card.id">
-          <button class="text-left rounded-[16px] md:rounded-[20px] h-full min-h-0 p-2 md:p-2.5 shadow-[0_10px_24px_rgba(15,23,42,.08)] flex flex-col overflow-hidden" 
-                  :style="`
-                    min-width: ${libraryConfigCardWidth}px;
-                    max-width: ${libraryConfigCardWidth}px;
-                    min-height: ${libraryConfigCardHeight}px;
-                    background-color: #E2E8F0;
-                    background-image: linear-gradient(
-                      180deg,
-                      ${getCategory(card.category)?.color || '#E2E8F0'} 0%,
-                      #ffffff 72%
-                    );
-                  `" 
-                  :class="editMode ? 'ring-4 ring-amber-400 cursor-pointer' : ''" 
-                  @pointerdown="!editMode && startDragFromLibrary($event, card)"
-                  @click="onLibraryCardClick(card)">
-            <div class="overflow-hidden rounded-[12px] w-8 h-8 md:w-10 md:h-10 mb-1.5 flex-shrink-0">
-              <img class="object-cover w-full h-full" :src="card.image">
-            </div>
-            <div class="text-[14px] md:text-[16px] leading-tight font-bold font-['Baloo_2'] mb-0.5 break-words line-clamp-2" 
-                 x-text="card.frontText">
-            </div>
-            <div x-show="libraryConfigShowCategory" 
-                 class="text-[7px] md:text-[8px] uppercase tracking-[.12em] text-slate-500 truncate flex items-center gap-1 mt-auto">
-              <span x-show="libraryConfigShowIcons" x-html="getCategoryIcon(card.category)"></span>
-              <span x-text="card.category"></span>
-            </div>
-          </button>
+            <template x-for="card in filteredCards" :key="card.id">
+              <button
+                class="text-left rounded-[16px] md:rounded-[20px] h-full min-h-0 p-2 md:p-2.5 shadow-[0_10px_24px_rgba(15,23,42,.08)] flex flex-col overflow-hidden"
+                :style="`
+                        min-width: ${libraryConfigCardWidth}px;
+                        max-width: ${libraryConfigCardWidth}px;
+                        min-height: ${libraryConfigCardHeight}px;
+                        background-color: #E2E8F0;
+                        background-image: linear-gradient(
+                          180deg,
+                          ${getCategory(card.category)?.color || '#E2E8F0'} 0%,
+                          #ffffff 72%
+                        );
+                      `" :class="editMode ? 'ring-4 ring-amber-400 cursor-pointer' : ''"
+                @pointerdown="!editMode && startDragFromLibrary($event, card)" @click="onLibraryCardClick(card)">
+                <div class="overflow-hidden rounded-[12px] w-8 h-8 md:w-10 md:h-10 mb-1.5 flex-shrink-0">
+                  <img class="object-cover w-full h-full" :src="card.image">
+                </div>
+                <div
+                  class="text-[14px] md:text-[16px] leading-tight font-bold font-['Baloo_2'] mb-0.5 break-words line-clamp-2"
+                  x-text="card.frontText">
+                </div>
+                <div x-show="libraryConfigShowCategory"
+                  class="text-[7px] md:text-[8px] uppercase tracking-[.12em] text-slate-500 truncate flex items-center gap-1 mt-auto">
+                  <span x-show="libraryConfigShowIcons" x-html="getCategoryIcon(card.category)"></span>
+                  <span x-text="card.category"></span>
+                </div>
+              </button>
+            </template>
+
+          </div>
         </template>
 
+        <template x-if="libraryConfigOrientation === 'horizontal'">
+          <div class="grid gap-2 min-h-0 w-max" :style="`
+                 grid-template-columns: repeat(${libraryConfigGridSize}, minmax(${libraryConfigCardWidth}px, 1fr));
+                 grid-auto-rows: ${libraryConfigCardHeight}px;
+                 align-content: start;
+               `">
+
+            <template x-for="card in filteredCards" :key="card.id">
+              <button
+                class="text-left rounded-[16px] md:rounded-[20px] p-2 md:p-2.5 shadow-[0_10px_24px_rgba(15,23,42,.08)] flex flex-col overflow-hidden"
+                :style="`
+                        background-color: #E2E8F0;
+                        background-image: linear-gradient(
+                          180deg,
+                          ${getCategory(card.category)?.color || '#E2E8F0'} 0%,
+                          #ffffff 72%
+                        );
+                      `" :class="editMode ? 'ring-4 ring-amber-400 cursor-pointer' : ''"
+                @pointerdown="!editMode && startDragFromLibrary($event, card)" @click="onLibraryCardClick(card)">
+                <div class="overflow-hidden rounded-[12px] w-8 h-8 md:w-10 md:h-10 mb-1.5 flex-shrink-0">
+                  <img class="object-cover w-full h-full" :src="card.image">
+                </div>
+                <div
+                  class="text-[14px] md:text-[16px] leading-tight font-bold font-['Baloo_2'] mb-0.5 break-words line-clamp-2"
+                  x-text="card.frontText">
+                </div>
+                <div x-show="libraryConfigShowCategory"
+                  class="text-[7px] md:text-[8px] uppercase tracking-[.12em] text-slate-500 truncate flex items-center gap-1 mt-auto">
+                  <span x-show="libraryConfigShowIcons" x-html="getCategoryIcon(card.category)"></span>
+                  <span x-text="card.category"></span>
+                </div>
+              </button>
+            </template>
+
+          </div>
+        </template>
       </div>
     </template>
 
-    <!-- PREENCHIMENTO HORIZONTAL (linha por linha) -->
-    <template x-if="libraryConfigOrientation === 'horizontal'">
-      <div class="grid gap-2 min-h-0 w-max"
-           :style="`
-             grid-template-columns: repeat(${libraryConfigGridSize}, minmax(${libraryConfigCardWidth}px, 1fr));
-             grid-auto-rows: ${libraryConfigCardHeight}px;
-             align-content: start;
-           `">
+    <!-- MODO SNAP-GRID -->
+    <template x-if="displayMode === 'snap-grid'">
+      <div>
+        <!-- Barra de navegação superior -->
+        <div class="flex items-center justify-between mb-2 flex-wrap gap-2">
+          <div class="flex items-center gap-2">
+            <button @click="resetSnapGrid()"
+              class="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-indigo-100 hover:bg-indigo-200 transition text-sm font-semibold">
+              🏠 Home
+            </button>
+            <span x-show="currentView === 'home'" class="text-sm font-semibold text-slate-600">📂 Início</span>
+            <span x-show="currentView === 'cards' && currentFilter" class="text-sm font-semibold text-indigo-600">
+              <span x-text="currentFilter"></span>
+            </span>
+          </div>
+          <div class="text-xs text-slate-400">
+            <span x-show="currentView === 'home'">Categorias e Tags</span>
+            <span x-show="currentView === 'cards'">
+              <span x-text="snapGridFilteredCards.length"></span> cards
+            </span>
+          </div>
+        </div>
 
-        <template x-for="card in filteredCards" :key="card.id">
-          <button class="text-left rounded-[16px] md:rounded-[20px] p-2 md:p-2.5 shadow-[0_10px_24px_rgba(15,23,42,.08)] flex flex-col overflow-hidden" 
-                  :style="`
-                    background-color: #E2E8F0;
-                    background-image: linear-gradient(
-                      180deg,
-                      ${getCategory(card.category)?.color || '#E2E8F0'} 0%,
-                      #ffffff 72%
-                    );
-                  `" 
-                  :class="editMode ? 'ring-4 ring-amber-400 cursor-pointer' : ''" 
-                  @pointerdown="!editMode && startDragFromLibrary($event, card)"
-                  @click="onLibraryCardClick(card)">
-            <div class="overflow-hidden rounded-[12px] w-8 h-8 md:w-10 md:h-10 mb-1.5 flex-shrink-0">
-              <img class="object-cover w-full h-full" :src="card.image">
-            </div>
-            <div class="text-[14px] md:text-[16px] leading-tight font-bold font-['Baloo_2'] mb-0.5 break-words line-clamp-2" 
-                 x-text="card.frontText">
-            </div>
-            <div x-show="libraryConfigShowCategory" 
-                 class="text-[7px] md:text-[8px] uppercase tracking-[.12em] text-slate-500 truncate flex items-center gap-1 mt-auto">
-              <span x-show="libraryConfigShowIcons" x-html="getCategoryIcon(card.category)"></span>
-              <span x-text="card.category"></span>
-            </div>
-          </button>
-        </template>
+        <!-- SEÇÃO DE FAVORITOS - SEMPRE VISÍVEL -->
+        <div class="mb-3">
+          <div class="flex items-center justify-between mb-1.5">
+            <span class="text-xs font-bold text-yellow-600 uppercase tracking-wide">⭐ Favoritos</span>
+            <span x-show="snapGridFavorites.length > 0" class="text-[10px] text-slate-400">
+              <span x-text="snapGridFavorites.length"></span> cards
+            </span>
+          </div>
+          <div class="flex gap-1.5 overflow-x-auto pb-1 snap-x">
+            <template x-if="snapGridFavorites.length === 0">
+              <div class="text-xs text-slate-400 py-1 px-2 bg-slate-50 rounded-lg flex items-center gap-1">
+                <span>⭐</span> Nenhum favorito
+              </div>
+            </template>
+            <template x-for="card in snapGridFavorites" :key="'fav-' + card.id">
+              <button
+                class="flex-shrink-0 rounded-lg p-1.5 shadow-sm hover:scale-105 transition-transform relative border-2 border-yellow-300 bg-yellow-50"
+                @click="onSnapGridCardClick(card)" :title="card.frontText">
+                <div class="w-10 h-10 rounded overflow-hidden bg-white">
+                  <img class="object-cover w-full h-full" :src="card.image" :alt="card.frontText">
+                </div>
+                <div class="absolute -top-1 -right-1 text-xs">⭐</div>
+              </button>
+            </template>
+          </div>
+        </div>
 
+        <!-- Grid principal -->
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2">
+
+          <!-- BOTÃO VOLTAR (HOME) -->
+          <template x-if="currentView === 'cards'">
+            <button @click="goBack()" class="rounded-[16px] md:rounded-[20px] p-2 md:p-3 shadow-[0_10px_24px_rgba(15,23,42,.08)] 
+                       flex flex-col items-center justify-center min-h-[120px] md:min-h-[140px]
+                       border-2 border-indigo-300 bg-indigo-50 hover:bg-indigo-100 transition
+                       hover:scale-105">
+              <div class="text-4xl mb-1">🏠</div>
+              <div class="text-sm font-bold text-indigo-600">Voltar</div>
+              <div class="text-[10px] text-slate-500">Início</div>
+            </button>
+          </template>
+
+          <!-- HOME: CATEGORIAS E TAGS JUNTAS -->
+          <template x-if="currentView === 'home'">
+            <template x-for="item in snapGridHomeItems" :key="item.type + '-' + item.name">
+              <button class="relative rounded-[16px] md:rounded-[20px] p-2 md:p-3 shadow-[0_10px_24px_rgba(15,23,42,.08)] 
+                       flex flex-col items-center justify-center min-h-[120px] md:min-h-[140px]
+                       hover:scale-105 transition-transform
+                       border-2 border-transparent hover:border-indigo-300 overflow-hidden"
+                :style="`background: ${item.color + '40' || '#E2E8F0'}80;`"
+                @click="navigateToCards(item.name, item.type)">
+
+                <!-- TRIÂNGULO INDICADOR NO CANTO SUPERIOR DIREITO -->
+                <div class="absolute top-0 right-0 w-0 h-0 z-10" :style="`
+                   border-style: solid;
+                   border-width: 0 35px 35px 0;
+                   border-color: transparent ${item.color || '#CBD5E1'} transparent transparent;
+                 `">
+                </div>
+
+                <!-- Ícone indicador dentro do triângulo -->
+                <div class="absolute top-0.5 right-1 z-10 text-[10px] text-white font-bold"
+                  x-text="item.type === 'category' ? '📂' : '🏷️'">
+                </div>
+
+                <!-- Ícone principal -->
+                <div class="text-5xl mb-1" x-text="item.icon"></div>
+                <div class="text-sm font-bold mt-1 truncate w-full text-center" x-text="item.name"></div>
+                <div class="text-[10px] text-slate-400 mt-1">
+                  <span x-text="item.count || 0"></span> cards
+                </div>
+              </button>
+            </template>
+          </template>
+
+          <!-- CARDS FILTRADOS -->
+          <template x-if="currentView === 'cards'">
+            <template x-for="card in snapGridFilteredCards" :key="'filtered-' + card.id">
+              <button class="relative rounded-[16px] md:rounded-[20px] p-2 md:p-3 shadow-[0_10px_24px_rgba(15,23,42,.08)] 
+                       flex flex-col items-center justify-start text-center min-h-[120px] md:min-h-[140px]
+                       hover:scale-105 transition-transform
+                       border-2 overflow-hidden" :style="`
+                    background: ${getCategory(card.category)?.color ? getCategory(card.category).color + '40' : '#E2E8F0'}80;
+                    border-color: ${isFavorite(card.id) ? '#F59E0B' : 'transparent'};
+                  `" @click="onSnapGridCardClick(card)">
+
+                <!-- TRIÂNGULO INDICADOR DA CATEGORIA NO CANTO SUPERIOR DIREITO -->
+                <div class="absolute top-0 right-0 w-0 h-0 z-10" :style="`
+                   border-style: solid;
+                   border-width: 0 30px 30px 0;
+                   border-color: transparent ${getCategory(card.category)?.color || '#CBD5E1'} transparent transparent;
+                 `">
+                </div>
+
+                <!-- Ícone de favorito -->
+                <div class="absolute top-1 left-1 text-base z-20 cursor-pointer" @click.stop="toggleFavorite(card.id)">
+                  <span x-text="isFavorite(card.id) ? '⭐' : '☆'"></span>
+                </div>
+
+                <!-- Imagem -->
+                <div class="w-12 h-12 md:w-16 md:h-16 rounded-lg overflow-hidden mb-1 flex-shrink-0 bg-white">
+                  <img class="object-cover w-full h-full" :src="card.image" :alt="card.frontText || 'Card'">
+                </div>
+                <div class="text-xs md:text-sm font-bold mt-1 truncate w-full" x-text="card.frontText || 'Sem nome'">
+                </div>
+                <div class="text-[8px] uppercase text-slate-500 truncate w-full mt-0.5" x-text="card.category"></div>
+              </button>
+            </template>
+            <div x-show="snapGridFilteredCards.length === 0" class="col-span-full text-center text-slate-500 py-8">
+              <div class="text-4xl mb-2">📭</div>
+              <div class="text-sm">Nenhum card encontrado</div>
+            </div>
+          </template>
+
+        </div>
       </div>
     </template>
-
   </div>
 
 </section>
@@ -193,48 +341,47 @@
             Número de colunas: <span x-text="libraryConfigGridSize"></span>
           </span>
         </label>
-        <div class="flex gap-2">
-          <button class="flex-1 rounded-xl py-2 px-3 font-semibold text-sm transition-all duration-200" 
-                  :class="libraryConfigGridSize === 2 ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'" 
-                  @click="updateLibraryConfig({ gridSize: 2 })">
+        <div class="flex gap-1 flex-wrap">
+          <button class="flex-1 min-w-[36px] rounded-xl py-2 px-1 font-semibold text-sm transition-all duration-200"
+            :class="libraryConfigGridSize === 2 ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
+            @click="updateLibraryConfig({ gridSize: 2 })">
             2
           </button>
-          <button class="flex-1 rounded-xl py-2 px-3 font-semibold text-sm transition-all duration-200" 
-                  :class="libraryConfigGridSize === 3 ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'" 
-                  @click="updateLibraryConfig({ gridSize: 3 })">
+          <button class="flex-1 min-w-[36px] rounded-xl py-2 px-1 font-semibold text-sm transition-all duration-200"
+            :class="libraryConfigGridSize === 3 ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
+            @click="updateLibraryConfig({ gridSize: 3 })">
             3
           </button>
-          <button class="flex-1 rounded-xl py-2 px-3 font-semibold text-sm transition-all duration-200" 
-                  :class="libraryConfigGridSize === 4 ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'" 
-                  @click="updateLibraryConfig({ gridSize: 4 })">
+          <button class="flex-1 min-w-[36px] rounded-xl py-2 px-1 font-semibold text-sm transition-all duration-200"
+            :class="libraryConfigGridSize === 4 ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
+            @click="updateLibraryConfig({ gridSize: 4 })">
             4
           </button>
-          <button class="flex-1 rounded-xl py-2 px-3 font-semibold text-sm transition-all duration-200" 
-                  :class="libraryConfigGridSize === 5 ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'" 
-                  @click="updateLibraryConfig({ gridSize: 5 })">
+          <button class="flex-1 min-w-[36px] rounded-xl py-2 px-1 font-semibold text-sm transition-all duration-200"
+            :class="libraryConfigGridSize === 5 ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
+            @click="updateLibraryConfig({ gridSize: 5 })">
             5
           </button>
-          <button class="flex-1 rounded-xl py-2 px-3 font-semibold text-sm transition-all duration-200" 
-                  :class="libraryConfigGridSize === 6 ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'" 
-                  @click="updateLibraryConfig({ gridSize: 6 })">
+          <button class="flex-1 min-w-[36px] rounded-xl py-2 px-1 font-semibold text-sm transition-all duration-200"
+            :class="libraryConfigGridSize === 6 ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
+            @click="updateLibraryConfig({ gridSize: 6 })">
             6
           </button>
-                    <button class="flex-1 rounded-xl py-2 px-3 font-semibold text-sm transition-all duration-200" 
-                  :class="libraryConfigGridSize === 8 ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'" 
-                  @click="updateLibraryConfig({ gridSize: 8 })">
+          <button class="flex-1 min-w-[36px] rounded-xl py-2 px-1 font-semibold text-sm transition-all duration-200"
+            :class="libraryConfigGridSize === 8 ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
+            @click="updateLibraryConfig({ gridSize: 8 })">
             8
           </button>
-          <button class="flex-1 rounded-xl py-2 px-3 font-semibold text-sm transition-all duration-200" 
-                  :class="libraryConfigGridSize === 10 ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'" 
-                  @click="updateLibraryConfig({ gridSize: 10 })">
+          <button class="flex-1 min-w-[36px] rounded-xl py-2 px-1 font-semibold text-sm transition-all duration-200"
+            :class="libraryConfigGridSize === 10 ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
+            @click="updateLibraryConfig({ gridSize: 10 })">
             10
           </button>
-          <button class="flex-1 rounded-xl py-2 px-3 font-semibold text-sm transition-all duration-200" 
-                  :class="libraryConfigGridSize === 12 ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'" 
-                  @click="updateLibraryConfig({ gridSize: 12 })">
+          <button class="flex-1 min-w-[36px] rounded-xl py-2 px-1 font-semibold text-sm transition-all duration-200"
+            :class="libraryConfigGridSize === 12 ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
+            @click="updateLibraryConfig({ gridSize: 12 })">
             12
           </button>
-
         </div>
         <div class="text-xs text-slate-400 mt-1 flex items-center gap-1">
           <span x-show="libraryConfigOrientation === 'vertical'">📏</span>
@@ -316,22 +463,22 @@
 
       <!-- OPÇÕES ADICIONAIS -->
       <div class="border-t border-slate-100 pt-4 space-y-2">
-        <label class="flex items-center justify-between py-2 hover:bg-slate-50 rounded-lg px-2 -mx-2 transition cursor-pointer">
+        <label
+          class="flex items-center justify-between py-2 hover:bg-slate-50 rounded-lg px-2 -mx-2 transition cursor-pointer">
           <span class="font-semibold">Mostrar categoria</span>
           <input type="checkbox" x-model="libraryConfigShowCategory"
             @change="updateLibraryConfig({ showCategory: $event.target.checked })"
             class="w-4 h-4 text-indigo-600 rounded focus:ring-indigo-500">
         </label>
         <label class="flex items-center justify-between py-2 rounded-lg px-2 -mx-2 transition"
-               :class="!libraryConfigShowCategory ? 'opacity-40 cursor-not-allowed bg-slate-50' : 'hover:bg-slate-50 cursor-pointer'">
+          :class="!libraryConfigShowCategory ? 'opacity-40 cursor-not-allowed bg-slate-50' : 'hover:bg-slate-50 cursor-pointer'">
           <div>
             <span class="font-semibold">Mostrar ícones das categorias</span>
             <span x-show="!libraryConfigShowCategory" class="text-[10px] text-amber-500 ml-1">
               ⚠️ depende da categoria
             </span>
           </div>
-          <input type="checkbox" x-model="libraryConfigShowIcons" 
-                 :disabled="!libraryConfigShowCategory"
+          <input type="checkbox" x-model="libraryConfigShowIcons" :disabled="!libraryConfigShowCategory"
             @change="updateLibraryConfig({ showIcons: $event.target.checked })"
             class="w-4 h-4 text-indigo-600 rounded focus:ring-indigo-500"
             :class="!libraryConfigShowCategory ? 'opacity-50' : ''">
@@ -341,7 +488,7 @@
       <!-- BOTÃO RESET -->
       <button class="w-full rounded-xl bg-red-50 text-red-600 py-2 font-semibold hover:bg-red-100 transition text-sm"
         @click="resetLibraryConfig()">
-        Restaurar padrões
+        🔄 Restaurar padrões
       </button>
 
     </div>

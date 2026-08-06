@@ -1,16 +1,14 @@
 <header class="flex-shrink-0 p-2 md:p-3">
     <div
         class="flex items-center justify-between rounded-[24px] bg-white/85 backdrop-blur-xl p-4 shadow-[0_10px_30px_rgba(0,0,0,.06)]">
-<!-- Voltar -->
 
-    <button
-        @click="window.location.href='../../index.html'"
-        class="w-10 h-10 rounded-full bg-white/80 border border-slate-200 flex items-center justify-center shadow hover:bg-slate-100 transition"
-        title="Voltar ao AAC Studio">
+        <button @click="window.location.href='../../index.html'"
+            class="w-10 h-10 rounded-full bg-white/80 border border-slate-200 flex items-center justify-center shadow hover:bg-slate-100 transition"
+            title="Voltar ao AAC Studio">
 
-        🏠
+            🏠
 
-    </button>
+        </button>
 
         <div>
 
@@ -31,13 +29,13 @@
         </button>
 
     </div>
-    
+
     <!-- MODAL CONFIGURAÇÕES -->
     <div x-show="configMode.open" x-transition.opacity
         class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" style="display:none">
 
-        <div @click.outside="configMode.open = false" 
-             class="w-full max-w-md max-h-[85vh] overflow-hidden rounded-[28px] bg-white shadow-2xl flex flex-col">
+        <div @click.outside="configMode.open = false"
+            class="w-full max-w-md max-h-[85vh] overflow-hidden rounded-[28px] bg-white shadow-2xl flex flex-col">
 
             <!-- HEADER FIXO -->
             <div class="flex-shrink-0 p-5 border-b border-slate-100">
@@ -49,29 +47,80 @@
             <!-- CONTEÚDO COM SCROLL -->
             <div class="flex-1 overflow-y-auto p-5 space-y-3">
                 
-                <!-- ============================================ -->
+                <!-- MODO DE EXIBIÇÃO -->
+                <div class="border border-slate-200 rounded-2xl p-4 bg-white mb-3">
+                    <div class="text-sm font-semibold mb-3">
+                        Modo de exibição
+                    </div>
+                    <div class="flex gap-2">
+                        <button class="flex-1 rounded-xl py-2 px-3 font-semibold text-sm transition-all duration-200"
+                            :class="displayMode === 'phrases' 
+                                    ? 'bg-indigo-600 text-white shadow-md' 
+                                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
+                            @click="
+                                displayMode = 'phrases'; 
+                                resetSnapGrid(); 
+                                if (typeof window.HeaderConfig !== 'undefined') {
+                                    window.HeaderConfig.setDisplayMode('phrases');
+                                }
+                            ">
+                            Frases
+                        </button>
+                        <button class="flex-1 rounded-xl py-2 px-3 font-semibold text-sm transition-all duration-200"
+                            :class="displayMode === 'snap-grid' 
+                                    ? 'bg-indigo-600 text-white shadow-md' 
+                                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
+                            @click="
+                                displayMode = 'snap-grid'; 
+                                resetSnapGrid(); 
+                                if (typeof window.HeaderConfig !== 'undefined') {
+                                    window.HeaderConfig.setDisplayMode('snap-grid');
+                                }
+                            ">
+                            Snap Grid
+                        </button>
+                    </div>
+                    <div class="text-xs text-slate-500 mt-2">
+                        <span x-show="displayMode === 'phrases'">
+                            📝 Modo frases: compose frases arrastando cards
+                        </span>
+                        <span x-show="displayMode === 'snap-grid'">
+                            🎯 Snap Grid: navegue por categorias, tags e favoritos
+                        </span>
+                    </div>
+                </div>
+
                 <!-- MODO DE FILTRO -->
-                <!-- ============================================ -->
                 <div class="border border-slate-200 rounded-2xl p-4 bg-white">
                     <div class="text-sm font-semibold mb-3">
                         Modo de filtro
                     </div>
                     <div class="flex gap-2">
                         <button class="flex-1 rounded-xl py-2 px-3 font-semibold text-sm transition-all duration-200"
-                                :class="filterMode === 'AND' 
+                            :class="filterMode === 'AND' 
                                     ? 'bg-indigo-600 text-white shadow-md' 
                                     : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
-                                @click="filterMode = 'AND'">
+                            @click="
+                                filterMode = 'AND'; 
+                                if (typeof window.HeaderConfig !== 'undefined') {
+                                    window.HeaderConfig.setFilterMode('AND');
+                                }
+                            ">
                             <span class="flex items-center justify-center gap-2">
                                 <span>E</span>
                                 <span class="text-[10px] opacity-70">(todos)</span>
                             </span>
                         </button>
                         <button class="flex-1 rounded-xl py-2 px-3 font-semibold text-sm transition-all duration-200"
-                                :class="filterMode === 'OR' 
+                            :class="filterMode === 'OR' 
                                     ? 'bg-indigo-600 text-white shadow-md' 
                                     : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
-                                @click="filterMode = 'OR'">
+                            @click="
+                                filterMode = 'OR'; 
+                                if (typeof window.HeaderConfig !== 'undefined') {
+                                    window.HeaderConfig.setFilterMode('OR');
+                                }
+                            ">
                             <span class="flex items-center justify-center gap-2">
                                 <span>OU</span>
                                 <span class="text-[10px] opacity-70">(qualquer)</span>
@@ -80,126 +129,117 @@
                     </div>
                     <div class="text-xs text-slate-500 mt-2">
                         <span x-show="filterMode === 'AND'">
-                            🔒 Mostra apenas cards que correspondem a <strong>todas</strong> as categorias e tags selecionadas
+                            🔒 Mostra apenas cards que correspondem a <strong>todas</strong> as categorias e tags
+                            selecionadas
                         </span>
                         <span x-show="filterMode === 'OR'">
                             🔓 Mostra cards que correspondem a <strong>qualquer</strong> categoria ou tag selecionada
                         </span>
                     </div>
                 </div>
-                
+
                 <!-- CREATE CARD -->
                 <label class="flex items-center justify-between py-3 border-b border-slate-100">
                     <span class="font-semibold">Criar Card</span>
-                    <input type="checkbox" x-model="configMode.createCard">
+                    <input type="checkbox" x-model="configMode.createCard"
+                           @change="if (typeof window.HeaderConfig !== 'undefined') {
+                               window.HeaderConfig.updateConfig({ createCard: configMode.createCard });
+                           }">
                 </label>
-                
+
                 <!-- EDIT CARD -->
                 <label class="flex items-center justify-between py-3 border-b border-slate-100">
                     <span class="font-semibold">Editar Cards</span>
-                    <input type="checkbox" x-model="configMode.editCard">
+                    <input type="checkbox" x-model="configMode.editCard"
+                           @change="if (typeof window.HeaderConfig !== 'undefined') {
+                               window.HeaderConfig.updateConfig({ editCard: configMode.editCard });
+                           }">
                 </label>
-                
+
                 <!-- ICON LIBRARIES -->
                 <div class="border border-slate-200 rounded-2xl p-4 bg-white">
-
                     <div class="text-sm font-semibold mb-3">
                         Bibliotecas de ícones
                     </div>
-
                     <div class="space-y-3">
-
                         <label class="flex items-center justify-between rounded-xl border border-slate-200 p-3">
-
                             <div>
-
-                                <div class="font-semibold">
-                                    Iconify
-                                </div>
-
-                                <div class="text-xs text-slate-500">
-                                    Milhares de ícones de múltiplos repositórios
-                                </div>
-
+                                <div class="font-semibold">Iconify</div>
+                                <div class="text-xs text-slate-500">Milhares de ícones de múltiplos repositórios</div>
                             </div>
-
-                            <input type="checkbox" x-model="configMode.iconProviders.iconify">
+                            <input type="checkbox" x-model="configMode.iconProviders.iconify"
+                                   @change="if (typeof window.HeaderConfig !== 'undefined') {
+                                       window.HeaderConfig.setIconProvider('iconify', configMode.iconProviders.iconify);
+                                   }">
                         </label>
-
                         <label class="flex items-center justify-between rounded-xl border border-slate-200 p-3">
-
                             <div>
-
-                                <div class="font-semibold">
-                                    OpenMoji
-                                </div>
-
-                                <div class="text-xs text-slate-500">
-                                    Emojis livres e ilustrados
-                                </div>
-
+                                <div class="font-semibold">OpenMoji</div>
+                                <div class="text-xs text-slate-500">Emojis livres e ilustrados</div>
                             </div>
-
-                            <input type="checkbox" x-model="configMode.iconProviders.openmoji">
+                            <input type="checkbox" x-model="configMode.iconProviders.openmoji"
+                                   @change="if (typeof window.HeaderConfig !== 'undefined') {
+                                       window.HeaderConfig.setIconProvider('openmoji', configMode.iconProviders.openmoji);
+                                   }">
                         </label>
-
                     </div>
-
                 </div>
 
                 <!-- CREATE TAG -->
                 <label class="flex items-center justify-between py-3 border-b border-slate-100">
                     <span class="font-semibold">Criar Tag</span>
-                    <input type="checkbox" x-model="configMode.createTag">
+                    <input type="checkbox" x-model="configMode.createTag"
+                           @change="if (typeof window.HeaderConfig !== 'undefined') {
+                               window.HeaderConfig.updateConfig({ createTag: configMode.createTag });
+                           }">
                 </label>
 
                 <!-- CREATE CATEGORY -->
                 <label class="flex items-center justify-between py-3 border-b border-slate-100">
                     <span class="font-semibold">Criar Categoria</span>
-                    <input type="checkbox" x-model="configMode.createCategory">
+                    <input type="checkbox" x-model="configMode.createCategory"
+                           @change="if (typeof window.HeaderConfig !== 'undefined') {
+                               window.HeaderConfig.updateConfig({ createCategory: configMode.createCategory });
+                           }">
                 </label>
 
                 <!-- IMPORT JSON -->
                 <div class="border border-slate-200 rounded-2xl p-4 bg-white">
-
-                    <div class="text-sm font-semibold mb-2">
-                        Importação de dados
-                    </div>
-
-                    <div class="text-xs text-slate-500 mb-3">
-                        Carregue um arquivo JSON com cards, categorias e tags
-                    </div>
-
+                    <div class="text-sm font-semibold mb-2">Importação de dados</div>
+                    <div class="text-xs text-slate-500 mb-3">Carregue um arquivo JSON com cards, categorias e tags</div>
                     <input type="file" accept="application/json" class="hidden" x-ref="fileInput"
                         @change="importJson($event)">
-
-                    <button
-                        class="w-full rounded-xl bg-indigo-600 text-white py-2 font-semibold hover:bg-indigo-500 transition"
+                    <button class="w-full rounded-xl bg-indigo-600 text-white py-2 font-semibold hover:bg-indigo-500 transition"
                         @click="$refs.fileInput.click()">
-
                         Selecionar arquivo
                     </button>
-
                 </div>
 
                 <!-- EXPORT JSON -->
                 <div class="border border-slate-200 rounded-2xl p-4 bg-white">
-
-                    <div class="text-sm font-semibold mb-2">
-                        Exportar dados
-                    </div>
-
-                    <div class="text-xs text-slate-500 mb-3">
-                        Baixe um backup completo do seu storage
-                    </div>
-
-                    <button
-                        class="w-full rounded-xl bg-emerald-600 text-white py-2 font-semibold hover:bg-emerald-500 transition"
+                    <div class="text-sm font-semibold mb-2">Exportar dados</div>
+                    <div class="text-xs text-slate-500 mb-3">Baixe um backup completo do seu storage</div>
+                    <button class="w-full rounded-xl bg-emerald-600 text-white py-2 font-semibold hover:bg-emerald-500 transition"
                         @click="exportJson()">
-
                         Baixar backup
                     </button>
+                </div>
 
+                <!-- BOTÃO RESETAR CONFIGURAÇÕES -->
+                <div class="border border-slate-200 rounded-2xl p-4 bg-white">
+                    <div class="text-sm font-semibold mb-2">Resetar configurações</div>
+                    <div class="text-xs text-slate-500 mb-3">Restaura todas as configurações para os valores padrão</div>
+                    <button class="w-full rounded-xl bg-red-100 text-red-600 py-2 font-semibold hover:bg-red-200 transition"
+                        @click="
+                            if (typeof window.HeaderConfig !== 'undefined') {
+                                window.HeaderConfig.reset();
+                                // Recarrega as configurações no app
+                                syncHeaderConfig();
+                                showToast('Configurações restauradas para o padrão!');
+                            }
+                        ">
+                        🔄 Restaurar padrões
+                    </button>
                 </div>
 
             </div>
@@ -207,7 +247,7 @@
             <!-- BOTÃO FECHAR FIXO -->
             <div class="flex-shrink-0 p-5 border-t border-slate-100">
                 <button class="w-full rounded-2xl bg-indigo-600 text-white py-3 font-bold hover:bg-indigo-500 transition"
-                        @click="configMode.open = false">
+                    @click="configMode.open = false">
                     Fechar
                 </button>
             </div>

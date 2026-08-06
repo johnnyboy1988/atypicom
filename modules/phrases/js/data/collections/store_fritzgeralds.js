@@ -9,6 +9,7 @@ window.AACStore = {
       category: "Pessoas",
       image: "https://img.icons8.com/?size=100&id=UzivRUTTbNKR&format=png&color=000000",
       frontText: "Eu",
+      tags: ["Casa", "Rotina"],
       backText: "Eu",
     },
     {
@@ -725,5 +726,11 @@ window.AACStore = {
     },
   ],
 
-  tags: [],
+  tags: [
+    {
+      name: "Casa",
+      color: "#F59E0B",
+      icon: "📚",
+    },
+  ],
 };
