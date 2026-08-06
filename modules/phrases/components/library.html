@@ -2,7 +2,7 @@
 
 <section class="flex flex-col
                flex-shrink-0
-               h-[38vh] 
+               h-[38vh] md:h-[45vh]
                overflow-hidden
                rounded-[20px] md:rounded-[28px]
                bg-white/80
@@ -105,7 +105,7 @@
 
     <div class="grid
             grid-flow-col
-            grid-rows-3
+            grid-rows-4
             auto-rows-fr
             gap-2
             h-full
@@ -170,21 +170,6 @@
                font-['Baloo_2']
                mb-1
                break-words" x-text="card.frontText">
-
-          </div>
-
-
-          <!-- CATEGORY COM ÍCONE -->
-
-          <div class="text-[8px] md:text-[9px]
-               uppercase
-               tracking-[.12em]
-               text-slate-500
-               truncate
-               flex items-center gap-1">
-
-            <span x-show="getCategoryIcon(card.category)" x-html="getCategoryIcon(card.category)"></span>
-            <span x-text="card.category"></span>
 
           </div>
 
