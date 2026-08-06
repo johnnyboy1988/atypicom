@@ -2,7 +2,7 @@
 
 <section class="flex flex-col
                flex-shrink-0
-               h-[280px] md:h-[360px]
+               h-[38vh] 
                overflow-hidden
                rounded-[20px] md:rounded-[28px]
                bg-white/80
@@ -17,94 +17,84 @@
               mb-2">
 
 
-<div>
+    <div>
 
-  <div class="text-[18px] md:text-[24px]
+      <div class="text-[18px] md:text-[24px]
               leading-none
               font-bold
               font-['Baloo_2']">
 
-    Biblioteca
+        Biblioteca
 
-  </div>
+      </div>
 
-  <div class="hidden md:block
+      <div class="hidden md:block
               text-sm
               text-slate-500">
 
-    Segure e arraste
+        Segure e arraste
 
-  </div>
+      </div>
 
-  <div
-    x-show="editMode"
-    class="text-xs
+      <div x-show="editMode" class="text-xs
            font-bold
            text-amber-600
            mt-1">
 
-    Clique em um cartão para editar
+        Clique em um cartão para editar
 
-  </div>
+      </div>
 
-</div>
+    </div>
 
 
-<div class="flex items-center gap-2">
+    <div class="flex items-center gap-2">
 
-  <!-- EDITAR -->
+      <!-- EDITAR -->
 
-  <button
-    x-show="configMode.editCard"
-    @click="toggleEditMode()"
-    :class="editMode
+      <button x-show="configMode.editCard" @click="toggleEditMode()" :class="editMode
       ? 'bg-amber-500 text-white'
-      : 'bg-slate-200 text-slate-700'"
-    class="px-3 py-2
+      : 'bg-slate-200 text-slate-700'" class="px-3 py-2
            rounded-2xl
            text-[11px] md:text-xs
            font-bold
            shadow-lg
            transition">
 
-    <span x-show="!editMode">
-      ✏️ Editar
-    </span>
+        <span x-show="!editMode">
+          ✏️ Editar
+        </span>
 
-    <span x-show="editMode">
-      ✖ Sair edição
-    </span>
+        <span x-show="editMode">
+          ✖ Sair edição
+        </span>
 
-  </button>
+      </button>
 
 
-  <!-- CRIAR -->
+      <!-- CRIAR -->
 
-  <button
-    x-show="configMode.createCard"
-    class="px-3 py-2
+      <button x-show="configMode.createCard" class="px-3 py-2
            rounded-2xl
            bg-indigo-600
            text-white
            text-[11px] md:text-xs
            font-bold
-           shadow-lg"
-
-    @click="
+           shadow-lg" @click="
       editMode = false;
       showCreateModal = true;
     ">
 
-    + Criar card
+        + Criar card
 
-  </button>
+      </button>
 
-</div>
+    </div>
 
 
   </div>
 
-  <!-- SCROLL HORIZONTAL COM 2 LINHAS -->
+  <!-- SCROLL HORIZONTAL COM 3 LINHAS -->
 
   <div class="flex-1
               min-h-0
@@ -113,21 +103,18 @@
               pb-1">
 
 
-<div class="grid
+    <div class="grid
             grid-flow-col
-            grid-rows-2
+            grid-rows-3
             auto-rows-fr
             gap-2
             h-full
             min-h-0
             w-max">
 
-  <template
-    x-for="card in filteredCards"
-    :key="card.id">
+      <template x-for="card in filteredCards" :key="card.id">
 
-    <button
-      class="text-left
+        <button class="text-left
              rounded-[16px] md:rounded-[20px]
 
              min-w-[120px]
@@ -145,20 +132,12 @@
 
              flex
              flex-col
-             overflow-hidden"
-
-      :class="editMode
+             overflow-hidden" :class="editMode
         ? 'ring-4 ring-amber-400 cursor-pointer'
-        : ''"
-
-      @pointerdown="
+        : ''" @pointerdown="
         !editMode &&
         startDragFromLibrary($event, card)
-      "
-
-      @click="onLibraryCardClick(card)"
-
-      :style="`
+      " @click="onLibraryCardClick(card)" :style="`
         background-color: #E2E8F0;
         background-image: linear-gradient(
           180deg,
@@ -167,58 +146,53 @@
         );
       `">
 
-<!-- IMAGE -->
+          <!-- IMAGE -->
 
-<div
-  class="overflow-hidden
+          <div class="overflow-hidden
          rounded-[12px]
          w-10 h-10
          md:w-12 md:h-12
          mb-2
          flex-shrink-0">
 
-  <img
-    class="object-cover
+            <img class="object-cover
            w-full
-           h-full"
-    :src="card.image">
+           h-full" :src="card.image">
 
-</div>
+          </div>
 
 
-      <!-- FRONT TEXT -->
+          <!-- FRONT TEXT -->
 
-      <div
-        class="text-[15px] md:text-[18px]
+          <div class="text-[15px] md:text-[18px]
                leading-none
                font-bold
                font-['Baloo_2']
                mb-1
-               break-words"
+               break-words" x-text="card.frontText">
 
-        x-text="card.frontText">
-
-      </div>
+          </div>
 
 
-      <!-- CATEGORY -->
+          <!-- CATEGORY COM ÍCONE -->
 
-      <div
-        class="text-[8px] md:text-[9px]
+          <div class="text-[8px] md:text-[9px]
                uppercase
                tracking-[.12em]
                text-slate-500
-               truncate"
+               truncate
+               flex items-center gap-1">
 
-        x-text="card.category">
+            <span x-show="getCategoryIcon(card.category)" x-html="getCategoryIcon(card.category)"></span>
+            <span x-text="card.category"></span>
 
-      </div>
+          </div>
 
-    </button>
+        </button>
 
-  </template>
+      </template>
 
-</div>
+    </div>
 
 
   </div>
