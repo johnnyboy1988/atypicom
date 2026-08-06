@@ -85,29 +85,83 @@ function aacApp() {
     libraryConfigCardWidthMd: 155,
     libraryConfigShowCategory: true,
     libraryConfigShowIcons: true,
-    libraryConfigOrientation: 'columns', 
+    libraryConfigOrientation: "columns",
+
+    showComposerConfigModal: false,
+    composerConfigMaxHeight: 30,
+    composerConfigColumnsMobile: 2,
+    composerConfigColumnsDesktop: 4,
+    composerConfigShowCategory: true,
+    composerConfigShowTags: true,
 
     // Adicione os métodos
     loadLibraryConfig() {
-        this.libraryConfigRows = LibraryConfig.getRows();
-        this.libraryConfigMaxHeight = LibraryConfig.getMaxHeight();
-        this.libraryConfigCardWidth = LibraryConfig.getCardWidth();
-        this.libraryConfigCardWidthMd = LibraryConfig.getCardWidthMd();
-        this.libraryConfigShowCategory = LibraryConfig.getShowCategory();
-        this.libraryConfigShowIcons = LibraryConfig.getShowIcons();
-        this.libraryConfigOrientation = LibraryConfig.getOrientation(); 
+      this.libraryConfigRows = LibraryConfig.getRows();
+      this.libraryConfigMaxHeight = LibraryConfig.getMaxHeight();
+      this.libraryConfigCardWidth = LibraryConfig.getCardWidth();
+      this.libraryConfigCardWidthMd = LibraryConfig.getCardWidthMd();
+      this.libraryConfigShowCategory = LibraryConfig.getShowCategory();
+      this.libraryConfigShowIcons = LibraryConfig.getShowIcons();
+      this.libraryConfigOrientation = LibraryConfig.getOrientation();
     },
 
     updateLibraryConfig(newConfig) {
-        LibraryConfig.updateConfig(newConfig);
-        this.loadLibraryConfig();
-        this.refreshComposer();
+      LibraryConfig.updateConfig(newConfig);
+      this.loadLibraryConfig();
+      this.refreshComposer();
     },
 
     resetLibraryConfig() {
-        LibraryConfig.reset();
-        this.loadLibraryConfig();
-        this.showToast("Configuração restaurada!");
+      LibraryConfig.reset();
+      this.loadLibraryConfig();
+      this.showToast("Configuração restaurada!");
+    },
+
+    loadComposerConfig() {
+      if (typeof window.ComposerConfig === "undefined") {
+        console.warn("ComposerConfig não disponível");
+        return;
+      }
+      this.composerConfigMaxHeight = window.ComposerConfig.getMaxHeight();
+      this.composerConfigColumnsMobile =
+        window.ComposerConfig.getColumnsMobile();
+      this.composerConfigColumnsDesktop =
+        window.ComposerConfig.getColumnsDesktop();
+      this.composerConfigShowCategory = window.ComposerConfig.getShowCategory();
+      this.composerConfigShowTags = window.ComposerConfig.getShowTags();
+    },
+    refreshComposer() {
+      if (Array.isArray(this.phrase)) {
+        if (this.phrase.length > 0) {
+          this.phrase = [...this.phrase];
+        } else {
+          this.phrase = [];
+        }
+      } else {
+        this.phrase = [];
+      }
+    },
+    updateComposerConfig(newConfig) {
+      if (typeof window.ComposerConfig === "undefined") {
+        console.warn("ComposerConfig não disponível");
+        return;
+      }
+      window.ComposerConfig.updateConfig(newConfig);
+      this.loadComposerConfig();
+      // Força atualização da UI
+      this.$nextTick(() => {
+        this.refreshComposer();
+      });
+    },
+
+    resetComposerConfig() {
+      if (typeof window.ComposerConfig === "undefined") {
+        console.warn("ComposerConfig não disponível");
+        return;
+      }
+      window.ComposerConfig.reset();
+      this.loadComposerConfig();
+      this.showToast("Configuração restaurada!");
     },
 
     // ===== INIT =====
@@ -125,7 +179,7 @@ function aacApp() {
 
       this.loadPhrasesFromStorage();
       this.loadLibraryConfig();
-
+      this.loadComposerConfig();
     },
 
     // ===== FILTROS =====
@@ -709,14 +763,14 @@ function aacApp() {
         this.showToast("A frase está vazia");
         return;
       }
-      
+
       const phraseName = this.phrase
-          .map(item => item.frontText || "")
-          .filter(text => text.trim() !== "")
-          .join(" ");
-      
+        .map((item) => item.frontText || "")
+        .filter((text) => text.trim() !== "")
+        .join(" ");
+
       this.phraseName = phraseName;
-      
+
       this.showSavePhraseModal = true;
     },
 

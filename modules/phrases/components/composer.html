@@ -1,9 +1,17 @@
 <!-- COMPOSER -->
 <style>
   @keyframes speakingPulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.06); }
-    100% { transform: scale(1); }
+    0% {
+      transform: scale(1);
+    }
+
+    50% {
+      transform: scale(1.06);
+    }
+
+    100% {
+      transform: scale(1);
+    }
   }
 
   .aac-speaking {
@@ -20,14 +28,17 @@
   .composer-scroll::-webkit-scrollbar {
     width: 6px;
   }
+
   .composer-scroll::-webkit-scrollbar-track {
     background: rgba(226, 232, 240, 0.3);
     border-radius: 10px;
   }
+
   .composer-scroll::-webkit-scrollbar-thumb {
     background: #94a3b8;
     border-radius: 10px;
   }
+
   .composer-scroll::-webkit-scrollbar-thumb:hover {
     background: #64748b;
   }
@@ -66,79 +77,79 @@
         @click="savePhrase()">
         💾 Salvar
       </button>
-
       <button
         class="px-3 py-2 rounded-xl md:rounded-2xl border border-slate-200 bg-slate-50 text-[11px] md:text-sm font-semibold hover:bg-slate-100 transition"
         @click="clearPhrase()">
         Limpar
       </button>
+      <button
+        class="px-3 py-2 rounded-xl md:rounded-2xl border border-slate-200 bg-slate-50 text-[11px] md:text-sm font-semibold hover:bg-slate-100 transition"
+        @click="showComposerConfigModal = true">
+        ⚙️
+      </button>
     </div>
   </div>
 
   <!-- CONTAINER -->
-  <div class="flex-1 min-h-0 max-h-[30vh] overflow-hidden composer-scroll">
-    <div x-ref="dropzone" 
-         class="h-full min-h-0
+  <div class="flex-1 min-h-0 composer-scroll" :style="`max-height: ${composerConfigMaxHeight}vh`">
+    <div x-ref="dropzone" class="h-full min-h-0
                 rounded-[18px] md:rounded-[28px]
                 border-2 border-dashed border-slate-300
                 p-2 md:p-3
                 transition-all duration-200
                 bg-[linear-gradient(to_right,rgba(148,163,184,.08)_1px,transparent_1px),linear-gradient(to_bottom,rgba(148,163,184,.08)_1px,transparent_1px)]
                 bg-[size:18px_18px] md:bg-[size:24px_24px]"
-         :class="drag.overDropzone ? 'border-indigo-500 bg-indigo-50/40' : ''">
+      :class="drag.overDropzone ? 'border-indigo-500 bg-indigo-50/40' : ''">
 
       <!-- GRID -->
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-3 w-full">
-        
+      <div class="grid gap-2 md:gap-3 w-full"
+        :class="`grid-cols-${composerConfigColumnsMobile} md:grid-cols-${composerConfigColumnsDesktop}`">
+
         <!-- EMPTY -->
         <template x-if="phrase.length === 0">
-          <div class="col-span-full flex items-center justify-center min-h-[80px] text-center text-slate-500 text-sm md:text-base font-['Baloo_2'] p-4">
+          <div
+            class="col-span-full flex items-center justify-center min-h-[80px] text-center text-slate-500 text-sm md:text-base font-['Baloo_2'] p-4">
             Arraste cartões para formar uma frase
           </div>
         </template>
-
         <!-- PHRASE CARDS -->
-        <template x-for="item in phrase" :key="item.uid">
-          <div data-gjs-name="Phrase Card Wrapper" 
-               class="relative overflow-hidden
-                      rounded-[18px] md:rounded-[22px]
-                      bg-white
-                      border-[3px]
-                      shadow-[0_10px_24px_rgba(15,23,42,.08)]
-                      p-2 md:p-2.5
-                      transition-all duration-300" 
-               :class="playingUid === item.uid ? 'aac-speaking z-10' : ''" 
-               :style="`
-          background:linear-gradient(
-            135deg,
-            ${getCategory(item.category)?.color} 0%,
-            #ffffff 70%
-          );
-          border-color:${getCategory(item.category)?.color || '#CBD5E1'};
-          ${
-            playingUid === item.uid
-              ? `
-                transform:scale(1.08);
-                box-shadow:
-                  0 0 0 4px ${getCategory(item.category)?.color || '#6366F1'},
-                  0 0 25px ${getCategory(item.category)?.color || '#6366F1'},
-                  0 0 60px ${getCategory(item.category)?.color || '#6366F1'};
-              `
-              : `
-                box-shadow:
-                  0 10px 24px rgba(15,23,42,.08);
-              `
-          }
-        `">
+        <template x-for="(item, index) in phrase" :key="item.uid">
+          <div data-gjs-name="Phrase Card Wrapper" class="relative overflow-hidden
+              rounded-[18px] md:rounded-[22px]
+              bg-white
+              border-[3px]
+              shadow-[0_10px_24px_rgba(15,23,42,.08)]
+              p-2 md:p-2.5
+              transition-all duration-300" :class="playingUid === item.uid ? 'aac-speaking z-10' : ''" :style="`
+      background:linear-gradient(
+        135deg,
+        ${getCategory(item.category)?.color} 0%,
+        #ffffff 70%
+      );
+      border-color:${getCategory(item.category)?.color || '#CBD5E1'};
+      ${
+        playingUid === item.uid
+          ? `
+            transform:scale(1.08);
+            box-shadow:
+              0 0 0 4px ${getCategory(item.category)?.color || '#6366F1'},
+              0 0 25px ${getCategory(item.category)?.color || '#6366F1'},
+              0 0 60px ${getCategory(item.category)?.color || '#6366F1'};
+          `
+          : `
+            box-shadow:
+              0 10px 24px rgba(15,23,42,.08);
+          `
+      }
+    `">
 
             <!-- REMOVE BUTTON -->
             <button class="absolute top-1.5 right-1.5 flex items-center justify-center
-                           w-[20px] h-[20px] md:w-[24px] md:h-[24px]
-                           rounded-[6px] md:rounded-[8px]
-                           bg-white/90 hover:bg-white
-                           text-sm font-bold z-20 
-                           transition-all duration-200" 
-                    @click="removeFromPhrase(index)">
+                   w-[20px] h-[20px] md:w-[24px] md:h-[24px]
+                   rounded-[6px] md:rounded-[8px]
+                   bg-white/90 hover:bg-white
+                   text-sm font-bold z-20 
+                   transition-all duration-200" @click="removeFromPhrase(index)">
               ×
             </button>
 
@@ -146,66 +157,60 @@
             <div class="flex items-center gap-2 md:gap-3">
               <!-- IMAGE -->
               <div class="flex-shrink-0 overflow-hidden rounded-[12px] md:rounded-[14px]
-                           w-[40px] h-[40px] md:w-[50px] md:h-[50px]">
+                   w-[40px] h-[40px] md:w-[50px] md:h-[50px]">
                 <img class="object-cover w-full h-full" :src="item.image">
               </div>
 
               <!-- TEXTO E CATEGORIA -->
               <div class="flex-1 min-w-0">
                 <div class="text-[14px] md:text-[18px] 
-                           leading-tight font-bold
-                           font-['Baloo_2'] 
-                           truncate" 
-                     x-text="displayText(item)">
+                   leading-tight font-bold
+                   font-['Baloo_2'] 
+                   truncate" x-text="displayText(item)">
                 </div>
-                <div class="mt-0.5">
+                <div x-show="composerConfigShowCategory" class="mt-0.5">
                   <span class="inline-flex items-center rounded-full
-                               px-1.5 py-0.5 md:px-2 md:py-0.5
-                               text-[7px] md:text-[9px]
-                               font-bold uppercase tracking-[.08em]" 
-                        :style="`
-                    background:${getCategory(item.category)?.color || '#CBD5E1'}25;
-                    color:${getCategory(item.category)?.color || '#64748B'};
-                    border: 1px solid ${getCategory(item.category)?.color || '#CBD5E1'}40;
-                  `" 
-                        x-text="item.category">
+                       px-1.5 py-0.5 md:px-2 md:py-0.5
+                       text-[7px] md:text-[9px]
+                       font-bold uppercase tracking-[.08em]" :style="`
+                background:${getCategory(item.category)?.color || '#CBD5E1'}25;
+                color:${getCategory(item.category)?.color || '#64748B'};
+                border: 1px solid ${getCategory(item.category)?.color || '#CBD5E1'}40;
+              `" x-text="item.category">
                   </span>
                 </div>
               </div>
 
               <!-- TAGS -->
-              <div class="flex-shrink-0 flex flex-col gap-0.5">
+              <div x-show="composerConfigShowTags" class="flex-shrink-0 flex flex-col gap-0.5">
                 <template x-for="tagName in (item.tags || []).slice(0,2)" :key="tagName">
                   <div class="px-1.5 py-0.5 rounded-full
-                               text-[6px] md:text-[8px]
-                               font-semibold whitespace-nowrap
-                               text-center" 
-                       :style="`
-                    background:${getTag(tagName)?.color || '#E2E8F0'}30;
-                    color:${getTag(tagName)?.color || '#475569'};
-                    border: 1px solid ${getTag(tagName)?.color || '#CBD5E1'}30;
-                  `" 
-                       x-text="tagName">
+                       text-[6px] md:text-[8px]
+                       font-semibold whitespace-nowrap
+                       text-center" :style="`
+                background:${getTag(tagName)?.color || '#E2E8F0'}30;
+                color:${getTag(tagName)?.color || '#475569'};
+                border: 1px solid ${getTag(tagName)?.color || '#CBD5E1'}30;
+              `" x-text="tagName">
                   </div>
                 </template>
               </div>
             </div>
 
             <!-- OVERLAY -->
-            <button class="absolute inset-0 opacity-0" 
-                    @pointerdown="startDragFromPhrase($event,index)"
-                    @click="flipCard(item.uid)">
+            <button class="absolute inset-0 opacity-0" @pointerdown="startDragFromPhrase($event,index)"
+              @click="flipCard(item.uid)">
             </button>
 
           </div>
         </template>
-
       </div>
     </div>
   </div>
 
   <!-- BOTÃO PLAY -->
-  <button class="absolute bottom-3 right-3
+  <button style="z-index: 99"
+    class="absolute bottom-3 right-3
                  md:bottom-[18px] md:right-[18px]
                  w-[52px] h-[52px]
                  md:w-[64px] md:h-[64px]
@@ -214,8 +219,7 @@
                  text-white text-[20px] md:text-[24px]
                  shadow-[0_16px_35px_rgba(79,70,229,.25)]
                  hover:scale-105
-                 transition-transform"
-          @click="playPhrase()">
+                 transition-transform" @click="playPhrase()">
     🔊
   </button>
 
@@ -223,37 +227,35 @@
 
 <!-- MODAL SALVAR FRASE -->
 <div x-show="showSavePhraseModal" x-transition.opacity
-     class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" style="display:none">
-  <div @click.outside="showSavePhraseModal = false"
-       class="w-full max-w-md rounded-[28px] bg-white shadow-2xl p-6">
+  class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" style="display:none">
+  <div @click.outside="showSavePhraseModal = false" class="w-full max-w-md rounded-[28px] bg-white shadow-2xl p-6">
     <div class="text-[22px] font-bold font-['Baloo_2'] mb-4">
       Salvar frase
     </div>
     <div class="text-sm text-slate-500 mb-4">
       Digite um nome para esta frase
     </div>
-    <input x-model="phraseName" 
-           type="text" 
-           placeholder="Ex: Minha primeira frase"
-           class="w-full rounded-2xl border border-slate-200 p-3 outline-none focus:border-indigo-500 mb-4"
-           @keydown.enter="confirmSavePhrase()">
+    <input x-model="phraseName" type="text" placeholder="Ex: Minha primeira frase"
+      class="w-full rounded-2xl border border-slate-200 p-3 outline-none focus:border-indigo-500 mb-4"
+      @keydown.enter="confirmSavePhrase()">
     <div class="flex gap-3">
       <button class="flex-1 rounded-2xl bg-indigo-600 text-white py-3 font-bold hover:bg-indigo-500 transition"
-              @click="confirmSavePhrase()">
+        @click="confirmSavePhrase()">
         Salvar
       </button>
       <button class="flex-1 rounded-2xl bg-slate-100 text-slate-700 py-3 font-bold hover:bg-slate-200 transition"
-              @click="showSavePhraseModal = false">
+        @click="showSavePhraseModal = false">
         Cancelar
       </button>
     </div>
   </div>
 </div>
-<!-- MODAL CARREGAR FRASE - VERSÃO SIMPLES E GARANTIDA -->
+
+<!-- MODAL CARREGAR FRASE -->
 <div x-show="showLoadPhraseModal" x-transition.opacity
-     class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" style="display:none">
+  class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" style="display:none">
   <div @click.outside="showLoadPhraseModal = false"
-       class="w-full max-w-2xl max-h-[80vh] rounded-[28px] bg-white shadow-2xl flex flex-col">
+    class="w-full max-w-2xl max-h-[80vh] rounded-[28px] bg-white shadow-2xl flex flex-col">
     <div class="flex items-center justify-between border-b border-slate-100 p-5 flex-shrink-0">
       <div>
         <div class="text-[22px] font-bold font-['Baloo_2']">
@@ -264,7 +266,7 @@
         </div>
       </div>
       <button class="w-10 h-10 rounded-2xl bg-slate-100 text-xl hover:bg-slate-200 transition flex-shrink-0"
-              @click="showLoadPhraseModal = false">
+        @click="showLoadPhraseModal = false">
         ×
       </button>
     </div>
@@ -275,11 +277,11 @@
         </div>
       </template>
       <template x-for="phrase in savedPhrases" :key="phrase.id">
-        <div class="flex items-center justify-between rounded-2xl border border-slate-200 p-4 hover:bg-slate-50 transition">
+        <div
+          class="flex items-center justify-between rounded-2xl border border-slate-200 p-4 hover:bg-slate-50 transition">
           <div>
             <div class="font-bold text-slate-700" x-text="phrase.name || 'Frase sem nome'"></div>
-            
-            <!-- Ícones dos cards - VERSÃO MAIS SIMPLES -->
+
             <div class="flex items-center gap-1 mt-2 flex-wrap">
               <div x-data="{ cards: phrase.cards || [] }">
                 <div x-html="cards.slice(0, 6).map(card => 
@@ -294,24 +296,166 @@
                 +<span x-text="(phrase.cards || []).length - 6"></span>
               </span>
             </div>
-            
+
             <div class="text-xs text-slate-500 mt-1">
-              <span x-text="phrase.cards ? phrase.cards.length : 0"></span> cartões • 
-              <span x-text="phrase.createdAt ? new Date(phrase.createdAt).toLocaleDateString('pt-BR') : 'Data desconhecida'"></span>
+              <span x-text="phrase.cards ? phrase.cards.length : 0"></span> cartões •
+              <span
+                x-text="phrase.createdAt ? new Date(phrase.createdAt).toLocaleDateString('pt-BR') : 'Data desconhecida'"></span>
             </div>
           </div>
           <div class="flex gap-2">
-            <button class="px-4 py-2 rounded-xl bg-indigo-600 text-white text-sm font-semibold hover:bg-indigo-500 transition"
-                    @click="loadPhrase(phrase.id)">
+            <button
+              class="px-4 py-2 rounded-xl bg-indigo-600 text-white text-sm font-semibold hover:bg-indigo-500 transition"
+              @click="loadPhrase(phrase.id)">
               Carregar
             </button>
-            <button class="px-4 py-2 rounded-xl bg-red-100 text-red-600 text-sm font-semibold hover:bg-red-200 transition"
-                    @click="deleteSavedPhrase(phrase.id)">
+            <button
+              class="px-4 py-2 rounded-xl bg-red-100 text-red-600 text-sm font-semibold hover:bg-red-200 transition"
+              @click="deleteSavedPhrase(phrase.id)">
               ✕
             </button>
           </div>
         </div>
       </template>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL CONFIGURAÇÃO DO COMPOSITOR -->
+<div x-show="showComposerConfigModal" x-transition.opacity
+  class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" style="display:none">
+  <div @click.outside="showComposerConfigModal = false"
+    class="w-full max-w-md max-h-[85vh] overflow-hidden rounded-[28px] bg-white shadow-2xl flex flex-col">
+
+    <!-- HEADER -->
+    <div class="flex items-center justify-between border-b border-slate-100 p-5 flex-shrink-0">
+      <div>
+        <div class="text-[22px] font-bold font-['Baloo_2']">
+          ⚙️ Configurar Compositor
+        </div>
+        <div class="text-sm text-slate-500">
+          Ajuste a aparência da área de composição
+        </div>
+      </div>
+      <button class="w-10 h-10 rounded-2xl bg-slate-100 text-xl hover:bg-slate-200 transition flex-shrink-0"
+        @click="showComposerConfigModal = false">
+        ×
+      </button>
+    </div>
+
+    <!-- BODY -->
+    <div class="flex-1 overflow-y-auto p-5 space-y-4">
+
+      <!-- ALTURA MÁXIMA -->
+      <div>
+        <label class="block text-sm font-semibold mb-2">
+          Altura máxima (vh): <span x-text="composerConfigMaxHeight"></span>vh
+        </label>
+        <input type="range" min="15" max="60" step="1" x-model="composerConfigMaxHeight"
+          @input="updateComposerConfig({ maxHeight: parseInt($event.target.value) })"
+          class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer">
+        <div class="flex justify-between text-xs text-slate-500">
+          <span>15vh</span>
+          <span>35vh</span>
+          <span>60vh</span>
+        </div>
+        <div class="text-xs text-slate-400 mt-1">
+          Controla a altura máxima da área de cards. Valores menores = mais espaço para a biblioteca.
+        </div>
+      </div>
+
+      <!-- COLUNAS MOBILE -->
+      <div>
+        <label class="block text-sm font-semibold mb-2">
+          Colunas (mobile): <span x-text="composerConfigColumnsMobile"></span>
+        </label>
+        <div class="flex gap-2">
+          <button class="flex-1 rounded-xl py-2 px-3 font-semibold text-sm transition-all duration-200" :class="composerConfigColumnsMobile === 1 
+                    ? 'bg-indigo-600 text-white shadow-md' 
+                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
+            @click="updateComposerConfig({ columnsMobile: 1 })">
+            1
+          </button>
+          <button class="flex-1 rounded-xl py-2 px-3 font-semibold text-sm transition-all duration-200" :class="composerConfigColumnsMobile === 2 
+                    ? 'bg-indigo-600 text-white shadow-md' 
+                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
+            @click="updateComposerConfig({ columnsMobile: 2 })">
+            2
+          </button>
+          <button class="flex-1 rounded-xl py-2 px-3 font-semibold text-sm transition-all duration-200" :class="composerConfigColumnsMobile === 3 
+                    ? 'bg-indigo-600 text-white shadow-md' 
+                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
+            @click="updateComposerConfig({ columnsMobile: 3 })">
+            3
+          </button>
+        </div>
+      </div>
+
+      <!-- COLUNAS DESKTOP -->
+      <div>
+        <label class="block text-sm font-semibold mb-2">
+          Colunas (desktop): <span x-text="composerConfigColumnsDesktop"></span>
+        </label>
+        <div class="flex gap-2">
+          <button class="flex-1 rounded-xl py-2 px-3 font-semibold text-sm transition-all duration-200" :class="composerConfigColumnsDesktop === 2 
+                    ? 'bg-indigo-600 text-white shadow-md' 
+                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
+            @click="updateComposerConfig({ columnsDesktop: 2 })">
+            2
+          </button>
+          <button class="flex-1 rounded-xl py-2 px-3 font-semibold text-sm transition-all duration-200" :class="composerConfigColumnsDesktop === 3 
+                    ? 'bg-indigo-600 text-white shadow-md' 
+                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
+            @click="updateComposerConfig({ columnsDesktop: 3 })">
+            3
+          </button>
+          <button class="flex-1 rounded-xl py-2 px-3 font-semibold text-sm transition-all duration-200" :class="composerConfigColumnsDesktop === 4 
+                    ? 'bg-indigo-600 text-white shadow-md' 
+                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
+            @click="updateComposerConfig({ columnsDesktop: 4 })">
+            4
+          </button>
+          <button class="flex-1 rounded-xl py-2 px-3 font-semibold text-sm transition-all duration-200" :class="composerConfigColumnsDesktop === 5 
+                    ? 'bg-indigo-600 text-white shadow-md' 
+                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
+            @click="updateComposerConfig({ columnsDesktop: 5 })">
+            5
+          </button>
+        </div>
+      </div>
+
+      <!-- OPÇÕES ADICIONAIS -->
+      <div class="border-t border-slate-100 pt-4 space-y-2">
+        <label
+          class="flex items-center justify-between py-2 hover:bg-slate-50 rounded-lg px-2 -mx-2 transition cursor-pointer">
+          <span class="font-semibold">Mostrar categoria</span>
+          <input type="checkbox" x-model="composerConfigShowCategory"
+            @change="updateComposerConfig({ showCategory: $event.target.checked })"
+            class="w-4 h-4 text-indigo-600 rounded focus:ring-indigo-500">
+        </label>
+        <label
+          class="flex items-center justify-between py-2 hover:bg-slate-50 rounded-lg px-2 -mx-2 transition cursor-pointer">
+          <span class="font-semibold">Mostrar tags</span>
+          <input type="checkbox" x-model="composerConfigShowTags"
+            @change="updateComposerConfig({ showTags: $event.target.checked })"
+            class="w-4 h-4 text-indigo-600 rounded focus:ring-indigo-500">
+        </label>
+      </div>
+
+      <!-- BOTÃO RESET -->
+      <button class="w-full rounded-xl bg-red-50 text-red-600 py-2 font-semibold hover:bg-red-100 transition text-sm"
+        @click="resetComposerConfig()">
+        Restaurar padrões
+      </button>
+
+    </div>
+
+    <!-- FOOTER -->
+    <div class="flex-shrink-0 p-5 border-t border-slate-100">
+      <button class="w-full rounded-2xl bg-indigo-600 text-white py-3 font-bold hover:bg-indigo-500 transition"
+        @click="showComposerConfigModal = false">
+        Fechar
+      </button>
     </div>
   </div>
 </div>
