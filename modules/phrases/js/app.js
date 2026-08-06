@@ -77,16 +77,18 @@ function aacApp() {
       selectedImage: "",
     },
 
-    // Adicione no return do aacApp()
+    // ===== CONFIGURAÇÕES DA BIBLIOTECA =====
     showLibraryConfigModal: false,
-    libraryConfigRows: 3,
+    libraryConfigGridSize: 3,
     libraryConfigMaxHeight: 38,
-    libraryConfigCardWidth: 120,
-    libraryConfigCardWidthMd: 155,
+    libraryConfigCardWidth: 110,
+    libraryConfigCardWidthMd: 140,
+    libraryConfigCardHeight: 120,
     libraryConfigShowCategory: true,
     libraryConfigShowIcons: true,
-    libraryConfigOrientation: "columns",
+    libraryConfigOrientation: "vertical",
 
+    // ===== CONFIGURAÇÕES DO COMPOSITOR =====
     showComposerConfigModal: false,
     composerConfigMaxHeight: 30,
     composerConfigColumnsMobile: 2,
@@ -94,53 +96,58 @@ function aacApp() {
     composerConfigShowCategory: true,
     composerConfigShowTags: true,
 
-    // Adicione os métodos
+    // ===== MÉTODOS DA BIBLIOTECA =====
     loadLibraryConfig() {
-      this.libraryConfigRows = LibraryConfig.getRows();
+      if (typeof window.LibraryConfig === 'undefined') {
+        console.warn('LibraryConfig não disponível');
+        return;
+      }
+      this.libraryConfigGridSize = LibraryConfig.getGridSize();
       this.libraryConfigMaxHeight = LibraryConfig.getMaxHeight();
       this.libraryConfigCardWidth = LibraryConfig.getCardWidth();
       this.libraryConfigCardWidthMd = LibraryConfig.getCardWidthMd();
+      this.libraryConfigCardHeight = LibraryConfig.getCardHeight();
       this.libraryConfigShowCategory = LibraryConfig.getShowCategory();
       this.libraryConfigShowIcons = LibraryConfig.getShowIcons();
       this.libraryConfigOrientation = LibraryConfig.getOrientation();
     },
 
     updateLibraryConfig(newConfig) {
+      if (typeof window.LibraryConfig === 'undefined') {
+        console.warn('LibraryConfig não disponível');
+        return;
+      }
       LibraryConfig.updateConfig(newConfig);
       this.loadLibraryConfig();
-      this.refreshComposer();
+      // Força atualização da UI
+      this.$nextTick(() => {
+        this.$dispatch('force-update');
+      });
     },
 
     resetLibraryConfig() {
+      if (typeof window.LibraryConfig === 'undefined') {
+        console.warn('LibraryConfig não disponível');
+        return;
+      }
       LibraryConfig.reset();
       this.loadLibraryConfig();
       this.showToast("Configuração restaurada!");
     },
 
+    // ===== MÉTODOS DO COMPOSITOR =====
     loadComposerConfig() {
       if (typeof window.ComposerConfig === "undefined") {
         console.warn("ComposerConfig não disponível");
         return;
       }
       this.composerConfigMaxHeight = window.ComposerConfig.getMaxHeight();
-      this.composerConfigColumnsMobile =
-        window.ComposerConfig.getColumnsMobile();
-      this.composerConfigColumnsDesktop =
-        window.ComposerConfig.getColumnsDesktop();
+      this.composerConfigColumnsMobile = window.ComposerConfig.getColumnsMobile();
+      this.composerConfigColumnsDesktop = window.ComposerConfig.getColumnsDesktop();
       this.composerConfigShowCategory = window.ComposerConfig.getShowCategory();
       this.composerConfigShowTags = window.ComposerConfig.getShowTags();
     },
-    refreshComposer() {
-      if (Array.isArray(this.phrase)) {
-        if (this.phrase.length > 0) {
-          this.phrase = [...this.phrase];
-        } else {
-          this.phrase = [];
-        }
-      } else {
-        this.phrase = [];
-      }
-    },
+
     updateComposerConfig(newConfig) {
       if (typeof window.ComposerConfig === "undefined") {
         console.warn("ComposerConfig não disponível");
@@ -148,7 +155,6 @@ function aacApp() {
       }
       window.ComposerConfig.updateConfig(newConfig);
       this.loadComposerConfig();
-      // Força atualização da UI
       this.$nextTick(() => {
         this.refreshComposer();
       });
@@ -162,6 +168,18 @@ function aacApp() {
       window.ComposerConfig.reset();
       this.loadComposerConfig();
       this.showToast("Configuração restaurada!");
+    },
+
+    refreshComposer() {
+      if (Array.isArray(this.phrase)) {
+        if (this.phrase.length > 0) {
+          this.phrase = [...this.phrase];
+        } else {
+          this.phrase = [];
+        }
+      } else {
+        this.phrase = [];
+      }
     },
 
     // ===== INIT =====
@@ -180,6 +198,13 @@ function aacApp() {
       this.loadPhrasesFromStorage();
       this.loadLibraryConfig();
       this.loadComposerConfig();
+      
+      // Listener para forçar atualização
+      this.$el.addEventListener('force-update', () => {
+        if (Array.isArray(this.phrase)) {
+          this.phrase = [...this.phrase];
+        }
+      });
     },
 
     // ===== FILTROS =====
@@ -258,11 +283,9 @@ function aacApp() {
     getCategoryIcon(name) {
       return this.categories.find((c) => c.name === name)?.icon || "";
     },
+    
     getTagIcon(name) {
       return this.tags.find((t) => t.name === name)?.icon || "";
-    },
-    getTag(name) {
-      return this.tags.find((t) => t.name === name);
     },
 
     getCategoryColor(categoryName) {

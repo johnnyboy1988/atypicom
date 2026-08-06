@@ -6,24 +6,25 @@
     const LibraryConfig = {
         // Valores padrão
         defaults: {
-            rows: 3,
+            gridSize: 3,
             maxHeight: 38,
             cardWidth: 110,
             cardWidthMd: 140,
+            cardHeight: 0, // 0 = automático, >0 = altura máxima
             showCategory: true,
             showIcons: true,
-            orientation: 'columns', 
+            orientation: 'vertical',
         },
 
-        // Estado atual
         state: {
-            rows: 3,
+            gridSize: 3,
             maxHeight: 38,
             cardWidth: 110,
             cardWidthMd: 140,
+            cardHeight: 0,
             showCategory: true,
             showIcons: true,
-            orientation: 'columns',
+            orientation: 'vertical',
         },
 
         // Inicializa
@@ -66,10 +67,8 @@
             const library = document.querySelector('#library-container section');
             if (!library) return;
 
-            // Aplica altura
             library.style.height = `${this.state.maxHeight}vh`;
             
-            // Dispara evento para outros componentes
             document.dispatchEvent(new CustomEvent('library-config-updated', {
                 detail: { config: this.state }
             }));
@@ -81,42 +80,27 @@
             this.saveToStorage();
             this.applyConfig();
             
-            // Dispara evento para atualizar a UI
             document.dispatchEvent(new CustomEvent('library-config-updated', {
                 detail: { config: this.state }
             }));
         },
 
         // Getters
-        getRows() { return this.state.rows; },
+        getGridSize() { return this.state.gridSize; },
         getMaxHeight() { return this.state.maxHeight; },
         getCardWidth() { return this.state.cardWidth; },
         getCardWidthMd() { return this.state.cardWidthMd; },
-        getShowCategory() { return this.state.showCategory; },
-        getShowIcons() { return this.state.showIcons; },
-
-        // Atalhos para atualização
-        setRows(value) { this.updateConfig({ rows: value }); },
-        setMaxHeight(value) { this.updateConfig({ maxHeight: value }); },
-        setCardWidth(value) { this.updateConfig({ cardWidth: value }); },
-        setCardWidthMd(value) { this.updateConfig({ cardWidthMd: value }); },
-        setShowCategory(value) { this.updateConfig({ showCategory: value }); },
-        setShowIcons(value) { this.updateConfig({ showIcons: value }); },
-
-
-        getRows() { return this.state.rows; },
-        getMaxHeight() { return this.state.maxHeight; },
-        getCardWidth() { return this.state.cardWidth; },
-        getCardWidthMd() { return this.state.cardWidthMd; },
+        getCardHeight() { return this.state.cardHeight; }, // NOVO
         getShowCategory() { return this.state.showCategory; },
         getShowIcons() { return this.state.showIcons; },
         getOrientation() { return this.state.orientation; },
 
         // Atalhos para atualização
-        setRows(value) { this.updateConfig({ rows: value }); },
+        setGridSize(value) { this.updateConfig({ gridSize: value }); },
         setMaxHeight(value) { this.updateConfig({ maxHeight: value }); },
         setCardWidth(value) { this.updateConfig({ cardWidth: value }); },
         setCardWidthMd(value) { this.updateConfig({ cardWidthMd: value }); },
+        setCardHeight(value) { this.updateConfig({ cardHeight: value }); }, // NOVO
         setShowCategory(value) { this.updateConfig({ showCategory: value }); },
         setShowIcons(value) { this.updateConfig({ showIcons: value }); },
         setOrientation(value) { this.updateConfig({ orientation: value }); },
@@ -140,7 +124,6 @@
         LibraryConfig.init();
     }
 
-    // Listener para quando os componentes forem carregados
     document.addEventListener('components-loaded', () => {
         LibraryConfig.applyConfig();
     });
