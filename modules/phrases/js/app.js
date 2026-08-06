@@ -166,6 +166,16 @@ function aacApp() {
       return this.tags.find((t) => t.name === name);
     },
 
+    getCategoryIcon(name) {
+      return this.categories.find((c) => c.name === name)?.icon || "";
+    },
+    getTagIcon(name) {
+      return this.tags.find((t) => t.name === name)?.icon || "";
+    },
+    getTag(name) {
+      return this.tags.find((t) => t.name === name);
+    },
+
     getCategoryColor(categoryName) {
       return (
         this.categories.find((c) => c.name === categoryName)?.color || "#CBD5E1"

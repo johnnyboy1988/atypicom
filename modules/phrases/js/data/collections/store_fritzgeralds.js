@@ -696,26 +696,32 @@ window.AACStore = {
     {
       name: "Pessoas",
       color: "#FACC15",
+      icon: "👤",
     },
     {
       name: "Ações",
       color: "#22C55E",
+      icon: "🏃",
     },
     {
       name: "Objetos",
       color: "#F97316",
+      icon: "📦",
     },
     {
       name: "Descrições",
       color: "#3B82F6",
+      icon: "📝",
     },
     {
       name: "Sociais",
       color: "#EC4899",
+      icon: "👥",
     },
     {
       name: "Gramática",
       color: "#E5E7EB",
+      icon: "📚",
     },
   ],
 

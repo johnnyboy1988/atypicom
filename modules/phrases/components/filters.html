@@ -69,6 +69,7 @@
           " :class="selectedCategories.includes(category.name)
             ? 'shadow-md scale-105'
             : 'hover:scale-105'" @click="toggleCategory(category.name)">
+                <span x-show="category.icon" class="text-base" x-html="category.icon"></span>
                 <span x-text="category.name"></span>
               </button>
             </template>
@@ -105,6 +106,7 @@
               ? 'shadow-md'
               : 'bg-white text-slate-700 border-slate-200 hover:border-slate-300'
           " @click="toggleTag(tag.name)">
+                <span x-show="tag.icon" class="text-base" x-html="tag.icon"></span>
                 <span x-text="tag.name"></span>
               </button>
             </template>
