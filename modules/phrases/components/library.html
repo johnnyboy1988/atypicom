@@ -1,5 +1,3 @@
-<!-- LIBRARY -->
-
 <section class="flex flex-col
                flex-shrink-0
                overflow-hidden
@@ -44,7 +42,7 @@
   </div>
 
   <!-- SCROLL COM DIREÇÃO CONFIGURÁVEL -->
-  <div class="flex-1 min-h-0 overflow-x-auto overflow-y-hidden pb-1">
+  <div class="flex-1 min-h-0 overflow-auto pb-1">
 
     <!-- PREENCHIMENTO VERTICAL (coluna por coluna) -->
     <template x-if="libraryConfigOrientation === 'vertical'">
@@ -84,9 +82,9 @@
       </div>
     </template>
 
-    <!-- PREENCHIMENTO HORIZONTAL (linha por linha) - CORRIGIDO -->
+    <!-- PREENCHIMENTO HORIZONTAL (linha por linha) -->
     <template x-if="libraryConfigOrientation === 'horizontal'">
-      <div class="grid gap-2 h-full min-h-0 w-max"
+      <div class="grid gap-2 min-h-0 w-max"
            :style="`
              grid-template-columns: repeat(${libraryConfigGridSize}, minmax(${libraryConfigCardWidth}px, 1fr));
              grid-auto-rows: ${libraryConfigCardHeight}px;
@@ -221,6 +219,22 @@
                   @click="updateLibraryConfig({ gridSize: 6 })">
             6
           </button>
+                    <button class="flex-1 rounded-xl py-2 px-3 font-semibold text-sm transition-all duration-200" 
+                  :class="libraryConfigGridSize === 8 ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'" 
+                  @click="updateLibraryConfig({ gridSize: 8 })">
+            8
+          </button>
+          <button class="flex-1 rounded-xl py-2 px-3 font-semibold text-sm transition-all duration-200" 
+                  :class="libraryConfigGridSize === 10 ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'" 
+                  @click="updateLibraryConfig({ gridSize: 10 })">
+            10
+          </button>
+          <button class="flex-1 rounded-xl py-2 px-3 font-semibold text-sm transition-all duration-200" 
+                  :class="libraryConfigGridSize === 12 ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'" 
+                  @click="updateLibraryConfig({ gridSize: 12 })">
+            12
+          </button>
+
         </div>
         <div class="text-xs text-slate-400 mt-1 flex items-center gap-1">
           <span x-show="libraryConfigOrientation === 'vertical'">📏</span>
