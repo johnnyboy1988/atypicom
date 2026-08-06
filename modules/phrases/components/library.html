@@ -2,13 +2,13 @@
 
 <section class="flex flex-col
                flex-shrink-0
-               h-[38vh] md:h-[45vh]
                overflow-hidden
                rounded-[20px] md:rounded-[28px]
                bg-white/80
                backdrop-blur-xl
                p-2 md:p-3
-               shadow-[0_-10px_30px_rgba(0,0,0,.08)]">
+               shadow-[0_-10px_30px_rgba(0,0,0,.08)]"
+         :style="`height: ${libraryConfigMaxHeight}vh`">
 
   <!-- TOP -->
 
@@ -72,6 +72,23 @@
       </button>
 
 
+      <!-- CONFIGURAR -->
+
+      <button x-show="configMode.editLibrary" class="px-3 py-2
+           rounded-2xl
+           bg-slate-200
+           text-slate-700
+           text-[11px] md:text-xs
+           font-bold
+           shadow-lg
+           hover:bg-slate-300
+           transition" @click="showLibraryConfigModal = true">
+
+        ⚙️
+
+      </button>
+
+
       <!-- CRIAR -->
 
       <button x-show="configMode.createCard" class="px-3 py-2
@@ -94,7 +111,7 @@
 
   </div>
 
-  <!-- SCROLL HORIZONTAL COM 3 LINHAS -->
+  <!-- SCROLL HORIZONTAL COM LINHAS CONFIGURÁVEIS -->
 
   <div class="flex-1
               min-h-0
@@ -105,54 +122,52 @@
 
     <div class="grid
             grid-flow-col
-            grid-rows-4
             auto-rows-fr
             gap-2
             h-full
             min-h-0
-            w-max">
+            w-max"
+         :style="`grid-template-rows: repeat(${libraryConfigRows}, 1fr);`">
 
       <template x-for="card in filteredCards" :key="card.id">
 
         <button class="text-left
              rounded-[16px] md:rounded-[20px]
 
-             min-w-[120px]
-             max-w-[120px]
-
-             md:min-w-[155px]
-             md:max-w-[155px]
-
              h-full
              min-h-0
 
-             p-2 md:p-3
+             p-2 md:p-2.5
 
              shadow-[0_10px_24px_rgba(15,23,42,.08)]
 
              flex
              flex-col
-             overflow-hidden" :class="editMode
+             overflow-hidden" 
+             :style="`
+               min-width: ${libraryConfigCardWidth}px;
+               max-width: ${libraryConfigCardWidth}px;
+               background-color: #E2E8F0;
+               background-image: linear-gradient(
+                 180deg,
+                 ${getCategory(card.category)?.color || '#E2E8F0'} 0%,
+                 #ffffff 72%
+               );
+             `"
+             :class="editMode
         ? 'ring-4 ring-amber-400 cursor-pointer'
         : ''" @pointerdown="
         !editMode &&
         startDragFromLibrary($event, card)
-      " @click="onLibraryCardClick(card)" :style="`
-        background-color: #E2E8F0;
-        background-image: linear-gradient(
-          180deg,
-          ${getCategory(card.category)?.color || '#E2E8F0'} 0%,
-          #ffffff 72%
-        );
-      `">
+      " @click="onLibraryCardClick(card)">
 
           <!-- IMAGE -->
 
           <div class="overflow-hidden
          rounded-[12px]
-         w-10 h-10
-         md:w-12 md:h-12
-         mb-2
+         w-8 h-8
+         md:w-10 md:h-10
+         mb-1.5
          flex-shrink-0">
 
             <img class="object-cover
@@ -164,12 +179,30 @@
 
           <!-- FRONT TEXT -->
 
-          <div class="text-[15px] md:text-[18px]
-               leading-none
+          <div class="text-[14px] md:text-[16px]
+               leading-tight
                font-bold
                font-['Baloo_2']
-               mb-1
-               break-words" x-text="card.frontText">
+               mb-0.5
+               break-words
+               line-clamp-2" x-text="card.frontText">
+
+          </div>
+
+
+          <!-- CATEGORY (condicional) -->
+
+          <div x-show="libraryConfigShowCategory" 
+               class="text-[7px] md:text-[8px]
+               uppercase
+               tracking-[.12em]
+               text-slate-500
+               truncate
+               flex items-center gap-1
+               mt-auto">
+
+            <span x-show="libraryConfigShowIcons" x-html="getCategoryIcon(card.category)"></span>
+            <span x-text="card.category"></span>
 
           </div>
 
@@ -183,3 +216,155 @@
   </div>
 
 </section>
+
+<!-- MODAL CONFIGURAÇÃO DA BIBLIOTECA -->
+<div x-show="showLibraryConfigModal" x-transition.opacity
+     class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" style="display:none">
+  <div @click.outside="showLibraryConfigModal = false"
+       class="w-full max-w-md max-h-[85vh] overflow-hidden rounded-[28px] bg-white shadow-2xl flex flex-col">
+    
+    <!-- HEADER -->
+    <div class="flex items-center justify-between border-b border-slate-100 p-5 flex-shrink-0">
+      <div>
+        <div class="text-[22px] font-bold font-['Baloo_2']">
+          ⚙️ Configurar Biblioteca
+        </div>
+        <div class="text-sm text-slate-500">
+          Ajuste a aparência da biblioteca de cards
+        </div>
+      </div>
+      <button class="w-10 h-10 rounded-2xl bg-slate-100 text-xl hover:bg-slate-200 transition flex-shrink-0"
+              @click="showLibraryConfigModal = false">
+        ×
+      </button>
+    </div>
+
+    <!-- BODY -->
+    <div class="flex-1 overflow-y-auto p-5 space-y-4">
+      
+      <!-- NÚMERO DE LINHAS -->
+      <div>
+        <label class="block text-sm font-semibold mb-2">
+          Número de linhas
+        </label>
+        <div class="flex gap-2">
+          <button class="flex-1 rounded-xl py-2 px-3 font-semibold text-sm transition-all duration-200"
+                  :class="libraryConfigRows === 2 
+                    ? 'bg-indigo-600 text-white shadow-md' 
+                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
+                  @click="updateLibraryConfig({ rows: 2 })">
+            2
+          </button>
+          <button class="flex-1 rounded-xl py-2 px-3 font-semibold text-sm transition-all duration-200"
+                  :class="libraryConfigRows === 3 
+                    ? 'bg-indigo-600 text-white shadow-md' 
+                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
+                  @click="updateLibraryConfig({ rows: 3 })">
+            3
+          </button>
+          <button class="flex-1 rounded-xl py-2 px-3 font-semibold text-sm transition-all duration-200"
+                  :class="libraryConfigRows === 4 
+                    ? 'bg-indigo-600 text-white shadow-md' 
+                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
+                  @click="updateLibraryConfig({ rows: 4 })">
+            4
+          </button>
+          <button class="flex-1 rounded-xl py-2 px-3 font-semibold text-sm transition-all duration-200"
+                  :class="libraryConfigRows === 5 
+                    ? 'bg-indigo-600 text-white shadow-md' 
+                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
+                  @click="updateLibraryConfig({ rows: 5 })">
+            5
+          </button>
+          <button class="flex-1 rounded-xl py-2 px-3 font-semibold text-sm transition-all duration-200"
+                  :class="libraryConfigRows === 6 
+                    ? 'bg-indigo-600 text-white shadow-md' 
+                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
+                  @click="updateLibraryConfig({ rows: 6 })">
+            6
+          </button>
+        </div>
+      </div>
+
+      <!-- ALTURA MÁXIMA -->
+      <div>
+        <label class="block text-sm font-semibold mb-2">
+          Altura máxima (vh): <span x-text="libraryConfigMaxHeight"></span>vh
+        </label>
+        <input type="range" 
+               min="20" max="70" step="1"
+               x-model="libraryConfigMaxHeight"
+               @input="updateLibraryConfig({ maxHeight: parseInt($event.target.value) })"
+               class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer">
+        <div class="flex justify-between text-xs text-slate-500">
+          <span>20vh</span>
+          <span>45vh</span>
+          <span>70vh</span>
+        </div>
+      </div>
+
+      <!-- LARGURA DOS CARDS (MOBILE) -->
+      <div>
+        <label class="block text-sm font-semibold mb-2">
+          Largura dos cards (mobile): <span x-text="libraryConfigCardWidth"></span>px
+        </label>
+        <input type="range" 
+               min="80" max="160" step="5"
+               x-model="libraryConfigCardWidth"
+               @input="updateLibraryConfig({ cardWidth: parseInt($event.target.value) })"
+               class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer">
+        <div class="flex justify-between text-xs text-slate-500">
+          <span>80px</span>
+          <span>120px</span>
+          <span>160px</span>
+        </div>
+      </div>
+
+      <!-- LARGURA DOS CARDS (DESKTOP) -->
+      <div>
+        <label class="block text-sm font-semibold mb-2">
+          Largura dos cards (desktop): <span x-text="libraryConfigCardWidthMd"></span>px
+        </label>
+        <input type="range" 
+               min="100" max="220" step="5"
+               x-model="libraryConfigCardWidthMd"
+               @input="updateLibraryConfig({ cardWidthMd: parseInt($event.target.value) })"
+               class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer">
+        <div class="flex justify-between text-xs text-slate-500">
+          <span>100px</span>
+          <span>160px</span>
+          <span>220px</span>
+        </div>
+      </div>
+
+      <!-- OPÇÕES ADICIONAIS -->
+      <div class="border-t border-slate-100 pt-4 space-y-2">
+        <label class="flex items-center justify-between py-2">
+          <span class="font-semibold">Mostrar categoria</span>
+          <input type="checkbox" x-model="libraryConfigShowCategory"
+                 @change="updateLibraryConfig({ showCategory: $event.target.checked })">
+        </label>
+        <label class="flex items-center justify-between py-2">
+          <span class="font-semibold">Mostrar ícones das categorias</span>
+          <input type="checkbox" x-model="libraryConfigShowIcons"
+                 @change="updateLibraryConfig({ showIcons: $event.target.checked })">
+        </label>
+      </div>
+
+      <!-- BOTÃO RESET -->
+      <button class="w-full rounded-xl bg-red-50 text-red-600 py-2 font-semibold hover:bg-red-100 transition text-sm"
+              @click="resetLibraryConfig()">
+        Restaurar padrões
+      </button>
+
+    </div>
+
+    <!-- FOOTER -->
+    <div class="flex-shrink-0 p-5 border-t border-slate-100">
+      <button class="w-full rounded-2xl bg-indigo-600 text-white py-3 font-bold hover:bg-indigo-500 transition"
+              @click="showLibraryConfigModal = false">
+        Fechar
+      </button>
+    </div>
+  </div>
+</div>

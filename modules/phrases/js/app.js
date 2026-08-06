@@ -34,6 +34,7 @@ function aacApp() {
       open: false,
       createCard: true,
       createTag: true,
+      editLibrary: true,
       createCategory: true,
       editCard: false,
       iconProviders: {
@@ -76,6 +77,38 @@ function aacApp() {
       selectedImage: "",
     },
 
+    // Adicione no return do aacApp()
+    showLibraryConfigModal: false,
+    libraryConfigRows: 3,
+    libraryConfigMaxHeight: 38,
+    libraryConfigCardWidth: 120,
+    libraryConfigCardWidthMd: 155,
+    libraryConfigShowCategory: true,
+    libraryConfigShowIcons: true,
+
+
+    // Adicione os métodos
+    loadLibraryConfig() {
+        this.libraryConfigRows = LibraryConfig.getRows();
+        this.libraryConfigMaxHeight = LibraryConfig.getMaxHeight();
+        this.libraryConfigCardWidth = LibraryConfig.getCardWidth();
+        this.libraryConfigCardWidthMd = LibraryConfig.getCardWidthMd();
+        this.libraryConfigShowCategory = LibraryConfig.getShowCategory();
+        this.libraryConfigShowIcons = LibraryConfig.getShowIcons();
+    },
+
+    updateLibraryConfig(newConfig) {
+        LibraryConfig.updateConfig(newConfig);
+        this.loadLibraryConfig();
+        this.refreshComposer();
+    },
+
+    resetLibraryConfig() {
+        LibraryConfig.reset();
+        this.loadLibraryConfig();
+        this.showToast("Configuração restaurada!");
+    },
+
     // ===== INIT =====
     async init() {
       window.__appInstance = this;
@@ -90,6 +123,7 @@ function aacApp() {
       this.createForm.newTagColor = this.randomColor();
 
       this.loadPhrasesFromStorage();
+      this.loadLibraryConfig();
 
     },
 
