@@ -114,7 +114,9 @@
         </template>
         <!-- PHRASE CARDS -->
         <template x-for="(item, index) in phrase" :key="item.uid">
-          <div data-gjs-name="Phrase Card Wrapper" class="relative overflow-hidden
+          <div data-gjs-name="Phrase Card Wrapper"
+          @click="Speech.speak(item.frontText)"
+          class="relative overflow-hidden
               rounded-[18px] md:rounded-[22px]
               bg-white
               border-[3px]
@@ -172,8 +174,8 @@
                   <span class="inline-flex items-center rounded-full
                        px-1.5 py-0.5 md:px-2 md:py-0.5
                        text-[7px] md:text-[9px]
-                       font-bold uppercase tracking-[.08em]" :style="`
-                background:${getCategory(item.category)?.color || '#CBD5E1'}25;
+                       font-bold uppercase tracking-[.08em]" 
+                       :style="`background:${getCategory(item.category)?.color || '#CBD5E1'}25;
                 color:${getCategory(item.category)?.color || '#64748B'};
                 border: 1px solid ${getCategory(item.category)?.color || '#CBD5E1'}40;
               `" x-text="item.category">

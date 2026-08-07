@@ -71,7 +71,7 @@
                           #ffffff 72%
                         );
                       `" :class="editMode ? 'ring-4 ring-amber-400 cursor-pointer' : ''"
-                @pointerdown="!editMode && startDragFromLibrary($event, card)" @click="onLibraryCardClick(card)">
+                @pointerdown="!editMode && startDragFromLibrary($event, card)" @click="speak(card.frontText) &&  onLibraryCardClick(card)">
                 <div class="overflow-hidden rounded-[12px] w-8 h-8 md:w-10 md:h-10 mb-1.5 flex-shrink-0">
                   <img class="object-cover w-full h-full" :src="card.image">
                 </div>
@@ -108,7 +108,7 @@
                           #ffffff 72%
                         );
                       `" :class="editMode ? 'ring-4 ring-amber-400 cursor-pointer' : ''"
-                @pointerdown="!editMode && startDragFromLibrary($event, card)" @click="onLibraryCardClick(card)">
+                @pointerdown="!editMode && startDragFromLibrary($event, card)" @click="Speech.speak(card.frontText) && onLibraryCardClick(card)">
                 <div class="overflow-hidden rounded-[12px] w-8 h-8 md:w-10 md:h-10 mb-1.5 flex-shrink-0">
                   <img class="object-cover w-full h-full" :src="card.image">
                 </div>
