@@ -1172,8 +1172,19 @@ function aacApp() {
 
     // ===== CLICK EM CARD SNAP-GRID =====
     onSnapGridCardClick(card) {
-      console.log("onSnapGridCardClick:", card.frontText);
-      this.quickAdd(card);
+        if (card && card.frontText) {
+            if (this.Speech && typeof this.Speech.speak === 'function') {
+                this.Speech.speak(card.frontText, {
+                    rate: 0.85,
+                    pitch: 1.0,
+                    lang: "pt-BR"
+                });
+            }
+        }
+        
+        if (!this.editMode) {
+            this.quickAdd(card);
+        }
     },
 
     // ===== NAVEGAÇÃO PARA CARDS =====
