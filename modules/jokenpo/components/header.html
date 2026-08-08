@@ -47,14 +47,14 @@
         <div class="flex gap-2">
           <button class="flex-1 rounded-xl py-2 px-3 font-semibold text-sm transition-all duration-200"
                   :class="!twoPlayerMode ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
-                  @click="twoPlayerMode = false">
+                  @click="setMode(false)">
             <span class="flex items-center justify-center gap-2">
               <span>🤖 vs CPU</span>
             </span>
           </button>
           <button class="flex-1 rounded-xl py-2 px-3 font-semibold text-sm transition-all duration-200"
                   :class="twoPlayerMode ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
-                  @click="twoPlayerMode = true">
+                  @click="setMode(true)">
             <span class="flex items-center justify-center gap-2">
               <span>👥 2 Jogadores</span>
             </span>
@@ -72,7 +72,7 @@
         <div class="flex gap-2">
           <button class="flex-1 rounded-xl py-2 px-3 font-semibold text-sm transition-all duration-200"
                   :class="!useHandIcons ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
-                  @click="useHandIcons = false">
+                  @click="setIconStyle(false)">
             <span class="flex items-center justify-center gap-2">
               <span>🪨📄✂️</span>
               <span class="text-[10px]">Objetos</span>
@@ -80,7 +80,7 @@
           </button>
           <button class="flex-1 rounded-xl py-2 px-3 font-semibold text-sm transition-all duration-200"
                   :class="useHandIcons ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
-                  @click="useHandIcons = true">
+                  @click="setIconStyle(true)">
             <span class="flex items-center justify-center gap-2">
               <span>✊✋✌️</span>
               <span class="text-[10px]">Mãos</span>
@@ -97,23 +97,21 @@
       <div class="border border-slate-200 rounded-2xl p-4 bg-white mb-3">
         <div class="text-sm font-semibold mb-3">⏱️ Tempo de exibição do resultado</div>
         
-        <!-- Botões rápidos -->
         <div class="flex gap-2 mb-3">
           <button class="flex-1 rounded-xl py-2 px-3 font-semibold text-sm transition-all duration-200"
                   :class="clearDelay === 3000 ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
-                  @click="clearDelay = 3000">3s</button>
+                  @click="setDelay(3000)">3s</button>
           <button class="flex-1 rounded-xl py-2 px-3 font-semibold text-sm transition-all duration-200"
                   :class="clearDelay === 5000 ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
-                  @click="clearDelay = 5000">5s</button>
+                  @click="setDelay(5000)">5s</button>
           <button class="flex-1 rounded-xl py-2 px-3 font-semibold text-sm transition-all duration-200"
                   :class="clearDelay === 7000 ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
-                  @click="clearDelay = 7000">7s</button>
+                  @click="setDelay(7000)">7s</button>
           <button class="flex-1 rounded-xl py-2 px-3 font-semibold text-sm transition-all duration-200"
                   :class="clearDelay === 10000 ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
-                  @click="clearDelay = 10000">10s</button>
+                  @click="setDelay(10000)">10s</button>
         </div>
         
-        <!-- Input personalizado -->
         <div class="flex items-center gap-3">
           <span class="text-xs font-medium text-slate-600">Personalizado:</span>
           <input type="number" 
@@ -121,15 +119,16 @@
                  min="1000" 
                  max="30000" 
                  step="500"
-                 class="w-24 rounded-xl border border-slate-200 p-2 text-sm font-semibold text-center focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200">
+                 class="w-24 rounded-xl border border-slate-200 p-2 text-sm font-semibold text-center focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200"
+                 @change="saveConfig()">
           <span class="text-xs text-slate-500">ms</span>
         </div>
         
-        <!-- Feedback do tempo atual -->
         <div class="text-xs text-slate-500 mt-2">
           <span>🔄 Resultado ficará visível por <strong x-text="(clearDelay / 1000).toFixed(0) + 's'"></strong></span>
         </div>
       </div>
+
 
       <!-- REGRAS -->
       <button class="w-full rounded-xl border border-slate-200 p-3 text-sm font-semibold hover:bg-slate-50 transition"
@@ -137,7 +136,13 @@
         📖 Ver regras
       </button>
 
-      <button class="w-full mt-5 rounded-2xl bg-indigo-600 text-white py-3 font-bold hover:bg-indigo-500 transition"
+      <!-- RESETAR PLACAR -->
+      <button class="w-full mt-2 rounded-xl border border-red-200 bg-red-50 p-3 text-sm font-semibold text-red-600 hover:bg-red-100 transition"
+              @click="resetGame()">
+        🔄 Resetar placar
+      </button>
+
+      <button class="w-full mt-3 rounded-2xl bg-indigo-600 text-white py-3 font-bold hover:bg-indigo-500 transition"
               @click="showSettings = false">
         Fechar
       </button>
