@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Quebra-Cabeças – AAC</title>
+
+    <!-- Alpine -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+    <!-- Tailwind -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700&family=Inter:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <style>
+        /* GARANTE QUE NÃO HAJA SCROLL */
+        html,
+        body {
+            overflow: hidden !important;
+            height: 100%;
+            max-height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        main {
+            overflow: hidden !important;
+            min-height: 0;
+            flex: 1;
+        }
+
+        .confetti {
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        @keyframes confettiFall {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        @keyframes shake {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            20% {
+                transform: translateX(-10px);
+            }
+
+            40% {
+                transform: translateX(10px);
+            }
+
+            60% {
+                transform: translateX(-10px);
+            }
+
+            80% {
+                transform: translateX(10px);
+            }
+        }
+
+        .puzzle-piece {
+            position: relative;
+            cursor: grab;
+            transition: all 0.2s ease;
+            border-radius: 0.5rem;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            aspect-ratio: 1/1;
+            width: 100%;
+            height: 100%;
+        }
+
+        .puzzle-piece:active {
+            cursor: grabbing;
+            transform: scale(1.05);
+            z-index: 10;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .puzzle-piece.dragging {
+            opacity: 0.7;
+            transform: scale(1.1);
+            z-index: 20;
+        }
+
+        .puzzle-piece.correct {
+            cursor: default;
+            box-shadow: 0 0 0 3px #22c55e, 0 4px 12px rgba(34, 197, 94, 0.3);
+        }
+
+        .puzzle-piece.correct:active {
+            transform: none;
+            cursor: default;
+        }
+
+        .drop-zone {
+            min-height: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-image:
+                radial-gradient(circle at 20% 50%, rgba(99, 102, 241, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 80% 50%, rgba(99, 102, 241, 0.05) 0%, transparent 50%);
+        }
+
+        .drop-zone.drag-over {
+            background-color: rgba(99, 102, 241, 0.08);
+            border-color: #6366f1;
+        }
+
+        .piece-placeholder {
+            background: rgba(0, 0, 0, 0.05);
+            border: 2px dashed rgba(0, 0, 0, 0.15);
+            border-radius: 0.5rem;
+            aspect-ratio: 1/1;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @keyframes popIn {
+            0% {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+
+            70% {
+                transform: scale(1.05);
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .piece-correct-anim {
+            animation: popIn 0.4s ease;
+            width: 100%;
+            height: 100%;
+        }
+
+        .puzzle-board {
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+
+        /* ===== ÁREA DE PEÇAS ===== */
+        .pieces-area {
+            overflow-x: auto;
+            overflow-y: hidden;
+            flex-shrink: 0;
+            min-height: 0;
+            height: 90px;
+            max-height: 25vh;
+        }
+
+        @media (min-width: 768px) {
+            .pieces-area {
+                height: 110px;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .pieces-area {
+                height: 130px;
+            }
+        }
+
+        .pieces-area::-webkit-scrollbar {
+            height: 4px;
+        }
+
+        .pieces-area::-webkit-scrollbar-track {
+            background: rgba(226, 232, 240, 0.3);
+            border-radius: 10px;
+        }
+
+        .pieces-area::-webkit-scrollbar-thumb {
+            background: #94a3b8;
+            border-radius: 10px;
+        }
+
+        .pieces-container {
+            display: flex;
+            gap: 0.5rem;
+            padding: 0.5rem;
+            height: 100%;
+            align-items: center;
+            flex-wrap: nowrap;
+        }
+
+        .piece-wrapper {
+            flex-shrink: 0;
+            width: 60px;
+            height: 60px;
+        }
+
+        @media (min-width: 640px) {
+            .piece-wrapper {
+                width: 70px;
+                height: 70px;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .piece-wrapper {
+                width: 80px;
+                height: 80px;
+            }
+        }
+
+        /* ===== GRID CENTRALIZADO ===== */
+        .puzzle-stage {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 4px;
+        }
+
+        .puzzle-stage-inner {
+            position: relative;
+            aspect-ratio: 1/1;
+            height: 100%;
+            max-height: 100%;
+            width: auto;
+            max-width: 100%;
+            overflow: hidden;
+            border-radius: 0.75rem;
+        }
+
+        .puzzle-stage-inner .bg-image {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.12;
+            transition: opacity 0.5s ease;
+            pointer-events: none;
+        }
+
+        .puzzle-stage-inner .bg-image.complete {
+            opacity: 1;
+        }
+
+        .puzzle-stage-inner .grid-overlay {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            display: grid;
+            gap: 2px;
+        }
+
+        .puzzle-stage-inner .grid-overlay>div {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            aspect-ratio: 1/1;
+        }
+
+        .slot-empty {
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.05);
+            border: 2px dashed rgba(0, 0, 0, 0.12);
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            color: rgba(0, 0, 0, 0.2);
+            aspect-ratio: 1/1;
+        }
+
+        @media (min-width: 768px) {
+            .slot-empty {
+                font-size: 1rem;
+            }
+        }
+
+        .slot-filled {
+            width: 100%;
+            height: 100%;
+            padding: 1px;
+        }
+
+        .slot-filled .puzzle-piece {
+            border-radius: 0.5rem;
+            overflow: hidden;
+            box-shadow: 0 0 0 2px #22c55e, 0 4px 12px rgba(34, 197, 94, 0.3);
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div x-data="puzzleApp()" x-init="init()"
+        class="flex flex-col h-dvh max-h-dvh overflow-hidden bg-gradient-to-b from-indigo-50 via-slate-50 to-white">
+
+        <!-- HEADER -->
+        <div id="header-container" class="flex-shrink-0"></div>
+
+        <!-- CONTEÚDO PRINCIPAL -->
+        <main class="flex flex-col flex-1 min-h-0 overflow-hidden gap-2 p-2">
+
+            <!-- STATUS -->
+            <div class="flex-shrink-0 flex items-center justify-between gap-2 flex-wrap">
+                <div class="text-sm font-semibold text-slate-600">
+                    🧩 <span x-text="placedPieces"></span>/<span x-text="totalPieces"></span>
+                </div>
+                <div class="flex items-center gap-1">
+                    <button @click="resetPuzzle()"
+                        class="px-3 py-1.5 rounded-xl bg-indigo-600 text-white text-xs font-bold hover:bg-indigo-500 transition shadow">
+                        🔄 Embaralhar
+                    </button>
+                    <button @click="showSettings = !showSettings"
+                        class="px-3 py-1.5 rounded-xl bg-slate-200 text-slate-700 text-xs font-bold hover:bg-slate-300 transition">
+                        ⚙️
+                    </button>
+                </div>
+            </div>
+
+            <!-- ÁREA SUPERIOR - TABULEIRO -->
+            <div class="flex-1 min-h-0 relative overflow-hidden rounded-2xl bg-white/60 shadow-inner puzzle-board drop-zone"
+                :class="dragOver ? 'drag-over' : ''" @dragover.prevent="handleDragOver" @dragleave="handleDragLeave"
+                @drop.prevent="handleDrop($event)">
+
+                <div class="puzzle-stage w-full h-full">
+                    <!-- O inner se ajusta automaticamente: altura = 100%, largura = automatica (aspect-ratio) -->
+                    <div class="puzzle-stage-inner">
+
+                        <img :src="currentImage" class="bg-image" :class="isComplete ? 'complete' : ''"
+                            alt="Imagem do quebra-cabeças">
+
+                        <div class="grid-overlay"
+                            :style="`grid-template-columns: repeat(${gridSize}, 1fr); grid-template-rows: repeat(${gridSize}, 1fr);`">
+                            <template x-for="i in totalPieces" :key="i">
+                                <div>
+                                    <template x-if="!gridPieces[i-1]">
+                                        <div class="slot-empty" x-text="i"></div>
+                                    </template>
+                                    <template x-if="gridPieces[i-1]">
+                                        <div class="slot-filled">
+                                            <div class="puzzle-piece" :style="getPieceStyle(gridPieces[i-1])">
+                                            </div>
+                                        </div>
+                                    </template>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+                </div>
+
+                <div x-show="isComplete"
+                    class="absolute inset-0 flex items-center justify-center bg-black/30 pointer-events-none">
+                    <div class="bg-white/90 rounded-3xl p-4 md:p-6 text-center shadow-2xl animate-bounce">
+                        <div class="text-4xl md:text-5xl mb-2">🎉</div>
+                        <div class="text-xl md:text-2xl font-bold font-['Baloo_2'] text-slate-800">Parabéns!</div>
+                        <div class="text-sm text-slate-600 mt-1">Você completou o quebra-cabeças!</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ÁREA INFERIOR - PEÇAS -->
+            <div class="pieces-area bg-white/40 rounded-2xl shadow-inner">
+                <div class="pieces-container">
+                    <template x-for="(piece, index) in shuffledPieces" :key="index">
+                        <div class="piece-wrapper" x-show="!piece.placed">
+                            <div class="puzzle-piece" :class="{ 'dragging': dragPieceIndex === index }" draggable="true"
+                                @dragstart="handleDragStart($event, index)" @dragend="handleDragEnd"
+                                :style="getPieceStyle(piece)">
+                                <!-- NÚMERO DA PEÇA - COM x-show PARA OCULTAR -->
+                                <div class="absolute top-0 left-0 text-[8px] font-bold text-white bg-black/50 px-1 py-0.5 rounded-br-lg z-10"
+                                    x-show="showPieceNumbers" x-text="piece.index + 1"></div>
+                            </div>
+                        </div>
+                    </template>
+                    <div x-show="shuffledPieces.every(p => p.placed)"
+                        class="flex items-center justify-center w-full text-slate-400 text-sm font-bold h-full">
+                        🎉 Todas as peças foram encaixadas!
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- MODAL DE CONFIGURAÇÕES -->
+        <div x-show="showSettings" x-transition.opacity
+            class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" style="display:none">
+            <div @click.outside="showSettings = false"
+                class="w-full max-w-md max-h-[85vh] overflow-hidden rounded-[28px] bg-white shadow-2xl flex flex-col">
+                <div class="flex items-center justify-between border-b border-slate-100 p-5 flex-shrink-0">
+                    <div>
+                        <div class="text-[22px] font-bold font-['Baloo_2']">⚙️ Configurações</div>
+                        <div class="text-sm text-slate-500">Ajuste o quebra-cabeças</div>
+                    </div>
+                    <button @click="showSettings = false"
+                        class="w-10 h-10 rounded-2xl bg-slate-100 text-xl hover:bg-slate-200 transition flex-shrink-0">×</button>
+                </div>
+                <div class="flex-1 overflow-y-auto p-5 space-y-4">
+
+                    <!-- DIFICULDADE -->
+                    <div class="border border-slate-200 rounded-2xl p-4 bg-white">
+                        <div class="text-sm font-semibold mb-3">📐 Dificuldade</div>
+                        <div class="flex gap-2">
+                            <button class="flex-1 rounded-xl py-2 px-3 font-semibold text-sm transition"
+                                :class="gridSize === 3 ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
+                                @click="setGridSize(3)">😊 3×3</button>
+                            <button class="flex-1 rounded-xl py-2 px-3 font-semibold text-sm transition"
+                                :class="gridSize === 4 ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
+                                @click="setGridSize(4)">🤔 4×4</button>
+                            <button class="flex-1 rounded-xl py-2 px-3 font-semibold text-sm transition"
+                                :class="gridSize === 5 ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
+                                @click="setGridSize(5)">🧠 5×5</button>
+                        </div>
+                        <div class="text-xs text-slate-500 mt-2"><span x-text="totalPieces"></span> peças</div>
+                    </div>
+
+                    <!-- IMAGENS -->
+                    <div class="border border-slate-200 rounded-2xl p-4 bg-white">
+                        <div class="text-sm font-semibold mb-3">🖼️ Escolher imagem</div>
+                        <div class="grid grid-cols-3 gap-2">
+                            <template x-for="(img, idx) in imageOptions" :key="idx">
+                                <button @click="selectImage(idx)"
+                                    class="aspect-square rounded-xl overflow-hidden border-2 transition"
+                                    :class="currentImageIndex === idx ? 'border-indigo-600 ring-2 ring-indigo-200' : 'border-slate-200 hover:border-indigo-300'">
+                                    <img :src="img" class="w-full h-full object-cover">
+                                </button>
+                            </template>
+                        </div>
+                    </div>
+
+                    <!-- MOSTRAR NÚMEROS - NOVA OPÇÃO -->
+                    <div class="border border-slate-200 rounded-2xl p-4 bg-white">
+                        <div class="text-sm font-semibold mb-3">🔢 Números nas peças</div>
+                        <div class="flex gap-2">
+                            <button
+                                class="flex-1 rounded-xl py-2 px-3 font-semibold text-sm transition-all duration-200"
+                                :class="showPieceNumbers ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
+                                @click="togglePieceNumbers()">
+                                <span class="flex items-center justify-center gap-2">
+                                    <span>🔢</span> Mostrar
+                                </span>
+                            </button>
+                            <button
+                                class="flex-1 rounded-xl py-2 px-3 font-semibold text-sm transition-all duration-200"
+                                :class="!showPieceNumbers ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
+                                @click="togglePieceNumbers()">
+                                <span class="flex items-center justify-center gap-2">
+                                    <span>🚫</span> Ocultar
+                                </span>
+                            </button>
+                        </div>
+                        <div class="text-xs text-slate-500 mt-2">
+                            <span x-show="showPieceNumbers">🔢 Os números das peças são mostrados</span>
+                            <span x-show="!showPieceNumbers">🚫 Os números das peças estão ocultos</span>
+                        </div>
+                    </div>
+
+                    <!-- RESETAR -->
+                    <button
+                        class="w-full rounded-xl bg-red-50 text-red-600 py-2.5 font-semibold hover:bg-red-100 transition text-sm"
+                        @click="resetPuzzle(); showSettings = false">🔄 Reiniciar</button>
+
+                </div>
+                <div class="flex-shrink-0 p-5 border-t border-slate-100">
+                    <button
+                        class="w-full rounded-2xl bg-indigo-600 text-white py-3 font-bold hover:bg-indigo-500 transition"
+                        @click="showSettings = false">Fechar</button>
+                </div>
+            </div>
+        </div>
+        <!-- MODAL DE CELEBRAÇÃO -->
+        <div x-show="celebration.show" x-transition.opacity
+            class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" style="display:none">
+            <div class="w-full max-w-md rounded-[32px] bg-white shadow-2xl p-6 md:p-8 text-center">
+                <div class="text-6xl mb-4">🧩</div>
+                <h2 class="text-3xl font-bold font-['Baloo_2'] text-slate-800" x-text="celebration.title"></h2>
+                <p class="text-slate-600 mt-2 text-lg" x-text="celebration.subtitle"></p>
+                <button @click="celebration.show = false"
+                    class="mt-6 rounded-2xl bg-indigo-600 text-white px-8 py-3 font-bold hover:bg-indigo-500 transition">
+                    Fechar
+                </button>
+            </div>
+        </div>
+
+        <!-- TOAST -->
+        <div x-show="_toastShow" x-transition
+            class="fixed bottom-5 left-1/2 z-[60] -translate-x-1/2 rounded-2xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white shadow-2xl"
+            style="display:none" x-text="_toastMessage"></div>
+
+    </div>
+
+    <!-- SCRIPTS -->
+    <script src="../../js/services/speech-service.js"></script>
+    <script src="../../js/safe-exit.js"></script>
+    <script src="./js/component-loader.js"></script>
+    <script src="./js/app.js"></script>
+
+</body>
+
+</html>

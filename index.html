@@ -236,7 +236,33 @@
                 </div>
 
             </button>
+            <!-- Módulo 8: Quebra-Cabeças -->
+            <button @click="open('puzzle')" class="w-full rounded-[28px]
+       bg-white
+       p-6
+       shadow-xl
+       hover:-translate-y-1
+       hover:shadow-2xl
+       transition">
 
+                <div class="flex items-center gap-5">
+                    <div class="w-16 h-16 rounded-2xl bg-green-100 flex items-center justify-center text-3xl">
+                        🧩
+                    </div>
+                    <div class="text-left">
+                        <div class="font-bold text-2xl font-['Baloo_2']">
+                            Quebra-Cabeças
+                        </div>
+                        <div class="text-slate-500 text-sm">
+                            Monte a imagem arrastando as peças
+                        </div>
+                        <div class="text-slate-500 text-sm italic">
+                            Raciocínio lógico e percepção visual
+                        </div>
+                    </div>
+                </div>
+
+            </button>
         </div>
 
         <!-- Footer -->
@@ -290,7 +316,9 @@
                         case "tictactoe":
                             window.location.href = "modules/tictactoe/index.html";
                             break;
-
+                        case "puzzle":
+                            window.location.href = "modules/puzzle/index.html";
+                            break;
                     }
 
                 }
