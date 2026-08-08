@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jogo da Velha – AAC</title>
+
+    <!-- Alpine -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+    <!-- Tailwind -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700&family=Inter:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <style>
+        .confetti {
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        @keyframes confettiFall {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        .cell {
+            aspect-ratio: 1/1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            font-weight: 700;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 0.75rem;
+            transition: all 0.3s;
+            border: 3px solid rgba(226, 232, 240, 0.6);
+            cursor: pointer;
+            user-select: none;
+        }
+
+        @media (min-width: 768px) {
+            .cell {
+                font-size: 5rem;
+            }
+        }
+
+        .cell-x {
+            color: #3b82f6;
+            border-color: #3b82f6;
+            background: #dbeafe;
+            animation: popIn 0.3s ease;
+        }
+
+        .cell-o {
+            color: #ef4444;
+            border-color: #ef4444;
+            background: #fee2e2;
+            animation: popIn 0.3s ease;
+        }
+
+        .cell-winner {
+            animation: winnerPulse 0.8s ease-in-out infinite;
+            border-color: #f59e0b;
+            box-shadow: 0 0 30px rgba(245, 158, 11, 0.4);
+        }
+
+        @keyframes popIn {
+            0% {
+                transform: scale(0.5);
+                opacity: 0;
+            }
+
+            70% {
+                transform: scale(1.1);
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        @keyframes winnerPulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        .cell-disabled {
+            cursor: not-allowed;
+            opacity: 0.8;
+        }
+
+        .timer-number {
+            font-variant-numeric: tabular-nums;
+        }
+
+        .clickable {
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div x-data="ticTacToeApp()" x-init="init()"
+        class="flex flex-col min-h-dvh bg-gradient-to-b from-indigo-50 via-slate-50 to-white">
+
+        <!-- HEADER (componente) -->
+        <div id="header-container"></div>
+
+        <!-- CONTEÚDO PRINCIPAL -->
+        <main class="flex flex-col flex-1 min-h-0 overflow-hidden gap-3 md:gap-4 p-3 md:p-4">
+
+            <!-- STATUS E CONTROLES -->
+            <div class="flex-shrink-0 flex items-center justify-between gap-3 flex-wrap">
+                <div class="flex items-center gap-3">
+                    <div class="text-sm font-semibold text-slate-600">
+                        <span x-show="gameMode === 'cpu'">🤖 vs CPU</span>
+                        <span x-show="gameMode === 'pvp'">👥 2 Jogadores</span>
+                    </div>
+                    <div class="flex items-center gap-2 text-sm">
+                        <span class="font-bold text-blue-600">❌ <span x-text="stats.x"></span></span>
+                        <span class="text-slate-300">|</span>
+                        <span class="font-bold text-slate-400">🤝 <span x-text="stats.draws"></span></span>
+                        <span class="text-slate-300">|</span>
+                        <span class="font-bold text-red-600">⭕ <span x-text="stats.o"></span></span>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button @click="resetGame()"
+                        class="px-4 py-2 rounded-xl bg-indigo-600 text-white text-sm font-bold hover:bg-indigo-500 transition shadow">
+                        🔄 Novo jogo
+                    </button>
+                    <button @click="showSettings = !showSettings"
+                        class="px-4 py-2 rounded-xl bg-slate-200 text-slate-700 text-sm font-bold hover:bg-slate-300 transition">
+                        ⚙️
+                    </button>
+                </div>
+            </div>
+
+            <!-- STATUS DO JOGO -->
+            <div class="flex-shrink-0 text-center">
+                <div class="text-2xl font-bold font-['Baloo_2']" x-text="gameStatus"></div>
+                <div class="text-sm text-slate-500" x-show="currentPlayer === 'x'">
+                    Vez do <span class="font-bold text-blue-600">❌</span>
+                </div>
+                <div class="text-sm text-slate-500" x-show="currentPlayer === 'o'">
+                    Vez do <span class="font-bold text-red-600">⭕</span>
+                </div>
+                <div class="text-sm text-slate-500" x-show="gameOver">
+                    <span x-show="winner === 'x'" class="text-blue-600 font-bold">❌ Venceu!</span>
+                    <span x-show="winner === 'o'" class="text-red-600 font-bold">⭕ Venceu!</span>
+                    <span x-show="winner === 'draw'" class="text-slate-600 font-bold">🤝 Empate!</span>
+                </div>
+            </div>
+
+            <!-- TABULEIRO -->
+            <div class="flex-1 min-h-0 flex items-center justify-center">
+                <div class="grid grid-cols-3 gap-2 w-full max-w-md aspect-square">
+                    <template x-for="(cell, index) in board" :key="index">
+                        <div class="cell" :class="{
+                            'cell-x': cell === 'x',
+                            'cell-o': cell === 'o',
+                            'cell-winner': winningCells && winningCells.includes(index),
+                            'cell-disabled': cell || gameOver || isCPUTurn
+                         }" @click="makeMove(index)" x-text="cell === 'x' ? '❌' : cell === 'o' ? '⭕' : ''">
+                        </div>
+                    </template>
+                </div>
+            </div>
+
+            <!-- LEGENDA -->
+            <div class="flex-shrink-0 flex items-center justify-center gap-4 text-sm text-slate-500">
+                <span>❌ = Jogador <span x-text="playerSymbol === 'x' ? '1' : '2'"></span></span>
+                <span>⭕ = Jogador <span x-text="playerSymbol === 'o' ? '1' : '2'"></span></span>
+            </div>
+
+        </main>
+
+        <!-- MODAL DE CONFIGURAÇÕES -->
+        <div x-show="showSettings" x-transition.opacity
+            class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" style="display:none">
+            <div @click.outside="showSettings = false"
+                class="w-full max-w-md max-h-[85vh] overflow-hidden rounded-[28px] bg-white shadow-2xl flex flex-col">
+
+                <div class="flex items-center justify-between border-b border-slate-100 p-5 flex-shrink-0">
+                    <div>
+                        <div class="text-[22px] font-bold font-['Baloo_2']">
+                            ⚙️ Configurações
+                        </div>
+                        <div class="text-sm text-slate-500">
+                            Ajuste as regras do jogo
+                        </div>
+                    </div>
+                    <button @click="showSettings = false"
+                        class="w-10 h-10 rounded-2xl bg-slate-100 text-xl hover:bg-slate-200 transition flex-shrink-0">
+                        ×
+                    </button>
+                </div>
+
+                <div class="flex-1 overflow-y-auto p-5 space-y-4">
+
+                    <!-- MODO DE JOGO -->
+                    <div class="border border-slate-200 rounded-2xl p-4 bg-white">
+                        <div class="text-sm font-semibold mb-3">🎮 Modo de jogo</div>
+                        <div class="flex gap-2">
+                            <button
+                                class="flex-1 rounded-xl py-2 px-3 font-semibold text-sm transition-all duration-200"
+                                :class="gameMode === 'cpu' ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
+                                @click="setGameMode('cpu')">
+                                🤖 vs CPU
+                            </button>
+                            <button
+                                class="flex-1 rounded-xl py-2 px-3 font-semibold text-sm transition-all duration-200"
+                                :class="gameMode === 'pvp' ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
+                                @click="setGameMode('pvp')">
+                                👥 2 Jogadores
+                            </button>
+                        </div>
+                        <div class="text-xs text-slate-500 mt-2">
+                            <span x-show="gameMode === 'cpu'">🤖 Jogue contra a CPU</span>
+                            <span x-show="gameMode === 'pvp'">👥 Jogue contra outro jogador localmente</span>
+                        </div>
+                    </div>
+
+                    <!-- DIFICULDADE DA CPU -->
+                    <div class="border border-slate-200 rounded-2xl p-4 bg-white" x-show="gameMode === 'cpu'">
+                        <div class="text-sm font-semibold mb-3">🤖 Nível da CPU</div>
+                        <div class="flex gap-2">
+                            <button
+                                class="flex-1 rounded-xl py-2 px-3 font-semibold text-sm transition-all duration-200"
+                                :class="difficulty === 'easy' ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
+                                @click="setDifficulty('easy')">
+                                😊 Fácil
+                            </button>
+                            <button
+                                class="flex-1 rounded-xl py-2 px-3 font-semibold text-sm transition-all duration-200"
+                                :class="difficulty === 'medium' ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
+                                @click="setDifficulty('medium')">
+                                🤔 Médio
+                            </button>
+                            <button
+                                class="flex-1 rounded-xl py-2 px-3 font-semibold text-sm transition-all duration-200"
+                                :class="difficulty === 'hard' ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
+                                @click="setDifficulty('hard')">
+                                🧠 Difícil
+                            </button>
+                        </div>
+                        <div class="text-xs text-slate-500 mt-2">
+                            <span x-show="difficulty === 'easy'">😊 CPU joga aleatoriamente</span>
+                            <span x-show="difficulty === 'medium'">🤔 CPU joga bem 60% das vezes</span>
+                            <span x-show="difficulty === 'hard'">🧠 CPU joga perfeitamente (Minimax)</span>
+                        </div>
+                    </div>
+
+                    <!-- ESCOLHER SÍMBOLO -->
+                    <div class="border border-slate-200 rounded-2xl p-4 bg-white">
+                        <div class="text-sm font-semibold mb-3">✏️ Escolher símbolo</div>
+                        <div class="flex gap-2">
+                            <button
+                                class="flex-1 rounded-xl py-2 px-3 font-semibold text-sm transition-all duration-200"
+                                :class="playerSymbol === 'x' ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
+                                @click="setPlayerSymbol('x')">
+                                ❌ X
+                            </button>
+                            <button
+                                class="flex-1 rounded-xl py-2 px-3 font-semibold text-sm transition-all duration-200"
+                                :class="playerSymbol === 'o' ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
+                                @click="setPlayerSymbol('o')">
+                                ⭕ O
+                            </button>
+                        </div>
+                        <div class="text-xs text-slate-500 mt-2">
+                            <span x-show="playerSymbol === 'x'">❌ Você joga primeiro</span>
+                            <span x-show="playerSymbol === 'o'">⭕ Você joga segundo</span>
+                        </div>
+                    </div>
+
+                    <!-- NARRAR JOGADAS -->
+                    <div class="border border-slate-200 rounded-2xl p-4 bg-white">
+                        <div class="text-sm font-semibold mb-3">🔊 Narração das jogadas</div>
+                        <div class="flex gap-2">
+                            <button
+                                class="flex-1 rounded-xl py-2 px-3 font-semibold text-sm transition-all duration-200"
+                                :class="narrateMoves ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
+                                @click="toggleNarrateMoves()">
+                                <span class="flex items-center justify-center gap-2">
+                                    <span>🔊</span> Ativado
+                                </span>
+                            </button>
+                            <button
+                                class="flex-1 rounded-xl py-2 px-3 font-semibold text-sm transition-all duration-200"
+                                :class="!narrateMoves ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
+                                @click="toggleNarrateMoves()">
+                                <span class="flex items-center justify-center gap-2">
+                                    <span>🔇</span> Desativado
+                                </span>
+                            </button>
+                        </div>
+                        <div class="text-xs text-slate-500 mt-2">
+                            <span x-show="narrateMoves">🔊 O jogo vai narrar cada jogada em voz alta</span>
+                            <span x-show="!narrateMoves">🔇 O jogo não vai narrar as jogadas</span>
+                        </div>
+                    </div>
+
+                    <!-- RESETAR PLACAR -->
+                    <button
+                        class="w-full rounded-xl bg-red-50 text-red-600 py-2.5 font-semibold hover:bg-red-100 transition text-sm"
+                        @click="resetStats()">
+                        🔄 Resetar placar
+                    </button>
+
+                </div>
+
+                <div class="flex-shrink-0 p-5 border-t border-slate-100">
+                    <button
+                        class="w-full rounded-2xl bg-indigo-600 text-white py-3 font-bold hover:bg-indigo-500 transition"
+                        @click="showSettings = false">
+                        Fechar
+                    </button>
+                </div>
+
+            </div>
+        </div>
+        <!-- MODAL DE CELEBRAÇÃO -->
+        <div x-show="celebration.show" x-transition.opacity
+            class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" style="display:none">
+            <div class="w-full max-w-md rounded-[32px] bg-white shadow-2xl p-8 text-center">
+                <div class="text-6xl mb-4">🎉</div>
+                <h2 class="text-3xl font-bold font-['Baloo_2'] text-slate-800" x-text="celebration.title"></h2>
+                <p class="text-slate-600 mt-2 text-lg" x-text="celebration.subtitle"></p>
+                <button @click="celebration.show = false"
+                    class="mt-6 rounded-2xl bg-indigo-600 text-white px-8 py-3 font-bold hover:bg-indigo-500 transition">
+                    Fechar
+                </button>
+            </div>
+        </div>
+
+        <!-- TOAST -->
+        <div x-show="_toastShow" x-transition
+            class="fixed bottom-5 left-1/2 z-[60] -translate-x-1/2 rounded-2xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white shadow-2xl"
+            style="display:none" x-text="_toastMessage"></div>
+
+    </div>
+
+    <!-- SCRIPTS NA ORDEM CORRETA -->
+    <script src="../../js/services/speech-service.js"></script>
+    <script src="../../js/safe-exit.js"></script>
+    <script src="./js/component-loader.js"></script>
+    <script src="./js/app.js"></script>
+
+</body>
+
+</html>

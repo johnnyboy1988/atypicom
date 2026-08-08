@@ -208,6 +208,35 @@
 
             </button>
 
+
+            <!-- Módulo 7: Jogo da Velha -->
+            <button @click="open('tictactoe')" class="w-full rounded-[28px]
+       bg-white
+       p-6
+       shadow-xl
+       hover:-translate-y-1
+       hover:shadow-2xl
+       transition">
+
+                <div class="flex items-center gap-5">
+                    <div class="w-16 h-16 rounded-2xl bg-purple-100 flex items-center justify-center text-3xl">
+                        ❌
+                    </div>
+                    <div class="text-left">
+                        <div class="font-bold text-2xl font-['Baloo_2']">
+                            Jogo da Velha
+                        </div>
+                        <div class="text-slate-500 text-sm">
+                            Jogue contra a CPU ou com um amigo
+                        </div>
+                        <div class="text-slate-500 text-sm italic">
+                            Raciocínio lógico e estratégia
+                        </div>
+                    </div>
+                </div>
+
+            </button>
+
         </div>
 
         <!-- Footer -->
@@ -256,6 +285,10 @@
 
                         case "waiting":
                             window.location.href = "modules/waiting/index.html";
+                            break;
+
+                        case "tictactoe":
+                            window.location.href = "modules/tictactoe/index.html";
                             break;
 
                     }
