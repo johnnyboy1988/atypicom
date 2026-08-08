@@ -278,7 +278,7 @@
 
 </section>
 
-<!-- MODAL CONFIGURAÇÃO DA BIBLIOTECA -->
+<!-- MODAL CONFIGURAÇÃO DA BIBLIOTECA - SEPARADA POR MODO -->
 <div x-show="showLibraryConfigModal" x-transition.opacity
   class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" style="display:none">
   <div @click.outside="showLibraryConfigModal = false"
@@ -300,198 +300,213 @@
       </button>
     </div>
 
-    <!-- BODY -->
+    <!-- BODY COM SCROLL -->
     <div class="flex-1 overflow-y-auto p-5 space-y-4">
 
-      <!-- DIREÇÃO DE PREENCHIMENTO -->
-      <div>
-        <label class="block text-sm font-semibold mb-2">
-          Direção de preenchimento
-        </label>
-        <div class="flex gap-2">
-          <button
-            class="flex-1 rounded-xl py-2 px-3 font-semibold text-sm transition-all duration-200 flex items-center justify-center gap-2"
-            :class="libraryConfigOrientation === 'vertical' 
-                    ? 'bg-indigo-600 text-white shadow-md' 
-                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
-            @click="updateLibraryConfig({ orientation: 'vertical' })">
-            <span>⬇️</span> Vertical
-          </button>
-          <button
-            class="flex-1 rounded-xl py-2 px-3 font-semibold text-sm transition-all duration-200 flex items-center justify-center gap-2"
-            :class="libraryConfigOrientation === 'horizontal' 
-                    ? 'bg-indigo-600 text-white shadow-md' 
-                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
-            @click="updateLibraryConfig({ orientation: 'horizontal' })">
-            <span>➡️</span> Horizontal
-          </button>
+      <!-- ============================================ -->
+      <!-- SEÇÃO: CONFIGURAÇÕES GERAIS (ambos os modos) -->
+      <!-- ============================================ -->
+      <div class="bg-indigo-50 rounded-2xl p-4 border border-indigo-200">
+        <div class="text-sm font-bold text-indigo-700 mb-3 flex items-center gap-2">
+          <span>🔧</span> Gerais (ambos os modos)
         </div>
-        <div class="text-xs text-slate-500 mt-2">
-          <span x-show="libraryConfigOrientation === 'vertical'">
-            ⬇️ Preenche coluna por coluna (de cima para baixo)
-          </span>
-          <span x-show="libraryConfigOrientation === 'horizontal'">
-            ➡️ Preenche linha por linha (da esquerda para direita)
-          </span>
+
+        <!-- ALTURA MÁXIMA DA BIBLIOTECA -->
+        <div class="mb-3">
+          <label class="block text-sm font-semibold mb-2">
+            Altura máxima da biblioteca (vh): <span x-text="libraryConfigMaxHeight"></span>vh
+          </label>
+          <input type="range" min="20" max="70" step="1" x-model="libraryConfigMaxHeight"
+            @input="updateLibraryConfig({ maxHeight: parseInt($event.target.value) })"
+            class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer">
+          <div class="flex justify-between text-xs text-slate-500">
+            <span>20vh</span>
+            <span>45vh</span>
+            <span>70vh</span>
+          </div>
+        </div>
+
+        <!-- OPÇÕES DE EXIBIÇÃO -->
+        <div class="space-y-2">
+          <label
+            class="flex items-center justify-between py-2 hover:bg-slate-50 rounded-lg px-2 -mx-2 transition cursor-pointer">
+            <span class="font-semibold">Mostrar categoria</span>
+            <input type="checkbox" x-model="libraryConfigShowCategory"
+              @change="updateLibraryConfig({ showCategory: $event.target.checked })"
+              class="w-4 h-4 text-indigo-600 rounded focus:ring-indigo-500">
+          </label>
+          <label class="flex items-center justify-between py-2 rounded-lg px-2 -mx-2 transition"
+            :class="!libraryConfigShowCategory ? 'opacity-40 cursor-not-allowed bg-slate-50' : 'hover:bg-slate-50 cursor-pointer'">
+            <div>
+              <span class="font-semibold">Mostrar ícones das categorias</span>
+              <span x-show="!libraryConfigShowCategory" class="text-[10px] text-amber-500 ml-1">
+                ⚠️ depende da categoria
+              </span>
+            </div>
+            <input type="checkbox" x-model="libraryConfigShowIcons" :disabled="!libraryConfigShowCategory"
+              @change="updateLibraryConfig({ showIcons: $event.target.checked })"
+              class="w-4 h-4 text-indigo-600 rounded focus:ring-indigo-500"
+              :class="!libraryConfigShowCategory ? 'opacity-50' : ''">
+          </label>
         </div>
       </div>
 
-      <!-- TAMANHO DO GRID -->
-      <div>
-        <label class="block text-sm font-semibold mb-2">
-          <span x-show="libraryConfigOrientation === 'vertical'">
-            Número de linhas: <span x-text="libraryConfigGridSize"></span>
-          </span>
-          <span x-show="libraryConfigOrientation === 'horizontal'">
-            Número de colunas: <span x-text="libraryConfigGridSize"></span>
-          </span>
-        </label>
-        <div class="flex gap-1 flex-wrap">
-          <button class="flex-1 min-w-[36px] rounded-xl py-2 px-1 font-semibold text-sm transition-all duration-200"
-            :class="libraryConfigGridSize === 2 ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
-            @click="updateLibraryConfig({ gridSize: 2 })">
-            2
-          </button>
-          <button class="flex-1 min-w-[36px] rounded-xl py-2 px-1 font-semibold text-sm transition-all duration-200"
-            :class="libraryConfigGridSize === 3 ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
-            @click="updateLibraryConfig({ gridSize: 3 })">
-            3
-          </button>
-          <button class="flex-1 min-w-[36px] rounded-xl py-2 px-1 font-semibold text-sm transition-all duration-200"
-            :class="libraryConfigGridSize === 4 ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
-            @click="updateLibraryConfig({ gridSize: 4 })">
-            4
-          </button>
-          <button class="flex-1 min-w-[36px] rounded-xl py-2 px-1 font-semibold text-sm transition-all duration-200"
-            :class="libraryConfigGridSize === 5 ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
-            @click="updateLibraryConfig({ gridSize: 5 })">
-            5
-          </button>
-          <button class="flex-1 min-w-[36px] rounded-xl py-2 px-1 font-semibold text-sm transition-all duration-200"
-            :class="libraryConfigGridSize === 6 ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
-            @click="updateLibraryConfig({ gridSize: 6 })">
-            6
-          </button>
-          <button class="flex-1 min-w-[36px] rounded-xl py-2 px-1 font-semibold text-sm transition-all duration-200"
-            :class="libraryConfigGridSize === 8 ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
-            @click="updateLibraryConfig({ gridSize: 8 })">
-            8
-          </button>
-          <button class="flex-1 min-w-[36px] rounded-xl py-2 px-1 font-semibold text-sm transition-all duration-200"
-            :class="libraryConfigGridSize === 10 ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
-            @click="updateLibraryConfig({ gridSize: 10 })">
-            10
-          </button>
-          <button class="flex-1 min-w-[36px] rounded-xl py-2 px-1 font-semibold text-sm transition-all duration-200"
-            :class="libraryConfigGridSize === 12 ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
-            @click="updateLibraryConfig({ gridSize: 12 })">
-            12
-          </button>
+      <!-- ============================================ -->
+      <!-- SEÇÃO: MODO PHRASES -->
+      <!-- ============================================ -->
+      <div class="bg-emerald-50 rounded-2xl p-4 border border-emerald-200">
+        <div class="text-sm font-bold text-emerald-700 mb-3 flex items-center gap-2">
+          <span>📝</span> Modo Phrases
         </div>
-        <div class="text-xs text-slate-400 mt-1 flex items-center gap-1">
-          <span x-show="libraryConfigOrientation === 'vertical'">📏</span>
-          <span x-show="libraryConfigOrientation === 'horizontal'">📐</span>
-          <span x-show="libraryConfigOrientation === 'vertical'">
-            Quantas linhas verticais o grid terá
-          </span>
-          <span x-show="libraryConfigOrientation === 'horizontal'">
-            Quantas colunas horizontais o grid terá
-          </span>
-        </div>
-      </div>
 
-      <!-- ALTURA DOS CARDS -->
-      <div>
-        <label class="block text-sm font-semibold mb-2">
-          Altura dos cards: <span x-text="libraryConfigCardHeight"></span>px
-        </label>
-        <input type="range" min="30" max="200" step="5" x-model="libraryConfigCardHeight"
-          @input="updateLibraryConfig({ cardHeight: parseInt($event.target.value) })"
-          class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer">
-        <div class="flex justify-between text-xs text-slate-500">
-          <span>30px</span>
-          <span>115px</span>
-          <span>200px</span>
-        </div>
-        <div class="text-xs text-slate-400 mt-1">
-          Controla a altura dos cards (horizontal) ou altura mínima (vertical)
-        </div>
-      </div>
-
-      <!-- LARGURA DOS CARDS (MOBILE) -->
-      <div>
-        <label class="block text-sm font-semibold mb-2">
-          Largura dos cards (mobile): <span x-text="libraryConfigCardWidth"></span>px
-        </label>
-        <input type="range" min="30" max="160" step="5" x-model="libraryConfigCardWidth"
-          @input="updateLibraryConfig({ cardWidth: parseInt($event.target.value) })"
-          class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer">
-        <div class="flex justify-between text-xs text-slate-500">
-          <span>30px</span>
-          <span>95px</span>
-          <span>160px</span>
-        </div>
-      </div>
-
-      <!-- LARGURA DOS CARDS (DESKTOP) -->
-      <div>
-        <label class="block text-sm font-semibold mb-2">
-          Largura dos cards (desktop): <span x-text="libraryConfigCardWidthMd"></span>px
-        </label>
-        <input type="range" min="50" max="220" step="5" x-model="libraryConfigCardWidthMd"
-          @input="updateLibraryConfig({ cardWidthMd: parseInt($event.target.value) })"
-          class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer">
-        <div class="flex justify-between text-xs text-slate-500">
-          <span>50px</span>
-          <span>135px</span>
-          <span>220px</span>
-        </div>
-      </div>
-
-      <!-- ALTURA MÁXIMA DA BIBLIOTECA -->
-      <div>
-        <label class="block text-sm font-semibold mb-2">
-          Altura máxima da biblioteca (vh): <span x-text="libraryConfigMaxHeight"></span>vh
-        </label>
-        <input type="range" min="20" max="70" step="1" x-model="libraryConfigMaxHeight"
-          @input="updateLibraryConfig({ maxHeight: parseInt($event.target.value) })"
-          class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer">
-        <div class="flex justify-between text-xs text-slate-500">
-          <span>20vh</span>
-          <span>45vh</span>
-          <span>70vh</span>
-        </div>
-        <div class="text-xs text-slate-400 mt-1">
-          Controla a altura total da biblioteca
-        </div>
-      </div>
-
-      <!-- OPÇÕES ADICIONAIS -->
-      <div class="border-t border-slate-100 pt-4 space-y-2">
-        <label
-          class="flex items-center justify-between py-2 hover:bg-slate-50 rounded-lg px-2 -mx-2 transition cursor-pointer">
-          <span class="font-semibold">Mostrar categoria</span>
-          <input type="checkbox" x-model="libraryConfigShowCategory"
-            @change="updateLibraryConfig({ showCategory: $event.target.checked })"
-            class="w-4 h-4 text-indigo-600 rounded focus:ring-indigo-500">
-        </label>
-        <label class="flex items-center justify-between py-2 rounded-lg px-2 -mx-2 transition"
-          :class="!libraryConfigShowCategory ? 'opacity-40 cursor-not-allowed bg-slate-50' : 'hover:bg-slate-50 cursor-pointer'">
-          <div>
-            <span class="font-semibold">Mostrar ícones das categorias</span>
-            <span x-show="!libraryConfigShowCategory" class="text-[10px] text-amber-500 ml-1">
-              ⚠️ depende da categoria
+        <!-- DIREÇÃO DE PREENCHIMENTO -->
+        <div class="mb-3">
+          <label class="block text-sm font-semibold mb-2">
+            Direção de preenchimento
+          </label>
+          <div class="flex gap-2">
+            <button
+              class="flex-1 rounded-xl py-2 px-3 font-semibold text-sm transition-all duration-200 flex items-center justify-center gap-2"
+              :class="libraryConfigOrientation === 'vertical' 
+                      ? 'bg-emerald-600 text-white shadow-md' 
+                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
+              @click="updateLibraryConfig({ orientation: 'vertical' })">
+              <span>⬇️</span> Vertical
+            </button>
+            <button
+              class="flex-1 rounded-xl py-2 px-3 font-semibold text-sm transition-all duration-200 flex items-center justify-center gap-2"
+              :class="libraryConfigOrientation === 'horizontal' 
+                      ? 'bg-emerald-600 text-white shadow-md' 
+                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
+              @click="updateLibraryConfig({ orientation: 'horizontal' })">
+              <span>➡️</span> Horizontal
+            </button>
+          </div>
+          <div class="text-xs text-slate-500 mt-1">
+            <span x-show="libraryConfigOrientation === 'vertical'">
+              ⬇️ Preenche coluna por coluna (de cima para baixo)
+            </span>
+            <span x-show="libraryConfigOrientation === 'horizontal'">
+              ➡️ Preenche linha por linha (da esquerda para direita)
             </span>
           </div>
-          <input type="checkbox" x-model="libraryConfigShowIcons" :disabled="!libraryConfigShowCategory"
-            @change="updateLibraryConfig({ showIcons: $event.target.checked })"
-            class="w-4 h-4 text-indigo-600 rounded focus:ring-indigo-500"
-            :class="!libraryConfigShowCategory ? 'opacity-50' : ''">
-        </label>
+        </div>
+
+        <!-- TAMANHO DO GRID -->
+        <div class="mb-3">
+          <label class="block text-sm font-semibold mb-2">
+            <span x-show="libraryConfigOrientation === 'vertical'">
+              Número de linhas: <span x-text="libraryConfigGridSize"></span>
+            </span>
+            <span x-show="libraryConfigOrientation === 'horizontal'">
+              Número de colunas: <span x-text="libraryConfigGridSize"></span>
+            </span>
+          </label>
+          <div class="flex gap-1 flex-wrap">
+            <button class="flex-1 min-w-[36px] rounded-xl py-2 px-1 font-semibold text-sm transition-all duration-200"
+              :class="libraryConfigGridSize === 2 ? 'bg-emerald-600 text-white shadow-md' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
+              @click="updateLibraryConfig({ gridSize: 2 })">2</button>
+            <button class="flex-1 min-w-[36px] rounded-xl py-2 px-1 font-semibold text-sm transition-all duration-200"
+              :class="libraryConfigGridSize === 3 ? 'bg-emerald-600 text-white shadow-md' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
+              @click="updateLibraryConfig({ gridSize: 3 })">3</button>
+            <button class="flex-1 min-w-[36px] rounded-xl py-2 px-1 font-semibold text-sm transition-all duration-200"
+              :class="libraryConfigGridSize === 4 ? 'bg-emerald-600 text-white shadow-md' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
+              @click="updateLibraryConfig({ gridSize: 4 })">4</button>
+            <button class="flex-1 min-w-[36px] rounded-xl py-2 px-1 font-semibold text-sm transition-all duration-200"
+              :class="libraryConfigGridSize === 5 ? 'bg-emerald-600 text-white shadow-md' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
+              @click="updateLibraryConfig({ gridSize: 5 })">5</button>
+            <button class="flex-1 min-w-[36px] rounded-xl py-2 px-1 font-semibold text-sm transition-all duration-200"
+              :class="libraryConfigGridSize === 6 ? 'bg-emerald-600 text-white shadow-md' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
+              @click="updateLibraryConfig({ gridSize: 6 })">6</button>
+            <button class="flex-1 min-w-[36px] rounded-xl py-2 px-1 font-semibold text-sm transition-all duration-200"
+              :class="libraryConfigGridSize === 8 ? 'bg-emerald-600 text-white shadow-md' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
+              @click="updateLibraryConfig({ gridSize: 8 })">8</button>
+            <button class="flex-1 min-w-[36px] rounded-xl py-2 px-1 font-semibold text-sm transition-all duration-200"
+              :class="libraryConfigGridSize === 10 ? 'bg-emerald-600 text-white shadow-md' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
+              @click="updateLibraryConfig({ gridSize: 10 })">10</button>
+            <button class="flex-1 min-w-[36px] rounded-xl py-2 px-1 font-semibold text-sm transition-all duration-200"
+              :class="libraryConfigGridSize === 12 ? 'bg-emerald-600 text-white shadow-md' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
+              @click="updateLibraryConfig({ gridSize: 12 })">12</button>
+          </div>
+          <div class="text-xs text-slate-400 mt-1">
+            <span x-show="libraryConfigOrientation === 'vertical'">
+              Quantas linhas verticais o grid terá
+            </span>
+            <span x-show="libraryConfigOrientation === 'horizontal'">
+              Quantas colunas horizontais o grid terá
+            </span>
+          </div>
+        </div>
+
+        <!-- ALTURA DOS CARDS -->
+        <div>
+          <label class="block text-sm font-semibold mb-2">
+            Altura dos cards: <span x-text="libraryConfigCardHeight"></span>px
+          </label>
+          <input type="range" min="30" max="200" step="5" x-model="libraryConfigCardHeight"
+            @input="updateLibraryConfig({ cardHeight: parseInt($event.target.value) })"
+            class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer">
+          <div class="flex justify-between text-xs text-slate-500">
+            <span>30px</span>
+            <span>115px</span>
+            <span>200px</span>
+          </div>
+          <div class="text-xs text-slate-400 mt-1">
+            Controla a altura dos cards (horizontal) ou altura mínima (vertical)
+          </div>
+        </div>
+
+                <!-- LARGURA DOS CARDS (MOBILE) -->
+        <div class="mb-3">
+          <label class="block text-sm font-semibold mb-2">
+            Largura dos cards (mobile): <span x-text="libraryConfigCardWidth"></span>px
+          </label>
+          <input type="range" min="60" max="180" step="5" x-model="libraryConfigCardWidth"
+            @input="updateLibraryConfig({ cardWidth: parseInt($event.target.value) })"
+            class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer">
+          <div class="flex justify-between text-xs text-slate-500">
+            <span>60px</span>
+            <span>120px</span>
+            <span>180px</span>
+          </div>
+        </div>
+
+        <!-- LARGURA DOS CARDS (DESKTOP) -->
+        <div>
+          <label class="block text-sm font-semibold mb-2">
+            Largura dos cards (desktop): <span x-text="libraryConfigCardWidthMd"></span>px
+          </label>
+          <input type="range" min="80" max="260" step="5" x-model="libraryConfigCardWidthMd"
+            @input="updateLibraryConfig({ cardWidthMd: parseInt($event.target.value) })"
+            class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer">
+          <div class="flex justify-between text-xs text-slate-500">
+            <span>80px</span>
+            <span>170px</span>
+            <span>260px</span>
+          </div>
+          <div class="text-xs text-slate-400 mt-1">
+            ⚠️ Ajusta o tamanho dos cards no modo snap-grid
+          </div>
+        </div>
+        
+      </div>
+
+      <!-- ============================================ -->
+      <!-- SEÇÃO: MODO SNAP-GRID -->
+      <!-- ============================================ -->
+      <div class="bg-amber-50 rounded-2xl p-4 border border-amber-200">
+        <div class="text-sm font-bold text-amber-700 mb-3 flex items-center gap-2">
+          <span>🖼️</span> Modo Snap-Grid
+        </div>
+        <div class="text-xs text-slate-500 mb-3">
+          Configurações específicas para o modo de visualização em grid
+        </div>
+
+
       </div>
 
       <!-- BOTÃO RESET -->
-      <button class="w-full rounded-xl bg-red-50 text-red-600 py-2 font-semibold hover:bg-red-100 transition text-sm"
+      <button class="w-full rounded-xl bg-red-50 text-red-600 py-2.5 font-semibold hover:bg-red-100 transition text-sm"
         @click="resetLibraryConfig()">
         🔄 Restaurar padrões
       </button>
