@@ -151,14 +151,15 @@
                 </div>
 
             </button>
+
             <!-- Módulo 5: Labirinto do Ratinho -->
             <button @click="open('maze')" class="w-full rounded-[28px]
-       bg-white
-       p-6
-       shadow-xl
-       hover:-translate-y-1
-       hover:shadow-2xl
-       transition">
+                bg-white
+                p-6
+                shadow-xl
+                hover:-translate-y-1
+                hover:shadow-2xl
+                transition">
 
                 <div class="flex items-center gap-5">
                     <div class="w-16 h-16 rounded-2xl bg-indigo-100 flex items-center justify-center text-3xl">
@@ -178,6 +179,35 @@
                 </div>
 
             </button>
+
+            <!-- Módulo 6: waiting (Novo!) -->
+            <button @click="open('waiting')" class="w-full rounded-[28px]
+                   bg-white
+                   p-6
+                   shadow-xl
+                   hover:-translate-y-1
+                   hover:shadow-2xl
+                   transition">
+
+                <div class="flex items-center gap-5">
+                    <div class="w-16 h-16 rounded-2xl bg-amber-100 flex items-center justify-center text-3xl">
+                        ⏳
+                    </div>
+                    <div class="text-left">
+                        <div class="font-bold text-2xl font-['Baloo_2']">
+                            waiting
+                        </div>
+                        <div class="text-slate-500 text-sm">
+                            Espere o tempo passar enquanto os queijos somem 🧀
+                        </div>
+                        <div class="text-slate-500 text-sm italic">
+                            Exercício de paciência e percepção temporal
+                        </div>
+                    </div>
+                </div>
+
+            </button>
+
         </div>
 
         <!-- Footer -->
@@ -219,8 +249,13 @@
                         case "reader":
                             window.location.href = "modules/reader/index.html";
                             break;
+
                         case "maze":
                             window.location.href = "modules/maze/index.html";
+                            break;
+
+                        case "waiting":
+                            window.location.href = "modules/waiting/index.html";
                             break;
 
                     }

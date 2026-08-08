@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Esperar – AAC</title>
+
+    <!-- Alpine -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+    <!-- Tailwind -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        .confetti {
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+        }
+        @keyframes confettiFall {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+        }
+        .cell {
+            aspect-ratio: 1/1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            background: rgba(255,255,255,0.5);
+            border-radius: 0.75rem;
+            transition: all 0.3s;
+            border: 2px solid rgba(226, 232, 240, 0.5);
+            cursor: default;
+        }
+        @media (min-width: 768px) {
+            .cell { font-size: 3rem; }
+        }
+        .cell-cheese {
+            background: #fef3c7;
+            border-color: #f59e0b;
+            animation: pulse 1s ease-in-out infinite;
+        }
+        .cell-mouse {
+            background: #dbeafe;
+            border-color: #3b82f6;
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+            animation: pulseMouse 0.8s ease-in-out infinite;
+            cursor: pointer;
+        }
+        .cell-empty {
+            background: #f1f5f9;
+            border-color: #e2e8f0;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        @keyframes pulseMouse {
+            0%, 100% { transform: scale(1.05); }
+            50% { transform: scale(1.15); }
+        }
+        .timer-number {
+            font-variant-numeric: tabular-nums;
+        }
+        .cell-clickable {
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<div x-data="esperarApp()" x-init="init()"
+     class="flex flex-col min-h-dvh bg-gradient-to-b from-indigo-50 via-slate-50 to-white">
+
+    <!-- HEADER (componente) -->
+    <div id="header-container"></div>
+
+    <!-- CONTEÚDO PRINCIPAL -->
+    <main class="flex flex-col flex-1 min-h-0 overflow-hidden gap-3 md:gap-4 p-3 md:p-4">
+
+        <!-- TELA DE CONFIGURAÇÃO -->
+        <template x-if="!gameStarted && !gameFinished">
+            <div class="flex-1 flex flex-col items-center justify-center gap-6 max-w-md mx-auto w-full">
+                <div class="text-center">
+                    <div class="text-6xl mb-4">⏳</div>
+                    <h2 class="text-3xl font-bold font-['Baloo_2'] text-slate-800">
+                        Quanto tempo você quer esperar?
+                    </h2>
+                    <p class="text-slate-500 mt-2">
+                        Escolha quantos minutos o ratinho vai esperar
+                    </p>
+                </div>
+
+                <!-- Seletores rápidos -->
+                <div class="flex flex-wrap gap-2 justify-center">
+                    <template x-for="m in [1, 3, 5, 10, 15]" :key="m">
+                        <button @click="minutes = m"
+                                class="px-4 py-2 rounded-xl font-bold text-sm transition"
+                                :class="minutes === m ? 'bg-indigo-600 text-white shadow-md' : 'bg-white text-slate-700 hover:bg-slate-100 shadow'">
+                            <span x-text="m"></span> min
+                        </button>
+                    </template>
+                </div>
+
+                <!-- Input personalizado -->
+                <div class="flex items-center gap-3 bg-white p-3 rounded-2xl shadow w-full max-w-xs">
+                    <span class="text-sm font-semibold text-slate-600">Personalizado:</span>
+                    <input type="number" x-model="minutes" min="1" max="60"
+                           class="flex-1 rounded-xl border border-slate-200 p-2 text-center text-lg font-bold focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200">
+                    <span class="text-sm text-slate-500">min</span>
+                </div>
+
+                <!-- Botão Iniciar -->
+                <button @click="startGame()"
+                        class="w-full max-w-xs rounded-2xl bg-gradient-to-r from-indigo-600 to-teal-500 text-white py-4 font-bold text-lg shadow-xl hover:scale-105 transition">
+                    🚀 Iniciar espera
+                </button>
+            </div>
+        </template>
+
+        <!-- TELA DO JOGO -->
+        <template x-if="gameStarted || gameFinished">
+            <div class="flex-1 min-h-0 flex flex-col gap-3">
+
+                <!-- Barra de progresso com timer -->
+                <div class="flex items-center gap-3 flex-shrink-0">
+                    <div class="flex-1 bg-slate-200 rounded-full h-3 overflow-hidden">
+                        <div class="h-full bg-gradient-to-r from-indigo-500 to-teal-400 rounded-full transition-all duration-1000"
+                             :style="`width: ${progressPercent}%`"></div>
+                    </div>
+                    <div class="text-sm font-bold text-slate-700 whitespace-nowrap timer-number" x-text="timeDisplay"></div>
+                </div>
+
+                <!-- Grid -->
+                <div class="flex-1 min-h-0 flex items-center justify-center">
+                    <div class="grid gap-1.5 w-full max-w-md aspect-square"
+                        :style="`grid-template-columns: repeat(${gridSizeDisplay}, 1fr);`">
+                        <template x-for="(cell, idx) in cells" :key="idx">
+                            <div class="cell"
+                                :class="{
+                                    'cell-cheese': cell === 'cheese',
+                                    'cell-mouse': cell === 'mouse',
+                                    'cell-empty': cell === null
+                                }"
+                                x-text="cell === 'cheese' ? '🧀' : cell === 'mouse' ? '🐭' : ''"
+                                @click="cell === 'mouse' ? speakMouse() : cell === 'cheese' ? speakCheese() : null">
+                            </div>
+                        </template>
+                    </div>
+                </div>
+
+                <!-- Informações -->
+                <div class="flex-shrink-0 flex items-center justify-between text-sm text-slate-500">
+                    <span>🐭 <span x-text="currentCellIndex"></span>/<span x-text="totalCells"></span></span>
+                    <span class="font-bold text-indigo-600 timer-number" x-text="timeDisplay"></span>
+                    <span x-show="gameFinished" class="text-green-600 font-bold">✅ Finalizado!</span>
+                    <span x-show="gameStarted && !gameFinished" class="text-indigo-600">⏳ Aguardando...</span>
+                </div>
+            </div>
+        </template>
+
+    </main>
+
+    <!-- MODAL DE CELEBRAÇÃO -->
+    <div x-show="celebration.show" x-transition.opacity
+         class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" style="display:none">
+        <div class="w-full max-w-md rounded-[32px] bg-white shadow-2xl p-8 text-center">
+            <div class="text-6xl mb-4">🎉</div>
+            <h2 class="text-3xl font-bold font-['Baloo_2'] text-slate-800" x-text="celebration.title"></h2>
+            <p class="text-slate-600 mt-2 text-lg" x-text="celebration.subtitle"></p>
+            <button @click="celebration.show = false"
+                    class="mt-6 rounded-2xl bg-indigo-600 text-white px-8 py-3 font-bold hover:bg-indigo-500 transition">
+                Fechar
+            </button>
+        </div>
+    </div>
+
+    <!-- TOAST -->
+    <div x-show="_toastShow" x-transition
+         class="fixed bottom-5 left-1/2 z-[60] -translate-x-1/2 rounded-2xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white shadow-2xl"
+         style="display:none" x-text="_toastMessage"></div>
+
+</div>
+
+<!-- SCRIPTS NA ORDEM CORRETA -->
+<script src="../../js/services/speech-service.js"></script>
+<script src="../../js/safe-exit.js"></script>
+<script src="./js/component-loader.js"></script>
+<script src="./js/app.js"></script>
+
+</body>
+</html>
