@@ -18,27 +18,47 @@ function mazeApp() {
     isMouseSelected: false,
     validMoves: [],
 
-    // ===== CELEBRAÇÃO (igual ao memory) =====
+    // ===== CELEBRAÇÃO =====
     celebration: {
       show: false,
       title: "",
       subtitle: "",
     },
-    // ===== NOVO: CONTADOR DE VERSÃO PARA FORÇAR RE-RENDERIZAÇÃO =====
+
+    // ===== CONTADOR DE VERSÃO =====
     _version: 0,
+
+    // ===== CONTROLE DE FALA =====
+    _isSpeaking: false,
+    _speakTimeout: null,
+
+    // ===== TEXTOS DO RATINHO =====
+    mouseSounds: [
+      'nhac nhac',
+      'sniff sniff',
+      'qui qui',
+      'q q queijo!',
+      'to indo!',
+      'hum.. ',
+      'vamos ',
+      'tic tic',
+      'tic tac',
+    ],
 
     async init() {
       if (typeof loadComponents === "function") {
         await loadComponents();
       }
 
-      //   console.log('[Maze] MazeGenerator:', typeof MazeGenerator);
+      // Inicializa Speech
+      this.Speech = window.Speech || null;
+      
       this.resetGame();
     },
 
     resetGame() {
       if (typeof MazeGenerator === "undefined") {
-        // console.error('[Maze] MazeGenerator não carregado')
+        console.error('[Maze] MazeGenerator não carregado');
         return;
       }
 
@@ -58,44 +78,90 @@ function mazeApp() {
       this.isMouseSelected = false;
       this.validMoves = [];
       this.celebration.show = false;
+      this._isSpeaking = false;
+      
+      if (this._speakTimeout) {
+        clearTimeout(this._speakTimeout);
+        this._speakTimeout = null;
+      }
 
-      this._version++; // <-- INCREMENTA VERSÃO
-
-      //   console.log('[Maze] Jogo reiniciado');
-      this.debugMaze();
+      this._version++;
     },
-    // ===== CELEBRAÇÃO (com fala) =====
-    async celebrate(title, subtitle) {
-      this.celebration.title = title;
-      this.celebration.subtitle = subtitle;
-      this.celebration.show = true;
 
-      // ===== FALA DO TEXTO DE VITÓRIA =====
+    // ===== FALA DO RATINHO (COM CONTROLE DE FLUXO) =====
+    async speakMouse(text) {
+      if (!text) return;
+      
+      // Se já está falando, ignora
+      if (this._isSpeaking) {
+        console.log("[Maze] Já falando, ignorando:", text);
+        return;
+      }
+
+      // Cancela timeout pendente
+      if (this._speakTimeout) {
+        clearTimeout(this._speakTimeout);
+        this._speakTimeout = null;
+      }
+
+      this._isSpeaking = true;
+      
       try {
-        // Verifica se o SpeechService está disponível
-        if (window.Speech && typeof window.Speech.speak === "function") {
-          // Texto completo da vitória
-          const victoryText = `Parabéns! O ratinho encontrou o queijo em ${this.steps} passos!`;
-          await window.Speech.speak(victoryText, {
-            rate: 0.9,
-            pitch: 1.0,
+        const speechService = this.Speech || window.Speech;
+        
+        if (speechService && typeof speechService.speak === "function") {
+          await speechService.speak(text, {
+            rate: 0.7,
+            pitch: 1.2,
             lang: "pt-BR",
           });
-          console.log("[Maze] Fala de vitória concluída");
         } else {
           console.warn("[Maze] SpeechService não disponível");
         }
       } catch (error) {
         console.warn("[Maze] Erro na fala:", error);
+      } finally {
+        // Libera após um pequeno delay para evitar falas consecutivas
+        this._speakTimeout = setTimeout(() => {
+          this._isSpeaking = false;
+          this._speakTimeout = null;
+        }, 300);
+      }
+    },
+
+    // ===== OBTÉM UM TEXTO ALEATÓRIO DO RATINHO =====
+    getRandomMouseSound() {
+      const index = Math.floor(Math.random() * this.mouseSounds.length);
+      return this.mouseSounds[index];
+    },
+
+    // ===== CELEBRAÇÃO =====
+    async celebrate(title, subtitle) {
+      this.celebration.title = title;
+      this.celebration.subtitle = subtitle;
+      this.celebration.show = true;
+
+      try {
+        const victoryText = `Parabéns! O ratinho encontrou o queijo em ${this.steps} passos!`;
+        const speechService = this.Speech || window.Speech;
+        
+        if (speechService && typeof speechService.speak === "function") {
+          await speechService.speak(victoryText, {
+            rate: 0.9,
+            pitch: 1.0,
+            lang: "pt-BR",
+          });
+        }
+      } catch (error) {
+        console.warn("[Maze] Erro na fala de vitória:", error);
       }
 
-      // Fecha automaticamente após 4 segundos (um pouco mais para a fala)
       setTimeout(() => {
         this.celebration.show = false;
       }, 4000);
     },
-    // ===== CÉLULAS LINEARIZADAS =====
 
+    // ===== CÉLULAS LINEARIZADAS =====
     get cells() {
       const cells = [];
       if (!this.grid || this.grid.length === 0) return cells;
@@ -114,7 +180,6 @@ function mazeApp() {
     },
 
     // ===== FUNÇÕES DE VERIFICAÇÃO =====
-
     isMouse(row, col) {
       return row === this.mouseRow && col === this.mouseCol;
     },
@@ -147,7 +212,6 @@ function mazeApp() {
     },
 
     // ===== DESTAQUE DE MOVIMENTOS VÁLIDOS =====
-
     isHighlighted(row, col) {
       return this.validMoves.some((m) => m.row === row && m.col === col);
     },
@@ -157,7 +221,6 @@ function mazeApp() {
     },
 
     // ===== OBTÉM VIZINHOS VÁLIDOS =====
-
     getValidNeighbors(row, col) {
       const neighbors = [];
       const directions = [
@@ -180,18 +243,14 @@ function mazeApp() {
 
       return neighbors;
     },
-    // ===== HANDLER ÚNICO PARA CLIQUE =====
 
+    // ===== HANDLER ÚNICO PARA CLIQUE (COM CONTROLE DE FALA) =====
     async handleCellClick(row, col) {
-      // console.log("[Maze] Clique:", row, col);
-
       if (this.gameOver || this.won) return;
 
       // Caso 1: Clicou no ratinho
       if (this.isMouse(row, col)) {
-        if (this.isMouseSelected) {
-          return;
-        }
+        if (this.isMouseSelected) return;
 
         this.isMouseSelected = true;
         this.validMoves = this.getValidNeighbors(row, col);
@@ -199,15 +258,29 @@ function mazeApp() {
         if (this.validMoves.length === 0) {
           this.gameOver = true;
           this.isMouseSelected = false;
+          // Fala game over (apenas uma vez)
+          if (!this._isSpeaking) {
+            this.speakMouse('ih, sem saída! 😰');
+          }
+        } else {
+          // Fala do ratinho quando selecionado (apenas uma vez)
+          if (!this._isSpeaking) {
+            this.speakMouse(this.getRandomMouseSound());
+          }
         }
 
         this._version++;
-        this.debugMaze();
         return;
       }
 
       // Caso 2: Clicou em uma célula destacada
       if (this.isHighlighted(row, col)) {
+        // Fala do ratinho antes de andar (apenas se não estiver falando)
+        if (!this._isSpeaking) {
+          const sound = this.getRandomMouseSound();
+          await this.speakMouse(sound);
+        }
+
         this.mouseRow = row;
         this.mouseCol = col;
         this.steps++;
@@ -215,31 +288,33 @@ function mazeApp() {
         this.validMoves = [];
         this._version++;
 
+        // Verifica se chegou ao queijo
         if (row === this.end.row && col === this.end.col) {
           this.won = true;
-          console.log("[Maze] => 🎉 VENCEU!");
-
-          const victoryText = this.getRandomVictoryText();
-          this.celebrate("🎉 " + victoryText + "🎉 ");
-          await window.Speech.speak(victoryText, {
-            rate: 0.9,
-            pitch: 1.0,
-            lang: "pt-BR",
-          });
-
+          // Fala especial do queijo (força a fala mesmo se estiver falando)
+          this._isSpeaking = false; // Reseta para permitir a fala
+          if (this._speakTimeout) {
+            clearTimeout(this._speakTimeout);
+            this._speakTimeout = null;
+          }
+          await this.speakMouse('Queijo! Queijo! 🧀🎉');
           this.generateConfetti();
-
+          this.celebrate("🎉 Parabéns!", `O ratinho encontrou o queijo em ${this.steps} passos!`);
           return;
         }
 
+        // Verifica se está preso
         const neighbors = this.getValidNeighbors(row, col);
         if (neighbors.length === 0 && !this.won) {
           this.gameOver = true;
+          if (!this._isSpeaking) {
+            await this.speakMouse('ih, sem saída! 😰');
+          }
         }
-        this.debugMaze();
-        return;
       }
     },
+
+    // ===== VITÓRIA =====
     getRandomVictoryText() {
       const texts = [
         `Parabéns! O ratinho encontrou o queijo!`,
@@ -249,29 +324,21 @@ function mazeApp() {
       ];
       return texts[Math.floor(Math.random() * texts.length)];
     },
-    // ===== FUNÇÃO PARA GERAR CONFETES =====
+
+    // ===== CONFETES =====
     generateConfetti() {
       const colors = [
-        "#FF6B6B",
-        "#4ECDC4",
-        "#45B7D1",
-        "#96CEB4",
-        "#FFEAA7",
-        "#DDA0DD",
-        "#FF8A5C",
-        "#A29BFE",
+        "#FF6B6B", "#4ECDC4", "#45B7D1", "#96CEB4",
+        "#FFEAA7", "#DDA0DD", "#FF8A5C", "#A29BFE"
       ];
       const confettiCount = 60;
       const container = document.querySelector(".maze-wrapper");
 
       if (!container) {
-        console.warn(
-          "[Maze] Container .maze-wrapper não encontrado para confetes",
-        );
+        console.warn("[Maze] Container .maze-wrapper não encontrado");
         return;
       }
 
-      // Remove confetes anteriores
       document.querySelectorAll(".confetti").forEach((el) => el.remove());
 
       for (let i = 0; i < confettiCount; i++) {
@@ -286,106 +353,36 @@ function mazeApp() {
         const isCircle = Math.random() > 0.5;
 
         confetti.style.cssText = `
-      position: fixed;
-      left: ${left}%;
-      top: -10%;
-      width: ${size}px;
-      height: ${size}px;
-      background: ${color};
-      border-radius: ${isCircle ? "50%" : "2px"};
-      transform: rotate(${rotation}deg);
-      animation: confettiFall ${duration}s linear infinite;
-      animation-delay: ${delay}s;
-      pointer-events: none;
-      z-index: 9999;
-    `;
+          position: fixed;
+          left: ${left}%;
+          top: -10%;
+          width: ${size}px;
+          height: ${size}px;
+          background: ${color};
+          border-radius: ${isCircle ? "50%" : "2px"};
+          transform: rotate(${rotation}deg);
+          animation: confettiFall ${duration}s linear infinite;
+          animation-delay: ${delay}s;
+          pointer-events: none;
+          z-index: 9999;
+        `;
 
         container.appendChild(confetti);
       }
 
-      // Remove confetes após 6 segundos
       setTimeout(() => {
         document.querySelectorAll(".confetti").forEach((el) => el.remove());
       }, 6000);
     },
-    // ===== DEBUG =====
-
-    debugMaze() {
-      return; // Desativa debug para produção
-      console.log("[Maze] ===== ESTADO =====");
-      console.log("[Maze] mouse:", this.mouseRow, this.mouseCol);
-      console.log("[Maze] selected:", this.isMouseSelected);
-      console.log("[Maze] validMoves:", this.validMoves);
-      console.log("[Maze] gameOver:", this.gameOver, "won:", this.won);
-      console.log("[Maze] Grid:");
-      for (let r = 0; r < 8; r++) {
-        let row = r + " ";
-        for (let c = 0; c < 8; c++) {
-          let char = this.grid[r][c] === 0 ? "·" : "█";
-          if (this.isMouse(r, c)) char = "🐭";
-          else if (this.isCheese(r, c)) char = "🧀";
-          else if (this.isHighlighted(r, c)) char = "🔵";
-          row += char + " ";
-        }
-        console.log(row);
-      }
-    },
 
     // ===== HELPERS =====
-
     toggleHelp() {
       this.showHelp = !this.showHelp;
     },
-    // ===== FUNÇÃO PARA GERAR CONFETES =====
-    generateConfetti() {
-      const colors = [
-        "#FF6B6B",
-        "#4ECDC4",
-        "#45B7D1",
-        "#96CEB4",
-        "#FFEAA7",
-        "#DDA0DD",
-        "#FF8A5C",
-        "#A29BFE",
-      ];
-      const confettiCount = 50;
-      const container = document.querySelector(".maze-wrapper");
 
-      if (!container) return;
-
-      for (let i = 0; i < confettiCount; i++) {
-        const confetti = document.createElement("div");
-        confetti.className = "confetti";
-        const size = 6 + Math.random() * 10;
-        const color = colors[Math.floor(Math.random() * colors.length)];
-        const left = Math.random() * 100;
-        const delay = Math.random() * 2;
-        const duration = 2 + Math.random() * 3;
-        const rotation = Math.random() * 360;
-        const isCircle = Math.random() > 0.5;
-
-        confetti.style.cssText = `
-      position: fixed;
-      left: ${left}%;
-      top: -10%;
-      width: ${size}px;
-      height: ${size}px;
-      background: ${color};
-      border-radius: ${isCircle ? "50%" : "2px"};
-      transform: rotate(${rotation}deg);
-      animation: confettiFall ${duration}s linear infinite;
-      animation-delay: ${delay}s;
-      pointer-events: none;
-      z-index: 9999;
-    `;
-
-        container.appendChild(confetti);
-      }
-
-      // Remove confetes após 5 segundos
-      setTimeout(() => {
-        document.querySelectorAll(".confetti").forEach((el) => el.remove());
-      }, 5000);
-    },
+    debugMaze() {
+      // Desativado para produção
+      return;
+    }
   };
 }
