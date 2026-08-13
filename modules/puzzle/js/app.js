@@ -5,9 +5,11 @@ function puzzleApp() {
     gridSize: 4,
     currentImageIndex: 0,
     showPieceNumbers: true,
-    randomizeOnReset: true, // Nova opção: randomizar imagem ao resetar
+    randomizeOnReset: true,
+    interactionMode: 'drag',
+    selectedPieceIndex: null,
 
-    // ===== IMAGENS DISPONÍVEIS (MAIS OPCIONAIS) =====
+    // ===== IMAGENS DISPONÍVEIS =====
     imageOptions: [
       // Animais
       "https://picsum.photos/seed/puzzle_animal1/400/400",
@@ -100,7 +102,6 @@ function puzzleApp() {
 
       this.loadConfig();
 
-      // Se randomizar ao iniciar, escolhe uma imagem aleatória
       if (this.randomizeOnReset) {
         this.currentImageIndex = this.getRandomImageIndex();
       }
@@ -116,7 +117,7 @@ function puzzleApp() {
 
       console.log("Quebra-Cabeças inicializado com sucesso!");
       console.log(
-        `Imagem selecionada: ${this.currentImageIndex + 1}/${this.imageOptions.length}`,
+        `Imagem selecionada: ${this.currentImageIndex + 1}/${this.imageOptions.length}`
       );
     },
 
@@ -152,28 +153,28 @@ function puzzleApp() {
       });
     },
 
-    // ===== CONFIGURAÇÕES =====
+    // ===== CONFIGURAÇÕES - CARREGAR =====
     loadConfig() {
       try {
         const saved = localStorage.getItem("puzzle_config");
+        
         if (saved) {
           const config = JSON.parse(saved);
           this.gridSize = config.gridSize || 4;
           this.currentImageIndex = config.imageIndex || 0;
-          this.showPieceNumbers =
-            config.showPieceNumbers !== undefined
-              ? config.showPieceNumbers
-              : true;
-          this.randomizeOnReset =
-            config.randomizeOnReset !== undefined
-              ? config.randomizeOnReset
-              : true;
+          this.showPieceNumbers = config.showPieceNumbers !== undefined ? config.showPieceNumbers : true;
+          this.randomizeOnReset = config.randomizeOnReset !== undefined ? config.randomizeOnReset : true;
+          this.interactionMode = config.interactionMode || 'drag';
+          
+        } else {
+          console.log("[Puzzle] Nenhuma configuração salva, usando padrões");
         }
       } catch (e) {
         console.warn("[Puzzle] Erro ao carregar configurações:", e);
       }
     },
 
+    // ===== CONFIGURAÇÕES - SALVAR =====
     saveConfig() {
       try {
         const config = {
@@ -181,13 +182,17 @@ function puzzleApp() {
           imageIndex: this.currentImageIndex,
           showPieceNumbers: this.showPieceNumbers,
           randomizeOnReset: this.randomizeOnReset,
+          interactionMode: this.interactionMode,
+          savedAt: new Date().toISOString(),
         };
+        
         localStorage.setItem("puzzle_config", JSON.stringify(config));
       } catch (e) {
         console.warn("[Puzzle] Erro ao salvar configurações:", e);
       }
     },
 
+    // ===== MÉTODOS QUE SALVAM CONFIGURAÇÕES =====
     setGridSize(size) {
       this.gridSize = size;
       this.saveConfig();
@@ -208,7 +213,7 @@ function puzzleApp() {
       this.showPieceNumbers = !this.showPieceNumbers;
       this.saveConfig();
       this.showToast(
-        this.showPieceNumbers ? "🔢 Números visíveis" : "🔢 Números ocultos",
+        this.showPieceNumbers ? "🔢 Números visíveis" : "🔢 Números ocultos"
       );
     },
 
@@ -218,8 +223,72 @@ function puzzleApp() {
       this.showToast(
         this.randomizeOnReset
           ? "🎲 Randomizar ao reiniciar: ATIVADO"
-          : "🎲 Randomizar ao reiniciar: DESATIVADO",
+          : "🎲 Randomizar ao reiniciar: DESATIVADO"
       );
+    },
+
+    toggleInteractionMode(mode) {
+      console.log("[Puzzle] Alternando modo para:", mode);
+      this.interactionMode = mode;
+      this.selectedPieceIndex = null;
+      this.saveConfig();
+      
+      const message = mode === 'drag' 
+        ? '🖱️ Modo Arrastar ativado' 
+        : '👆 Modo Clique ativado - Clique na peça e no destino';
+      
+      this.showToast(message);
+    },
+
+    handlePieceClick(index) {
+      if (this.interactionMode !== 'click') return;
+      if (this.shuffledPieces[index].placed) return;
+      if (this.isComplete) return;
+
+      if (this.selectedPieceIndex === index) {
+        this.selectedPieceIndex = null;
+        return;
+      }
+
+      this.selectedPieceIndex = index;
+    },
+
+    handleSlotClick(slotIndex) {
+      if (this.interactionMode !== 'click') return;
+      if (this.selectedPieceIndex === null) return;
+      if (this.isComplete) return;
+
+      const piece = this.shuffledPieces[this.selectedPieceIndex];
+      if (!piece || piece.placed) {
+        this.selectedPieceIndex = null;
+        return;
+      }
+
+      if (this.gridPieces[slotIndex]) {
+        this.showToast('⚠️ Este espaço já está ocupado!');
+        this.selectedPieceIndex = null;
+        return;
+      }
+
+      if (piece.index === slotIndex) {
+        this.placePiece(this.selectedPieceIndex, slotIndex);
+        this.selectedPieceIndex = null;
+      } else {
+        this.speakError();
+        this.showToast('❌ Peça incorreta! Tente outra.');
+        
+        setTimeout(() => {
+          const slotEl = document.querySelector(`[data-slot-index="${slotIndex}"] .slot-empty`);
+          if (slotEl) {
+            slotEl.classList.add('shake');
+            setTimeout(() => {
+              slotEl.classList.remove('shake');
+            }, 500);
+          }
+        }, 50);
+        
+        this.selectedPieceIndex = null;
+      }
     },
 
     // ===== INICIALIZAR QUEBRA-CABEÇAS =====
@@ -230,6 +299,7 @@ function puzzleApp() {
       this.isComplete = false;
       this.celebration.show = false;
       this.dragPieceIndex = null;
+      this.selectedPieceIndex = null;
 
       const pieces = [];
       for (let i = 0; i < total; i++) {
@@ -250,53 +320,17 @@ function puzzleApp() {
       this.shuffledPieces = this.shuffleArray([...pieces]);
       this.dragOver = false;
 
-      console.log(
-        `[Puzzle] Iniciado grid ${this.gridSize}×${this.gridSize} (${total} peças)`,
-      );
-      console.log(
-        `[Puzzle] Imagem: ${this.currentImageIndex + 1}/${this.imageOptions.length}`,
-      );
     },
 
     resetPuzzle() {
-      if (this.randomizeOnReset) {
-        let newIndex;
-        if (this.imageOptions.length > 1) {
-          do {
-            newIndex = this.getRandomImageIndex();
-          } while (
-            newIndex === this.currentImageIndex &&
-            this.imageOptions.length > 1
-          );
-        } else {
-          newIndex = 0;
-        }
-
-        this.currentImageIndex = newIndex;
-        this.saveConfig();
-
-        this.preloadImage(this.currentImage).then(() => {
-          this.initPuzzle();
-          this.showToast("🔄 Nova imagem carregada!");
-        });
-      } else {
-        this.initPuzzle();
-        this.showToast("🔄 Quebra-cabeças reiniciado!");
-      }
-    },
-    resetPuzzle() {
-      console.log("[Puzzle] Resetando quebra-cabeças...");
-      console.log("[Puzzle] Randomizar ao resetar:", this.randomizeOnReset);
 
       if (this.randomizeOnReset) {
-        // Escolhe uma imagem diferente da atual (se houver mais de 1 imagem)
         let newIndex;
         if (this.imageOptions.length > 1) {
           let attempts = 0;
           do {
             newIndex = this.getRandomImageIndex();
             attempts++;
-            // Evita loop infinito
             if (attempts > 50) break;
           } while (
             newIndex === this.currentImageIndex &&
@@ -306,24 +340,19 @@ function puzzleApp() {
           newIndex = 0;
         }
 
-        console.log(
-          `[Puzzle] Nova imagem: ${newIndex + 1}/${this.imageOptions.length}`,
-        );
         this.currentImageIndex = newIndex;
         this.saveConfig();
 
-        // Pré-carrega a nova imagem e reinicia o jogo
         this.preloadImage(this.currentImage).then(() => {
           this.initPuzzle();
           this.showToast("🔄 Nova imagem carregada!");
         });
       } else {
-        // Mantém a mesma imagem, apenas embaralha as peças
-        console.log("[Puzzle] Mantendo imagem, apenas embaralhando");
         this.initPuzzle();
         this.showToast("🔄 Quebra-cabeças reiniciado!");
       }
     },
+
     // ===== SHUFFLE =====
     shuffleArray(array) {
       for (let i = array.length - 1; i > 0; i--) {
@@ -348,10 +377,7 @@ function puzzleApp() {
     speakError() {
       if (!this.Speech) return;
       try {
-        const text =
-          this.errorMessages[
-            Math.floor(Math.random() * this.errorMessages.length)
-          ];
+        const text = this.errorMessages[Math.floor(Math.random() * this.errorMessages.length)];
         this.Speech.speak(text, {
           rate: 0.8,
           pitch: 0.9,
@@ -377,6 +403,11 @@ function puzzleApp() {
 
     // ===== DRAG & DROP =====
     handleDragStart(event, index) {
+      if (this.interactionMode === 'click') {
+        event.preventDefault();
+        return;
+      }
+      
       this.dragPieceIndex = index;
       event.dataTransfer.effectAllowed = "move";
       event.dataTransfer.setData("text/plain", index.toString());
@@ -391,6 +422,7 @@ function puzzleApp() {
     },
 
     handleDragOver(event) {
+      if (this.interactionMode === 'click') return;
       this.dragOver = true;
     },
 
@@ -399,6 +431,8 @@ function puzzleApp() {
     },
 
     handleDrop(event) {
+      if (this.interactionMode === 'click') return;
+      
       this.dragOver = false;
 
       const dragIndex = parseInt(event.dataTransfer.getData("text/plain"));
@@ -580,5 +614,26 @@ function puzzleApp() {
         height: "100%",
       };
     },
+
+    // ===== FORÇAR ATUALIZAÇÃO =====
+    $forceUpdate() {
+      if (this.$el) {
+        this.$el.dispatchEvent(new CustomEvent('alpine:updated'));
+      }
+    },
+
+    // ===== MÉTODO PARA DEBUG =====
+    debugConfig() {
+      console.log("=== DEBUG CONFIGURAÇÕES ===");
+      console.log("Configurações atuais:", {
+        gridSize: this.gridSize,
+        currentImageIndex: this.currentImageIndex,
+        showPieceNumbers: this.showPieceNumbers,
+        randomizeOnReset: this.randomizeOnReset,
+        interactionMode: this.interactionMode,
+      });
+      console.log("localStorage:", localStorage.getItem("puzzle_config"));
+      console.log("=== FIM DEBUG ===");
+    }
   };
 }
